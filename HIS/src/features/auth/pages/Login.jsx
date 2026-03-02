@@ -112,7 +112,7 @@ export default function Login() {
             <BottomBadge icon={<CheckCircle2 className="w-3.5 h-3.5" />} text="HL7 Ready" />
             <BottomBadge icon={<CheckCircle2 className="w-3.5 h-3.5" />} text="FHIR R4" />
             <BottomBadge icon={<Wifi className="w-3.5 h-3.5" />} text="Low Bandwidth Optimized" />
-            <BottomBadge icon={<Building2 className="w-3.5 h-3.5" />} text="MOH Certified" />
+            {/* <BottomBadge icon={<Building2 className="w-3.5 h-3.5" />} text="MOH Certified" /> */}
           </div>
           <p className="text-center text-[11px] text-gray-400 mt-3">
             &copy; {new Date().getFullYear()} Ministry of Health &mdash; Smart Health Network. All rights reserved.
