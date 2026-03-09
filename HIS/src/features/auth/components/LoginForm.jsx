@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   User,
   Lock,
@@ -9,6 +10,8 @@ import {
   ShieldCheck,
   MapPin,
 } from 'lucide-react';
+import useAuthStore from '../store';
+import { odooLogin } from '../../../services/odooClient';
 
 const ROLES = [
   'Governorate Manager',
@@ -28,7 +31,19 @@ const LOCATIONS = [
   'Aswan District Hospital',
 ];
 
+const DB = import.meta.env.VITE_ODOO_DB || 'Agial_Hospital';
+
+// Map Odoo login → unit code
+function resolveUnit(session) {
+  const name = (session?.name || '').toLowerCase();
+  if (name.includes('agial')) return 'agial';
+  return 'agial'; // default until more units exist
+}
+
 export default function LoginForm() {
+  const navigate = useNavigate();
+  const login = useAuthStore((s) => s.login);
+
   const [form, setForm] = useState({
     username: '',
     password: '',
@@ -38,17 +53,28 @@ export default function LoginForm() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     setLoading(true);
-    // TODO: call auth API
-    setTimeout(() => setLoading(false), 1500);
+    try {
+      const session = await odooLogin(DB, form.username, form.password);
+      if (!session?.uid) throw new Error('Invalid username or password');
+      const unit = resolveUnit(session);
+      login(session, session.session_id, unit);
+      navigate('/agial/patients');
+    } catch (err) {
+      setError(err.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const inputBase =
@@ -181,6 +207,13 @@ export default function LoginForm() {
           Forgot password?
         </a>
       </div>
+
+      {/* Error */}
+      {error && (
+        <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-3 py-2">
+          {error}
+        </p>
+      )}
 
       {/* Submit */}
       <button

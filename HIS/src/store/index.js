@@ -1,1 +1,3 @@
-// Global Zustand store — add slices here as needed
+// Unit state now lives in useAuthStore (src/features/auth/store.js)
+// as the `unit` field set on login.
+export { default } from '../features/auth/store';
