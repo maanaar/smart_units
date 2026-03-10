@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './features/auth/pages/Login';
 import PatientInfo from './features/agial/pages/PatientInfo';
+import ReceptionPage from './features/agial/pages/ReceptionPage';
 import useAuthStore from './features/auth/store';
 
 // function Protected({ children }) {
@@ -16,6 +17,7 @@ export default function App() {
 
         <Route path="/agial/patients" element={<PatientInfo />} />
         <Route path="/agial/patients/:id" element={<PatientInfo />} />
+            <Route path="/agial/ReceptionPage" element={<ReceptionPage />} />
 
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
