@@ -57,9 +57,9 @@ export default function ReceptionScreen() {
 
             {/* Patient Search & Registration */}
             <div className="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
-              <div className="bg-gradient-to-r from-slate-900 via-teal-900 to-slate-900 px-6 py-4 ">
+              <div className="bg-gradient-to-r  from-[#13534c] to-[#1f7e74] px-6 py-4 ">
                 <h2 className="text-white font-bold text-lg tracking-tight flex items-center gap-2">
-                  <span>👤</span> Patient Search & Registration
+                   Patient Search & Registration
                 </h2>
               </div>
               <div className="p-6 space-y-4">
@@ -113,9 +113,9 @@ export default function ReceptionScreen() {
 
             {/* Visit Registration */}
             <div className="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden flex flex-col">
-              <div className="bg-gradient-to-r from-slate-900 via-teal-900 to-slate-900 px-6 py-4">
+              <div className="bg-gradient-to-r  from-[#1f7e74] to-[#13534c]  px-6 py-4">
                 <h2 className="text-white font-bold text-lg tracking-tight flex items-center gap-2">
-                  <span>📋</span> Visit Registration
+                   Visit Registration
                 </h2>
               </div>
               <div className="p-6 space-y-4 flex-1">
@@ -210,7 +210,7 @@ export default function ReceptionScreen() {
               <div className="px-6 pb-6 pt-2 flex flex-col sm:flex-row gap-3">
                 <button
                   type="submit"
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold py-3 rounded-xl shadow transition-all flex items-center justify-center gap-2"
+                  className="flex-1 bg-[#1c6a60] hover:bg-[#048171] active:scale-95 text-white font-bold py-3 rounded-xl shadow transition-all flex items-center justify-center gap-2"
                 >
                    Create Visit
                 </button>
