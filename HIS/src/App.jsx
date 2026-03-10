@@ -1,13 +1,22 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import Login from './features/auth/pages/Login';
 import PatientInfo from './features/agial/pages/PatientInfo';
 import ReceptionPage from './features/agial/pages/ReceptionPage';
+import Sidebar from './components/layout/Sidebar';
 import useAuthStore from './features/auth/store';
 
-// function Protected({ children }) {
-//   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
-//   return isLoggedIn ? children : <Navigate to="/login" replace />;
-// }
+function Protected() {
+  const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
+  if (!isLoggedIn) return <Navigate to="/login" replace />;
+  return (
+    <div className="flex h-screen overflow-hidden">
+      <Sidebar />
+      <main className="flex-1 overflow-y-auto bg-gray-50">
+        <Outlet />
+      </main>
+    </div>
+  );
+}
 
 export default function App() {
   return (
@@ -15,9 +24,12 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
 
-        <Route path="/agial/patients" element={<PatientInfo />} />
-        <Route path="/agial/patients/:id" element={<PatientInfo />} />
-            <Route path="/agial/ReceptionPage" element={<ReceptionPage />} />
+
+        <Route element={<Protected />}>
+          <Route path="/agial/patients"     element={<PatientInfo />} />
+          <Route path="/agial/patients/:id" element={<PatientInfo />} />
+                      <Route path="/agial/ReceptionPage" element={<ReceptionPage />} />
+        </Route>
 
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>

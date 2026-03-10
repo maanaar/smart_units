@@ -11,7 +11,6 @@ import {
   MapPin,
 } from 'lucide-react';
 import useAuthStore from '../store';
-import { odooLogin } from '../../../services/odooClient';
 
 const ROLES = [
   'Governorate Manager',
@@ -31,14 +30,9 @@ const LOCATIONS = [
   'Aswan District Hospital',
 ];
 
-const DB = import.meta.env.VITE_ODOO_DB || 'Agial_Hospital';
-
-// Map Odoo login → unit code
-function resolveUnit(session) {
-  const name = (session?.name || '').toLowerCase();
-  if (name.includes('agial')) return 'agial';
-  return 'agial'; // default until more units exist
-}
+// Static credentials — replace with Odoo call when ready
+const STATIC_USER = 'admin';
+const STATIC_PASS = 'admin123';
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -52,7 +46,6 @@ export default function LoginForm() {
     remember: false,
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
@@ -60,21 +53,15 @@ export default function LoginForm() {
     setForm((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
-    try {
-      const session = await odooLogin(DB, form.username, form.password);
-      if (!session?.uid) throw new Error('Invalid username or password');
-      const unit = resolveUnit(session);
-      login(session, session.session_id, unit);
-      navigate('/agial/patients');
-    } catch (err) {
-      setError(err.message || 'Login failed');
-    } finally {
-      setLoading(false);
+    if (form.username !== STATIC_USER || form.password !== STATIC_PASS) {
+      setError('Invalid username or password');
+      return;
     }
+    login({ name: 'Admin' }, 'static-token', 'agial');
+    navigate('/agial/patients');
   };
 
   const inputBase =
@@ -218,17 +205,10 @@ export default function LoginForm() {
       {/* Submit */}
       <button
         type="submit"
-        disabled={loading}
-        className="group relative w-full flex items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-teal-500/25 hover:shadow-xl hover:shadow-teal-500/30 hover:from-teal-600 hover:to-emerald-600 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/50 focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100 transition-all duration-200"
+        className="group relative w-full flex items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-teal-500/25 hover:shadow-xl hover:shadow-teal-500/30 hover:from-teal-600 hover:to-emerald-600 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/50 focus-visible:ring-offset-2 transition-all duration-200"
       >
-        {loading ? (
-          <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-        ) : (
-          <>
-            Sign In
-            <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
-          </>
-        )}
+        Sign In
+        <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
       </button>
     </form>
   );
