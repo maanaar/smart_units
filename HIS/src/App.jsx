@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import Login from './features/auth/pages/Login';
 import PatientInfo from './features/agial/pages/PatientInfo';
+import CalendarPage from './features/agial/pages/CalendarPage';
 import ReceptionPage from './features/agial/pages/ReceptionPage';
+import DoctorScreen from './features/agial/pages/Doctor';
 import Sidebar from './components/layout/Sidebar';
 import useAuthStore from './features/auth/store';
 import NursingPage from './features/agial/pages/NursingPage';
@@ -29,9 +31,9 @@ export default function App() {
         <Route element={<Protected />}>
           <Route path="/agial/patients"     element={<PatientInfo />} />
           <Route path="/agial/patients/:id" element={<PatientInfo />} />
-                      <Route path="/agial/ReceptionPage" element={<ReceptionPage />} />
-                              <Route path="/agial/nursing" element={<NursingPage />} />
-
+          <Route path="/agial/calendar"      element={<CalendarPage />} />
+          <Route path="/agial/ReceptionPage" element={<ReceptionPage />} />
+           <Route path="/agial/doctorscreen" element={<DoctorScreen />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/login" replace />} />
