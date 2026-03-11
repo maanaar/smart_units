@@ -1,33 +1,47 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import {
   HeartPulse,
   Users,
   LayoutDashboard,
   CalendarDays,
   FileBarChart,
-  BellElectric,
-  Stethoscope, 
+  Stethoscope,
+  ChevronDown,
   LogOut,
 } from 'lucide-react';
 import useAuthStore from '../../features/auth/store';
 
 const NAV = [
-  { to: '/agial/patients',  icon: Users,            label: 'Patients'  },
-  { to: '/agial/ReceptionPage',  icon: Users,       label: 'Reception' },
-  { to: '/agial/dashboard', icon: LayoutDashboard,  label: 'Dashboard' },
-  { to:'/agial/doctorscreen',  icon: Stethoscope,  label: 'Doctor'     },
-  { to: '/agial/calendar',  icon: CalendarDays,     label: 'Calendar'  },
-  { to: '/agial/reports',   icon: FileBarChart,     label: 'Reports'   },
+  { to: '/agial/patients',      icon: Users,           label: 'Patients'  },
+  { to: '/agial/ReceptionPage', icon: Users,           label: 'Reception' },
+  {
+    icon: LayoutDashboard,
+    label: 'Dashboard',
+    children: [
+      { to: '/agial/centcom', label: 'CentCom Dashboard' },
+      { to: '/agial/nationalcentcom',           label: 'National Command' },
+      { to: '/agial/unitcentcom',   label: 'Unit Dashboard'   },
+    ],
+  },
+  { to: '/agial/doctorscreen',  icon: Stethoscope,     label: 'Doctor'    },
+  { to: '/agial/calendar',      icon: CalendarDays,    label: 'Calendar'  },
+  { to: '/agial/reports',       icon: FileBarChart,    label: 'Reports'   },
 ];
 
 export default function Sidebar() {
-  const navigate = useNavigate();
+  const navigate  = useNavigate();
+  const location  = useLocation();
   const { user, unit, logout } = useAuthStore();
+
+  // auto-open Dashboard group if current path is one of its children
+  const dashPaths = ['/agial/dashboard', '/agial/unitcentcom', '/centcom'];
+  const [dashOpen, setDashOpen] = useState(dashPaths.includes(location.pathname));
 
   return (
     <aside className="w-80 flex-shrink-0 overflow-hidden bg-gradient-to-b from-slate-900 via-teal-900 to-slate-900 flex flex-col h-screen sticky rounded-r-2xl top-0">
 
-      {/* Orbs — mirrors the login panel */}
+      {/* Orbs */}
       <div className="absolute -top-20 -left-20 w-64 h-64 bg-teal-500/20 rounded-full blur-3xl animate-pulse pointer-events-none" />
       <div className="absolute top-1/2 -right-10 w-48 h-48 bg-cyan-500/15 rounded-full blur-3xl animate-pulse [animation-delay:2s] pointer-events-none" />
       <div className="absolute -bottom-10 left-1/4 w-56 h-56 bg-emerald-500/10 rounded-full blur-3xl animate-pulse [animation-delay:4s] pointer-events-none" />
@@ -42,7 +56,6 @@ export default function Sidebar() {
         }}
       />
 
-      {/* All content sits above the decorations */}
       <div className="relative z-10 flex flex-col h-full p-4">
 
         {/* Logo */}
@@ -56,24 +69,69 @@ export default function Sidebar() {
           </div>
         </div>
 
-        {/* Nav items */}
-        <nav className="flex-1 space-y-1">
-          {NAV.map(({ to, icon: Icon, label }) => (
-            <NavLink
-              key={to}
-              to={to}
-              className={({ isActive }) =>
-                `flex items-center gap-8 px-3 py-2.5 rounded-xl text-lg font-medium transition-all ${
-                  isActive
-                    ? 'bg-teal-500/20 text-white border border-teal-500/30'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
-                }`
-              }
-            >
-              <Icon className="w-4 h-4 flex-shrink-0" />
-              {label}
-            </NavLink>
-          ))}
+        {/* Nav */}
+        <nav className="flex-1 space-y-1 overflow-y-auto">
+          {NAV.map((item) => {
+            if (item.children) {
+              const isAnyActive = item.children.some(c => location.pathname === c.to);
+              return (
+                <div key={item.label}>
+                  {/* group toggle */}
+                  <button
+                    onClick={() => setDashOpen(o => !o)}
+                    className={`w-full flex items-center gap-8 px-3 py-2.5 rounded-xl text-lg font-medium transition-all ${
+                      isAnyActive
+                        ? 'bg-teal-500/20 text-white border border-teal-500/30'
+                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    <item.icon className="w-4 h-4 flex-shrink-0" />
+                    <span className="flex-1 text-left">{item.label}</span>
+                    <ChevronDown className={`w-3.5 h-3.5 transition-transform ${dashOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {/* sub-items */}
+                  {dashOpen && (
+                    <div className="ml-6 mt-0.5 space-y-0.5 border-l border-white/10 pl-3">
+                      {item.children.map(child => (
+                        <NavLink
+                          key={child.to}
+                          to={child.to}
+                          className={({ isActive }) =>
+                            `flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                              isActive
+                                ? 'bg-teal-500/20 text-white'
+                                : 'text-slate-400 hover:text-white hover:bg-white/5'
+                            }`
+                          }
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-current opacity-60" />
+                          {child.label}
+                        </NavLink>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            return (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) =>
+                  `flex items-center gap-8 px-3 py-2.5 rounded-xl text-lg font-medium transition-all ${
+                    isActive
+                      ? 'bg-teal-500/20 text-white border border-teal-500/30'
+                      : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  }`
+                }
+              >
+                <item.icon className="w-4 h-4 flex-shrink-0" />
+                {item.label}
+              </NavLink>
+            );
+          })}
         </nav>
 
         {/* User + sign out */}
