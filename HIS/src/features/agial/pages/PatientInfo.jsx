@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Search, X, Loader2, User } from 'lucide-react';
+import { Search, X, User } from 'lucide-react';
 
 import useAgialStore from '../store';
-import { fetchPatient, fetchAllVisits, searchPatients } from '../api';
+import { MOCK_PATIENT, MOCK_VISITS, MOCK_PATIENTS_LIST } from '../mockData';
 import PatientHeader from '../components/PatientHeader';
 import VisitHistory from '../components/VisitHistory';
 import DiagnosisPanel from '../components/DiagnosisPanel';
-
-// ── Tab definitions ────────────────────────────────────────────────────────
 
 const TABS = [
   { id: 'visits',      label: 'Visits History' },
@@ -19,46 +17,34 @@ const TABS = [
   { id: 'attachments', label: 'Attachments' },
 ];
 
-// ── Placeholder for unbuilt tabs ───────────────────────────────────────────
-
 function ComingSoon({ label }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-gray-400 text-sm">
       <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mb-3">
         <span className="text-lg">📋</span>
       </div>
-      {label} coming soon
+      {label} — coming soon
     </div>
   );
 }
 
-// ── Patient search bar ─────────────────────────────────────────────────────
+// ── Search bar (filters mock list) ─────────────────────────────────────────
 
 function PatientSearchBar({ onSelect }) {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState([]);
-  const [searching, setSearching] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen]   = useState(false);
 
-  const handleChange = async (e) => {
-    const val = e.target.value;
-    setQuery(val);
-    if (val.trim().length < 2) { setResults([]); setOpen(false); return; }
-    setSearching(true);
-    setOpen(true);
-    try {
-      const data = await searchPatients(val);
-      setResults(data);
-    } catch {
-      setResults([]);
-    } finally {
-      setSearching(false);
-    }
-  };
+  const results = query.trim().length >= 1
+    ? MOCK_PATIENTS_LIST.filter((p) =>
+        p.name.includes(query) ||
+        p.english_name.toLowerCase().includes(query.toLowerCase()) ||
+        p.mrn.toLowerCase().includes(query.toLowerCase()) ||
+        p.mobile.includes(query)
+      )
+    : [];
 
   const pick = (patient) => {
     setQuery('');
-    setResults([]);
     setOpen(false);
     onSelect(patient.id);
   };
@@ -69,13 +55,15 @@ function PatientSearchBar({ onSelect }) {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
         <input
           value={query}
-          onChange={handleChange}
+          onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
+          onFocus={() => setOpen(true)}
+          onBlur={() => setTimeout(() => setOpen(false), 150)}
           placeholder="Search patient…"
           className="w-full pl-9 pr-8 py-1.5 text-sm rounded-md border border-gray-300 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
         />
         {query && (
           <button
-            onClick={() => { setQuery(''); setResults([]); setOpen(false); }}
+            onClick={() => { setQuery(''); setOpen(false); }}
             className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
           >
             <X className="w-3.5 h-3.5" />
@@ -83,31 +71,23 @@ function PatientSearchBar({ onSelect }) {
         )}
       </div>
 
-      {open && (
-        <div className="absolute top-full mt-1 left-0 right-0 bg-white rounded-md border border-gray-200 shadow-lg z-20 max-h-56 overflow-y-auto">
-          {searching ? (
-            <div className="flex items-center justify-center py-5">
-              <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />
-            </div>
-          ) : results.length === 0 ? (
-            <p className="text-center text-sm text-gray-400 py-5">No patients found</p>
-          ) : (
-            results.map((p) => (
-              <button
-                key={p.id}
-                onClick={() => pick(p)}
-                className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0"
-              >
-                <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
-                  <User className="w-3.5 h-3.5 text-gray-500" />
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-gray-900">{p.name}</div>
-                  <div className="text-xs text-gray-400">{p.mrn} · {p.mobile || '—'}</div>
-                </div>
-              </button>
-            ))
-          )}
+      {open && results.length > 0 && (
+        <div className="absolute top-full mt-1 left-0 right-0 bg-white rounded-md border border-gray-200 shadow-lg z-20">
+          {results.map((p) => (
+            <button
+              key={p.id}
+              onMouseDown={() => pick(p)}
+              className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0"
+            >
+              <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+                <User className="w-3.5 h-3.5 text-gray-500" />
+              </div>
+              <div>
+                <div className="text-sm font-medium text-gray-900">{p.name}</div>
+                <div className="text-xs text-gray-400">{p.mrn} · {p.mobile}</div>
+              </div>
+            </button>
+          ))}
         </div>
       )}
     </div>
@@ -122,92 +102,51 @@ export default function PatientInfo() {
 
   const {
     selectedPatient,
-    patientLoading, patientError,
-    visits, visitsLoading, visitsError,
+    visits,
     diagnosis, drugAllergies, generalNotes,
-    setSelectedPatient, setPatientLoading, setPatientError,
-    setVisits, setVisitsLoading, setVisitsError,
-    clearPatient,
+    setSelectedPatient,
+    setVisits,
   } = useAgialStore();
 
   const [activeTab, setActiveTab] = useState('visits');
 
+  // Load mock data on mount — swap for real API call later
   useEffect(() => {
-    if (!id) return;
-    loadPatient(Number(id));
+    const match = id
+      ? MOCK_PATIENTS_LIST.find((p) => p.id === Number(id))
+      : null;
+
+    setSelectedPatient(match ? { ...MOCK_PATIENT, ...match } : MOCK_PATIENT);
+    setVisits(MOCK_VISITS);
   }, [id]);
 
-  async function loadPatient(patientId) {
-    clearPatient();
-    setPatientLoading(true);
-    try {
-      const patient = await fetchPatient(patientId);
-      if (!patient) throw new Error('Patient not found');
-      setSelectedPatient(patient);
-    } catch (err) {
-      setPatientError(err.message);
-    } finally {
-      setPatientLoading(false);
-    }
-
-    setVisitsLoading(true);
-    try {
-      const all = await fetchAllVisits(patientId);
-      setVisits(all);
-    } catch (err) {
-      setVisitsError(err.message);
-    } finally {
-      setVisitsLoading(false);
-    }
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Page title bar */}
+    <div className="min-h-full bg-gray-50">
+      {/* Top bar */}
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-gray-900">Patient Profile Screen</h1>
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-1 h-7 rounded-full bg-emerald-700" />
+            <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-emerald-900 to-teal-700 bg-clip-text text-transparent">
+              Patient Profile Screen
+            </h1>
+          </div>
           <PatientSearchBar onSelect={(pid) => navigate(`/agial/patients/${pid}`)} />
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 py-5 space-y-4">
-
-        {/* Loading */}
-        {patientLoading && (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-7 h-7 text-blue-500 animate-spin" />
-          </div>
-        )}
-
-        {/* Error */}
-        {patientError && (
-          <div className="rounded-md border border-red-100 bg-red-50 p-3 text-sm text-red-600">
-            {patientError}
-          </div>
-        )}
-
-        {/* Empty state */}
-        {!id && !selectedPatient && !patientLoading && (
-          <div className="flex flex-col items-center justify-center py-24 text-gray-400 text-sm">
-            <Search className="w-10 h-10 mb-3 opacity-30" />
-            Search for a patient using the search bar above
-          </div>
-        )}
-
-        {/* Patient loaded */}
-        {selectedPatient && !patientLoading && (
+      <div className="max-w-7xl mx-auto px-6 py-5 space-y-4">
+        {selectedPatient && (
           <>
-            {/* Header card */}
+            {/* Patient card */}
             <PatientHeader
               patient={selectedPatient}
               onEdit={() => {}}
               onNewVisit={() => {}}
             />
 
-            {/* Tabs + content */}
+            {/* Tabs */}
             <div className="bg-white rounded-xl border border-gray-200">
-              {/* Tab bar */}
               <div className="flex border-b border-gray-200 overflow-x-auto">
                 {TABS.map((tab) => (
                   <button
@@ -224,26 +163,13 @@ export default function PatientInfo() {
                 ))}
               </div>
 
-              {/* Tab content */}
               <div className="p-4">
-                {activeTab === 'visits' && (
-                  <VisitHistory
-                    visits={visits}
-                    loading={visitsLoading}
-                    error={visitsError}
-                  />
-                )}
-                {activeTab === 'diagnoses' && (
-                  <DiagnosisPanel
-                    diagnosis={diagnosis}
-                    drugAllergies={drugAllergies}
-                    generalNotes={generalNotes}
-                  />
-                )}
-                {activeTab === 'medications'  && <ComingSoon label="Medications" />}
-                {activeTab === 'lab'          && <ComingSoon label="Lab Results" />}
-                {activeTab === 'radiology'    && <ComingSoon label="Radiology" />}
-                {activeTab === 'attachments'  && <ComingSoon label="Attachments" />}
+                {activeTab === 'visits'      && <VisitHistory visits={visits} loading={false} error={null} />}
+                {activeTab === 'diagnoses'   && <DiagnosisPanel diagnosis={diagnosis} drugAllergies={drugAllergies} generalNotes={generalNotes} />}
+                {activeTab === 'medications' && <ComingSoon label="Medications" />}
+                {activeTab === 'lab'         && <ComingSoon label="Lab Results" />}
+                {activeTab === 'radiology'   && <ComingSoon label="Radiology" />}
+                {activeTab === 'attachments' && <ComingSoon label="Attachments" />}
               </div>
             </div>
           </>
