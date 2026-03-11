@@ -3,6 +3,7 @@ import Login from './features/auth/pages/Login';
 import PatientInfo from './features/agial/pages/PatientInfo';
 import CalendarPage from './features/agial/pages/CalendarPage';
 import ReceptionPage from './features/agial/pages/ReceptionPage';
+import DoctorScreen from './features/agial/pages/Doctor';
 import Sidebar from './components/layout/Sidebar';
 import useAuthStore from './features/auth/store';
 
@@ -31,6 +32,7 @@ export default function App() {
           <Route path="/agial/patients/:id" element={<PatientInfo />} />
           <Route path="/agial/calendar"      element={<CalendarPage />} />
           <Route path="/agial/ReceptionPage" element={<ReceptionPage />} />
+           <Route path="/agial/doctorscreen" element={<DoctorScreen />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/login" replace />} />

@@ -45,10 +45,10 @@ export default function ReceptionScreen() {
           backgroundSize: '60px 60px',
         }}>
          
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">
+          <h1 className="text-4xl font-extrabold text-white tracking-tight">
             Reception Screen
           </h1>
-          <p className="text-slate-500 text-sm mt-1">Register patients and manage visit queues</p>
+          {/* <p className="text-[#bdbdbd] text-sm mt-1">Register patients and manage visit queues</p> */}
         </div>
         </div>
 
