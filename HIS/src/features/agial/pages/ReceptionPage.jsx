@@ -173,7 +173,7 @@ export default function ReceptionScreen() {
                         onClick={() => setVisit({ ...visit, visitType: t })}
                         className={`px-4 py-2 rounded-lg text-sm font-semibold border transition-all ${
                           visit.visitType === t
-                            ? "bg-blue-600 text-white border-blue-600 shadow"
+                            ? "bg-teal-600 text-white border-teal-600 shadow"
                             : "bg-white text-slate-600 border-slate-300 hover:border-blue-400"
                         }`}
                       >

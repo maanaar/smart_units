@@ -28,7 +28,7 @@ export default function App() {
         <Route element={<Protected />}>
           <Route path="/agial/patients"     element={<PatientInfo />} />
           <Route path="/agial/patients/:id" element={<PatientInfo />} />
-                      <Route path="/agial/ReceptionPage" element={<ReceptionPage />} />
+          <Route path="/agial/ReceptionPage" element={<ReceptionPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/login" replace />} />
