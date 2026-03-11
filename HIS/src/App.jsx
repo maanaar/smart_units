@@ -9,6 +9,8 @@ import UnitDashboard from './features/centcom/pages/UnitDashboard';
 import CentComPage from './features/centcom/pages/CentComPage';
 import Sidebar from './components/layout/Sidebar';
 import useAuthStore from './features/auth/store';
+import NursingPage from './features/agial/pages/NursingPage';
+import ReceptionScreenAr from './features/agial/pages/ReceptionPageAR';
 
 function Protected() {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
@@ -34,7 +36,10 @@ export default function App() {
           <Route path="/agial/patients"      element={<PatientInfo />} />
           <Route path="/agial/patients/:id"  element={<PatientInfo />} />
           <Route path="/agial/calendar"      element={<CalendarPage />} />
+           <Route path="/agial/nursing"      element={<NursingPage/>} />
           <Route path="/agial/ReceptionPage" element={<ReceptionPage />} />
+          <Route path="/agial/AR/ReceptionPage" element={<ReceptionScreenAr />} />
+           <Route path="/agial/doctorscreen" element={<DoctorScreen />} />
           <Route path="/agial/doctorscreen"  element={<DoctorScreen />} />
           <Route path="/agial/unitcentcom"     element={<AgialDashboard />} />
           <Route path="/agial/centcom"   element={<UnitDashboard />} />
