@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './features/auth/pages/Login';
 import PatientInfo from './features/agial/pages/PatientInfo';
 import useAuthStore from './features/auth/store';
+import NursingPage from './features/agial/pages/NursingPage';
 
 // function Protected({ children }) {
 //   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
@@ -16,6 +17,7 @@ export default function App() {
 
         <Route path="/agial/patients" element={<PatientInfo />} />
         <Route path="/agial/patients/:id" element={<PatientInfo />} />
+        <Route path="/agial/nursing" element={<NursingPage />} />
 
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
