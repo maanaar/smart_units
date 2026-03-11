@@ -6,6 +6,7 @@ import {
   CalendarDays,
   FileBarChart,
   LogOut,
+  ClipboardPlus,
 } from 'lucide-react';
 import useAuthStore from '../../features/auth/store';
 
@@ -14,6 +15,7 @@ const NAV = [
   { to: '/agial/dashboard', icon: LayoutDashboard,  label: 'Dashboard' },
   { to: '/agial/calendar',  icon: CalendarDays,     label: 'Calendar'  },
   { to: '/agial/reports',   icon: FileBarChart,     label: 'Reports'   },
+  { to: '/agial/nursing',   icon: ClipboardPlus,     label: 'Nursing'   },
 ];
 
 export default function Sidebar() {

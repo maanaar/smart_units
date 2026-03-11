@@ -1,4 +1,4 @@
-#root {
+/* #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
@@ -39,4 +39,12 @@
 
 .read-the-docs {
   color: #888;
+} */
+input:where([type='checkbox']):checked, input:where([type='radio']):checked, input:where([type='checkbox']):checked:hover, input:where([type='checkbox']):checked:focus, input:where([type='radio']):checked:hover, input:where([type='radio']):checked:focus{
+  background-color: #1e7b71;
+  border-color:#1e7b71; 
+}
+
+input:where([type='checkbox']):hover, input:where([type='checkbox']):focus, input:where([type='radio']):hover, input:where([type='radio']):focus{
+  box-shadow: 0 0 0 1px #1e7b71, 0 0 0 3px #1e7b71aa  ;
 }
