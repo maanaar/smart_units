@@ -7,6 +7,7 @@ import DoctorScreen from './features/agial/pages/Doctor';
 import Sidebar from './components/layout/Sidebar';
 import useAuthStore from './features/auth/store';
 import NursingPage from './features/agial/pages/NursingPage';
+import ReceptionScreenAr from './features/agial/pages/ReceptionPageAR';
 
 function Protected() {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
@@ -34,6 +35,7 @@ export default function App() {
           <Route path="/agial/calendar"      element={<CalendarPage />} />
            <Route path="/agial/nursing"      element={<NursingPage/>} />
           <Route path="/agial/ReceptionPage" element={<ReceptionPage />} />
+          <Route path="/agial/AR/ReceptionPage" element={<ReceptionScreenAr />} />
            <Route path="/agial/doctorscreen" element={<DoctorScreen />} />
         </Route>
 

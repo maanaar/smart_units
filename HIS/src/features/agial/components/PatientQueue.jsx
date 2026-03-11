@@ -11,20 +11,20 @@ export default function PatientQueue() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-left text-gray-600 border-b border-gray-200 bg-gray-300">
-                  <th className="py-2 font-semibold w-16 pl-2  text-lg">Queue</th>
-                  <th className="py-2 font-semibold border-l pl-2 border-gray-200 text-lg">Patient</th>
-                  <th className="py-2 font-semibold border-l pl-2 border-gray-200 text-lg">Doctor</th>
-                  <th className="py-2 font-semibold border-l pl-2 border-gray-200 text-lg">Status</th>
-                  <th className="py-2 font-semibold border-l pl-2 border-gray-200 text-lg">Action</th>
+                  <th className="py-2 font-semibold w-16 px-2  text-lg">Queue</th>
+                  <th className="py-2 font-semibold border-l px-2 border-gray-200 text-lg">Patient</th>
+                  <th className="py-2 font-semibold border-l px-2 border-gray-200 text-lg">Doctor</th>
+                  <th className="py-2 font-semibold border-l px-2 border-gray-200 text-lg">Status</th>
+                  <th className="py-2 font-semibold border-l px-2 border-gray-200 text-lg">Action</th>
                 </tr>
               </thead>
               <tbody>
                 <tr className="text-gray-700">
-                  <td className="py-2 pl-2  text-base">15</td>
-                  <td className="py-2 pl-2 border-l border-gray-200 text-base">Ahmed Ali</td>
-                  <td className="py-2 pl-2 border-l border-gray-200 text-base">Dr. Hassan</td>
-                  <td className="py-2 pl-2 border-l border-gray-200 text-base">Waiting</td>
-                  <td className="py-2 pl-2 border-l border-gray-200 text-base flex gap-3">
+                  <td className="py-2 px-2  text-base">15</td>
+                  <td className="py-2 px-2 border-l border-gray-200 text-base">Ahmed Ali</td>
+                  <td className="py-2 px-2 border-l border-gray-200 text-base">Dr. Hassan</td>
+                  <td className="py-2 px-2 border-l border-gray-200 text-base">Waiting</td>
+                  <td className="py-2 px-2 border-l border-gray-200 text-base flex gap-3">
                     <button className="  bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-bold px-6 py-3 rounded-xl border border-slate-300 transition-all flex items-center justify-center gap-2">
                       Start
                 </button>

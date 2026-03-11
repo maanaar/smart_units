@@ -1,19 +1,19 @@
 import { useState } from "react";
 
-const genderOptions = ["Male", "Female",];
-const visitTypes = ["New", "Follow-up", "Consultation"];
-const paymentTypes = ["Cash", "Insurance", "Contract"];
+const genderOptions = ["ذكر", "أنثى"];
+const visitTypes = ["جديد", "متابعة", "استشارة"];
+const paymentTypes = ["نقدي", "تأمين", "عقد"];
 
 const today = new Date().toISOString().split("T")[0];
 
-export default function ReceptionScreen() {
+export default function ReceptionScreenAR() {
   const [patient, setPatient] = useState({
     mrn: "", name: "", nationalId: "", mobile: "",
     dob: "", gender: "", insurance: "", address: "",
   });
   const [visit, setVisit] = useState({
     visitDate: today, clinic: "", doctor: "",
-    visitType: "New", payment: "Cash",
+    visitType: "جديد", payment: "نقدي",
   });
 
   const handlePatient = (e) =>
@@ -23,33 +23,26 @@ export default function ReceptionScreen() {
 
   const handleCreateVisit = (e) => {
     e.preventDefault();
-    alert("Visit created!\n" + JSON.stringify({ patient, visit }, null, 2));
+    alert("تم إنشاء الزيارة!\n" + JSON.stringify({ patient, visit }, null, 2));
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-blue-50 flex items-start justify-center py-5 px-4 font-sans">
-      <div className="w-full ">
+    <div dir="rtl" className="min-h-screen bg-gradient-to-br from-slate-100 to-blue-50 flex items-start justify-center py-5 px-4 font-sans">
+      <div className="w-full">
         {/* Header */}
-              <div className=" relative overflow-hidden bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900  rounded-2xl">
-      {/* Animated gradient orbs */}
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute top-1/2 -right-20 w-72 h-72 bg-cyan-500/15 rounded-full blur-3xl animate-pulse [animation-delay:2s]" />
-        <div className="absolute -bottom-20 left-1/3 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl animate-pulse [animation-delay:4s]" />
+        <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900 rounded-2xl">
+          <div className="absolute -top-40 -left-40 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute top-1/2 -right-20 w-72 h-72 bg-cyan-500/15 rounded-full blur-3xl animate-pulse [animation-delay:2s]" />
+          <div className="absolute -bottom-20 left-1/3 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl animate-pulse [animation-delay:4s]" />
 
-        {/* Grid overlay */}
-        <div className="absolute inset-0 opacity-[0.03]" />
-
-
-        <div className="text-center py-10  relative overflow-hidden bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900" style={{
-          backgroundImage: 'linear-gradient(rgb(255 255 255 / 11%) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 5%) 1px, transparent 1px)',
-          backgroundSize: '60px 60px',
-        }}>
-         
-          <h1 className="text-4xl font-extrabold text-white tracking-tight">
-            Reception Screen
-          </h1>
-          {/* <p className="text-[#bdbdbd] text-sm mt-1">Register patients and manage visit queues</p> */}
-        </div>
+          <div className="text-center py-10 relative overflow-hidden bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900" style={{
+            backgroundImage: 'linear-gradient(rgb(255 255 255 / 11%) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 5%) 1px, transparent 1px)',
+            backgroundSize: '60px 60px',
+          }}>
+            <h1 className="text-4xl font-extrabold text-white tracking-tight">
+              شاشة الاستقبال
+            </h1>
+          </div>
         </div>
 
         <form onSubmit={handleCreateVisit}>
@@ -57,22 +50,22 @@ export default function ReceptionScreen() {
 
             {/* Patient Search & Registration */}
             <div className="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
-              <div className="bg-gradient-to-r  from-[#13534c] to-[#1f7e74] px-6 py-4 ">
+              <div className="bg-gradient-to-l from-[#13534c] to-[#1f7e74] px-6 py-4">
                 <h2 className="text-white font-bold text-lg tracking-tight flex items-center gap-2">
-                   Patient Search & Registration
+                  بحث وتسجيل المريض
                 </h2>
               </div>
               <div className="p-6 space-y-4">
-                <Field label="MRN" name="mrn" value={patient.mrn} onChange={handlePatient} placeholder="e.g. MRN-00123" />
-                <Field label="Name" name="name" value={patient.name} onChange={handlePatient} placeholder="Full name" required />
-                <Field label="National ID" name="nationalId" value={patient.nationalId} onChange={handlePatient} placeholder="National ID number" />
-                <Field label="Mobile" name="mobile" value={patient.mobile} onChange={handlePatient} type="tel" placeholder="+20 1xx xxx xxxx" />
+                <Field label="رقم السجل الطبي" name="mrn" value={patient.mrn} onChange={handlePatient} placeholder="مثال: MRN-00123" />
+                <Field label="الاسم" name="name" value={patient.name} onChange={handlePatient} placeholder="الاسم الكامل" required />
+                <Field label="الرقم الوطني" name="nationalId" value={patient.nationalId} onChange={handlePatient} placeholder="رقم الهوية الوطنية" />
+                <Field label="الجوال" name="mobile" value={patient.mobile} onChange={handlePatient} type="tel" placeholder="+20 1xx xxx xxxx" ltr />
 
                 {/* DOB + Gender */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                      Date of Birth
+                      تاريخ الميلاد
                     </label>
                     <input
                       type="date"
@@ -84,10 +77,10 @@ export default function ReceptionScreen() {
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                      Gender
+                      الجنس
                     </label>
-                    <select name="gender" value={patient.gender} onChange={handlePatient} className={inputCls}>
-                      <option value="">Select</option>
+                    <select name="gender" value={patient.gender} onChange={handlePatient} className={`${inputCls} pr-[30px]`}>
+                      <option value="">اختر</option>
                       {genderOptions.map((g) => <option key={g}>{g}</option>)}
                     </select>
                   </div>
@@ -95,33 +88,33 @@ export default function ReceptionScreen() {
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                    Insurance
+                    التأمين
                   </label>
-                  <select name="insurance" value={patient.insurance} onChange={handlePatient} className={inputCls}>
-                    <option value="">— Select Insurance —</option>
-                    <option>Misr Insurance</option>
+                  <select name="insurance" value={patient.insurance} onChange={handlePatient} className={`${inputCls} pr-[30px]`}>
+                    <option value="">— اختر التأمين —</option>
+                    <option>تأمين مصر</option>
                     <option>AXA</option>
-                    <option>MetLife</option>
-                    <option>GIG Insurance</option>
-                    <option>Allianz</option>
+                    <option>ميتلايف</option>
+                    <option>GIG للتأمين</option>
+                    <option>أليانز</option>
                   </select>
                 </div>
 
-                <Field label="Address" name="address" value={patient.address} onChange={handlePatient} placeholder="City, Street..." />
+                <Field label="العنوان" name="address" value={patient.address} onChange={handlePatient} placeholder="المدينة، الشارع..." />
               </div>
             </div>
 
             {/* Visit Registration */}
             <div className="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden flex flex-col">
-              <div className="bg-gradient-to-r  from-[#1f7e74] to-[#13534c]  px-6 py-4">
+              <div className="bg-gradient-to-l from-[#1f7e74] to-[#13534c] px-6 py-4">
                 <h2 className="text-white font-bold text-lg tracking-tight flex items-center gap-2">
-                   Visit Registration
+                  تسجيل الزيارة
                 </h2>
               </div>
               <div className="p-6 space-y-4 flex-1">
                 <div>
                   <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                    Visit Date
+                    تاريخ الزيارة
                   </label>
                   <input
                     type="date"
@@ -135,35 +128,35 @@ export default function ReceptionScreen() {
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                    Clinic
+                    العيادة
                   </label>
-                  <select name="clinic" value={visit.clinic} onChange={handleVisit} className={inputCls} required>
-                    <option value="">— Select Clinic —</option>
-                    <option>Cardiology</option>
-                    <option>Orthopedics</option>
-                    <option>Neurology</option>
-                    <option>Dermatology</option>
-                    <option>Pediatrics</option>
-                    <option>General Medicine</option>
+                  <select name="clinic" value={visit.clinic} onChange={handleVisit} className={`${inputCls} pr-[30px]`} required>
+                    <option value="">— اختر العيادة —</option>
+                    <option>القلب</option>
+                    <option>العظام</option>
+                    <option>الأعصاب</option>
+                    <option>الجلدية</option>
+                    <option>طب الأطفال</option>
+                    <option>الطب العام</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                    Doctor
+                    الطبيب
                   </label>
-                  <select name="doctor" value={visit.doctor} onChange={handleVisit} className={inputCls} required>
-                    <option value="">— Select Doctor —</option>
-                    <option>Dr. Ahmed Hassan</option>
-                    <option>Dr. Sara Mahmoud</option>
-                    <option>Dr. Khaled Nasser</option>
-                    <option>Dr. Mona Ibrahim</option>
+                  <select name="doctor" value={visit.doctor} onChange={handleVisit} className={`${inputCls} pr-[30px]`} required>
+                    <option value="">— اختر الطبيب —</option>
+                    <option>د. أحمد حسن</option>
+                    <option>د. سارة محمود</option>
+                    <option>د. خالد ناصر</option>
+                    <option>د. منى إبراهيم</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                    Visit Type
+                    نوع الزيارة
                   </label>
                   <div className="flex gap-2 flex-wrap">
                     {visitTypes.map((t) => (
@@ -185,7 +178,7 @@ export default function ReceptionScreen() {
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                    Payment
+                    الدفع
                   </label>
                   <div className="flex gap-2 flex-wrap">
                     {paymentTypes.map((p) => (
@@ -212,32 +205,32 @@ export default function ReceptionScreen() {
                   type="submit"
                   className="flex-1 bg-[#1c6a60] hover:bg-[#048171] active:scale-95 text-white font-bold py-3 rounded-xl shadow transition-all flex items-center justify-center gap-2"
                 >
-                   Create Visit
+                  إنشاء زيارة
                 </button>
                 <button
                   type="button"
                   onClick={() => window.print()}
                   className="flex-1 bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-bold py-3 rounded-xl border border-slate-300 transition-all flex items-center justify-center gap-2"
                 >
-                   Print Ticket
+                  طباعة التذكرة
                 </button>
                 <button
                   type="button"
                   className="flex-1 bg-teal-600 hover:bg-teal-700 active:scale-95 text-white font-bold py-3 rounded-xl shadow transition-all flex items-center justify-center gap-2"
                 >
-                   Send to Queue
+                  إرسال للقائمة
                 </button>
               </div>
             </div>
           </div>
         </form>
-        <div>
-          <button id="arButton" className="mt-6 bg-teal-900 text-white hover:text-white hover:bg-teal-700  text-base  rounded-2xl transition-colors px-6 py-3">
-            <a href="/agial/AR/ReceptionPage">
-            AR
-            </a>
-          </button>
-        </div>
+          <div>
+                  <button id="arButton" className="mt-6 bg-teal-900 text-white hover:text-white hover:bg-teal-700  text-base  rounded-2xl transition-colors px-6 py-3">
+                    <a href="/agial/ReceptionPage">
+                    EN
+                    </a>
+                  </button>
+                </div>
       </div>
     </div>
   );
@@ -246,7 +239,7 @@ export default function ReceptionScreen() {
 const inputCls =
   "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-slate-50 transition";
 
-function Field({ label, name, value, onChange, type = "text", placeholder = "", required = false }) {
+function Field({ label, name, value, onChange, type = "text", placeholder = "", required = false, ltr = false }) {
   return (
     <div>
       <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
@@ -259,6 +252,7 @@ function Field({ label, name, value, onChange, type = "text", placeholder = "", 
         onChange={onChange}
         placeholder={placeholder}
         required={required}
+        dir={ltr ? "ltr" : "rtl"}
         className={inputCls}
       />
     </div>
