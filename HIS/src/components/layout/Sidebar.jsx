@@ -5,6 +5,8 @@ import {
   LayoutDashboard,
   CalendarDays,
   FileBarChart,
+  BellElectric,
+  Stethoscope, 
   LogOut,
 } from 'lucide-react';
 import useAuthStore from '../../features/auth/store';
@@ -12,6 +14,7 @@ import useAuthStore from '../../features/auth/store';
 const NAV = [
   { to: '/agial/patients',  icon: Users,            label: 'Patients'  },
   { to: '/agial/dashboard', icon: LayoutDashboard,  label: 'Dashboard' },
+  { to:'/agial/doctorscreen',  icon: Stethoscope,  label: 'Doctor'     },
   { to: '/agial/calendar',  icon: CalendarDays,     label: 'Calendar'  },
   { to: '/agial/reports',   icon: FileBarChart,     label: 'Reports'   },
 ];
