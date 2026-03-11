@@ -32,7 +32,6 @@ const NAV = [
       { to: '/agial/unitcentcom',   label: 'Unit Dashboard'   },
     ],
   },
-  { to: '/agial/doctorscreen',  icon: Stethoscope,     label: 'Doctor'    },
   { to: '/agial/calendar',      icon: CalendarDays,    label: 'Calendar'  },
   { to: '/agial/reports',       icon: FileBarChart,    label: 'Reports'   },
 ];
