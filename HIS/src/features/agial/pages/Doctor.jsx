@@ -42,7 +42,7 @@ function AllergyInput({ tags, setTags }) {
   const remove = (t) => setTags(tags.filter((x) => x !== t));
 
   return (
-    <div className="p-4 space-y-2">
+    <div className="p-4 flex-1 space-y-2">
       <div className="flex gap-2">
         <input
           value={input}
@@ -472,88 +472,44 @@ export default function DoctorScreen() {
         )}
 
         {/* Clinical sections — disabled when visit is complete */}
-        <div className={isReadOnly ? "pointer-events-none opacity-60 select-none" : ""}>
+        <div className={`space-y-5 ${isReadOnly ? "pointer-events-none opacity-60 select-none" : ""}`}>
 
-        {/* Diagnoses — full width row */}
-        <div className={sectionCls}>
-          <div className={headerCls}>
-            <span className="w-2 h-2 rounded-full bg-purple-400" />
-            <h3 className="text-sm font-bold text-slate-700">Diagnoses</h3>
-            <span className="ml-auto text-xs text-slate-400">ICD-10</span>
-          </div>
-          <DiagnosesPanel selected={diagnoses} setSelected={setDiagnoses} />
-        </div>
-        {/* Lab + Radiology — 2 columns */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <div className={sectionCls}>
+        {/* Row 1 — 3 columns: Chief Complaint | Allergy | Vital Signs + Risk Factors */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-stretch">
+
+          {/* Chief Complaint */}
+          <div className={`${sectionCls} flex flex-col`}>
             <div className={headerCls}>
-              <span className="w-2 h-2 rounded-full bg-cyan-400" />
-              <h3 className="text-sm font-bold text-slate-700">Lab Orders</h3>
-              <span className="ml-auto text-xs text-slate-400">ALB</span>
+              <span className="w-2 h-2 rounded-full bg-teal-500" />
+              <h3 className="text-sm font-bold text-slate-700">Chief Complaint</h3>
             </div>
-            <OrdersPanel
-              presets={COMMON_LABS}
-              selected={labSelected}
-              setSelected={setLabSelected}
-              custom={labCustom}
-              setCustom={setLabCustom}
-            />
+            <div className="p-4 flex-1 flex flex-col">
+              <textarea
+                value={chiefComplaint}
+                onChange={(e) => setChiefComplaint(e.target.value)}
+                placeholder="Describe the main complaint…"
+                className={`${inputCls} resize-none flex-1`}
+              />
+            </div>
           </div>
 
-          <div className={sectionCls}>
+          {/* Allergy */}
+          <div className={`${sectionCls} flex flex-col`}>
             <div className={headerCls}>
-              <span className="w-2 h-2 rounded-full bg-violet-400" />
-              <h3 className="text-sm font-bold text-slate-700">Radiology Orders</h3>
-              <span className="ml-auto text-xs text-slate-400">RAD</span>
+              <span className="w-2 h-2 rounded-full bg-red-400" />
+              <h3 className="text-sm font-bold text-slate-700">Allergy</h3>
             </div>
-            <OrdersPanel
-              presets={COMMON_RAD}
-              selected={radSelected}
-              setSelected={setRadSelected}
-              custom={radCustom}
-              setCustom={setRadCustom}
-            />
-          </div>
-        </div>
-
-        {/* Clinical Grid — 3 columns */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-
-          {/* Col 1: Chief Complaint + Allergy */}
-          <div className="flex flex-col gap-5">
-            <div className={sectionCls}>
-              <div className={headerCls}>
-                <span className="w-2 h-2 rounded-full bg-teal-500" />
-                <h3 className="text-sm font-bold text-slate-700">Chief Complaint</h3>
-              </div>
-              <div className="p-4">
-                <textarea
-                  rows={4}
-                  value={chiefComplaint}
-                  onChange={(e) => setChiefComplaint(e.target.value)}
-                  placeholder="Describe the main complaint…"
-                  className={`${inputCls} resize-none`}
-                />
-              </div>
-            </div>
-
-            <div className={`${sectionCls} flex-1`}>
-              <div className={headerCls}>
-                <span className="w-2 h-2 rounded-full bg-red-400" />
-                <h3 className="text-sm font-bold text-slate-700">Allergy</h3>
-              </div>
-              <AllergyInput tags={allergies} setTags={setAllergies} />
-            </div>
+            <AllergyInput tags={allergies} setTags={setAllergies} />
           </div>
 
-          {/* Col 2: Vital Signs + Risk Factors */}
+          {/* Vital Signs + Risk Factors stacked */}
           <div className="flex flex-col gap-5">
             <div className={sectionCls}>
               <div className={headerCls}>
                 <span className="w-2 h-2 rounded-full bg-blue-400" />
                 <h3 className="text-sm font-bold text-slate-700">Vital Signs</h3>
               </div>
-              <div className="p-4 grid grid-cols-2 gap-3">
+              <div className="p-3 grid grid-cols-2 gap-2">
                 <div>
                   <label className="block text-xs text-slate-400 mb-1">BP Systolic</label>
                   <input value={vitals.bpSys} onChange={(e) => setVitals({ ...vitals, bpSys: e.target.value })} placeholder="mmHg" className={`${inputCls} text-xs py-1.5`} />
@@ -584,45 +540,85 @@ export default function DoctorScreen() {
                 </div>
                 <div>
                   <label className="block text-xs text-slate-400 mb-1">BMI</label>
-                  <div className={`${inputCls} text-xs py-1.5 bg-slate-50 text-slate-500`}>
-                    {bmi || "—"}
-                  </div>
+                  <div className={`${inputCls} text-xs py-1.5 bg-slate-50 text-slate-500`}>{bmi || "—"}</div>
                 </div>
               </div>
             </div>
 
-            <div className={`${sectionCls} flex-1`}>
+            <div className={sectionCls}>
               <div className={headerCls}>
                 <span className="w-2 h-2 rounded-full bg-amber-400" />
                 <h3 className="text-sm font-bold text-slate-700">Risk Factors</h3>
               </div>
-              <div className="p-4 grid grid-cols-1 gap-2">
+              <div className="p-4 grid grid-cols-2 gap-2">
                 {RISK_FACTORS.map((r) => (
-                  <label key={r} className="flex items-center gap-3 cursor-pointer group">
+                  <label key={r} className="flex items-center gap-2 cursor-pointer group">
                     <input
                       type="checkbox"
                       checked={riskFactors.includes(r)}
                       onChange={() => toggleRisk(r)}
                       className="w-4 h-4 rounded border-slate-300 accent-teal-600 cursor-pointer"
                     />
-                    <span className="text-sm text-slate-600 group-hover:text-slate-900 transition">{r}</span>
+                    <span className="text-xs text-slate-600 group-hover:text-slate-900 transition">{r}</span>
                   </label>
                 ))}
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Col 3: Medication Profile */}
-          <div className="flex flex-col gap-5">
-            <div className={`${sectionCls} flex-1`}>
-              <div className={headerCls}>
-                <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                <h3 className="text-sm font-bold text-slate-700">Medication Profile</h3>
-              </div>
-              <MedicationProfile rows={medications} setRows={setMedications} />
+        {/* Row 2 — Medication Profile full width */}
+        <div className={sectionCls}>
+          <div className={headerCls}>
+            <span className="w-2 h-2 rounded-full bg-emerald-400" />
+            <h3 className="text-sm font-bold text-slate-700">Medication Profile</h3>
+          </div>
+          <MedicationProfile rows={medications} setRows={setMedications} />
+        </div>
+
+        {/* Row 4 — Diagnoses full width */}
+        <div className={sectionCls}>
+          <div className={headerCls}>
+            <span className="w-2 h-2 rounded-full bg-purple-400" />
+            <h3 className="text-sm font-bold text-slate-700">Diagnoses</h3>
+            <span className="ml-auto text-xs text-slate-400">ICD-10</span>
+          </div>
+          <DiagnosesPanel selected={diagnoses} setSelected={setDiagnoses} />
+        </div>
+        
+        {/* Row 3 — Lab + Radiology 2 columns */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <div className={sectionCls}>
+            <div className={headerCls}>
+              <span className="w-2 h-2 rounded-full bg-cyan-400" />
+              <h3 className="text-sm font-bold text-slate-700">Lab Orders</h3>
+              <span className="ml-auto text-xs text-slate-400">ALB</span>
             </div>
+            <OrdersPanel
+              presets={COMMON_LABS}
+              selected={labSelected}
+              setSelected={setLabSelected}
+              custom={labCustom}
+              setCustom={setLabCustom}
+            />
+          </div>
+          <div className={sectionCls}>
+            <div className={headerCls}>
+              <span className="w-2 h-2 rounded-full bg-violet-400" />
+              <h3 className="text-sm font-bold text-slate-700">Radiology Orders</h3>
+              <span className="ml-auto text-xs text-slate-400">RAD</span>
+            </div>
+            <OrdersPanel
+              presets={COMMON_RAD}
+              selected={radSelected}
+              setSelected={setRadSelected}
+              custom={radCustom}
+              setCustom={setRadCustom}
+            />
           </div>
         </div>
+
+
 
         </div>{/* end clinical read-only wrapper */}
 

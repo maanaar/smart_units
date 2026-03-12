@@ -22,13 +22,13 @@ const NAV = [
       { to: '/agial/nationalcentcom',           label: 'National Command' },
       { to: '/agial/unitcentcom',   label: 'Unit Dashboard'   },
     ],
-  },
-  { to: '/agial/patients',  icon: Users,            label: 'Patients'  },
-  { to: '/agial/ReceptionPage',  icon: Users,       label: 'Reception' },
-  { to:'/agial/doctorscreen',  icon: Stethoscope,  label: 'Doctor'     },
-  { to: '/agial/nursing',   icon: ClipboardPlus,     label: 'Nursing'   },
+  },  
   { to: '/agial/calendar',  icon: CalendarDays,     label: 'Calendar'  },
-  // { to: '/agial/reports',   icon: FileBarChart,     label: 'Reports'   },
+  { to: '/agial/ReceptionPage',  icon: Users,       label: 'Reception' },
+  { to: '/agial/patients',  icon: Users,            label: 'Patients'  },
+  { to: '/agial/nursing',   icon: ClipboardPlus,     label: 'Nursing'   },
+  { to:'/agial/doctorscreen',  icon: Stethoscope,  label: 'Doctor'     },
+// { to: '/agial/reports',   icon: FileBarChart,     label: 'Reports'   },
 ];
 
 export default function Sidebar() {
