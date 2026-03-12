@@ -36,9 +36,7 @@ export default function Sidebar() {
   const location  = useLocation();
   const { user, unit, logout } = useAuthStore();
 
-  // auto-open Dashboard group if current path is one of its children
-  const dashPaths = ['/agial/dashboard', '/agial/unitcentcom', '/centcom'];
-  const [dashOpen, setDashOpen] = useState(dashPaths.includes(location.pathname));
+  const [dashOpen, setDashOpen] = useState(true);
 
   return (
     <aside className="w-80 flex-shrink-0 overflow-hidden bg-gradient-to-b from-slate-900 via-teal-900 to-slate-900 flex flex-col h-screen sticky rounded-r-2xl top-0">
