@@ -13,7 +13,8 @@ import {
 import useAuthStore from '../store';
 
 const ROLES = [
-  'Governorate Manager',
+  'MOH',
+  'Governorate',
   'Hospital Admin',
   'Doctor',
   'Nurse',
@@ -24,10 +25,7 @@ const ROLES = [
 
 const LOCATIONS = [
   'Cairo Governorate - Main HQ',
-  'Alexandria General Hospital',
-  'Giza Central Clinic',
-  'Luxor Health Unit',
-  'Aswan District Hospital',
+  'Alexandria Governorate - Main HQ',
 ];
 
 // Static credentials — replace with Odoo call when ready

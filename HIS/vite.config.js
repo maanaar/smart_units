@@ -10,4 +10,13 @@ export default defineConfig({
       },
     }),
   ],
+  server: {
+    proxy: {
+      '/id_scanner': {
+        target: 'http://209.38.41.253:8006',
+        changeOrigin: true,
+      }
+    }
+  }
 })
+

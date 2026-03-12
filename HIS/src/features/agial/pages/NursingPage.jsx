@@ -11,17 +11,17 @@ export default function NursingPage() {
       <div className="w-full ">
         {/* Header */}
      
-              <div className=" relative overflow-hidden bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900  rounded-2xl">
+              <div className=" relative overflow-hidden bg-gradient-to-br from-slate-900 via-teal-900/80 to-slate-900  rounded-2xl">
       {/* Animated gradient orbs */}
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute top-1/2 -right-20 w-72 h-72 bg-cyan-500/15 rounded-full blur-3xl animate-pulse [animation-delay:2s]" />
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute top-1/2 -right-20 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl animate-pulse [animation-delay:2s]" />
         <div className="absolute -bottom-20 left-1/3 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl animate-pulse [animation-delay:4s]" />
 
         {/* Grid overlay */}
         <div className="absolute inset-0 opacity-[0.03]" />
 
 
-        <div className="text-center py-10  relative overflow-hidden bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900" style={{
+        <div className="text-center py-10  relative overflow-hidden bg-gradient-to-br from-slate-900 via-teal-900/80 to-slate-900" style={{
           backgroundImage: 'linear-gradient(rgb(255 255 255 / 11%) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 5%) 1px, transparent 1px)',
           backgroundSize: '60px 60px',
         }}>
@@ -58,7 +58,7 @@ export default function NursingPage() {
               <button className=" bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-bold px-6 py-3 rounded-xl border border-slate-300 transition-all flex items-center justify-center gap-2">
                 Save
               </button>
-              <button className="bg-[#1c6a60] hover:bg-[#048171] active:scale-95 text-white font-bold py-3 rounded-xl shadow transition-all flex items-center justify-center gap-2 px-6">
+              <button className="bg-[#1c6a60]/80 hover:bg-[#048171]/80 active:scale-95 text-white font-bold py-3 rounded-xl shadow transition-all flex items-center justify-center gap-2 px-6">
                 Send to Doctor
               </button>
             </div>

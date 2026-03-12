@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+
+const OCR_ENDPOINT = "/id_scanner";
 
 const genderOptions = ["Male", "Female",];
 const visitTypes = ["New", "Follow-up", "Consultation"];
@@ -7,6 +10,7 @@ const paymentTypes = ["Cash", "Insurance", "Contract"];
 const today = new Date().toISOString().split("T")[0];
 
 export default function ReceptionScreen() {
+  const navigate = useNavigate();
   const [patient, setPatient] = useState({
     mrn: "", name: "", nationalId: "", mobile: "",
     dob: "", gender: "", insurance: "", address: "",
@@ -16,10 +20,47 @@ export default function ReceptionScreen() {
     visitType: "New", payment: "Cash",
   });
 
+  const [ocrPreview, setOcrPreview] = useState(null);
+  const [ocrLoading, setOcrLoading] = useState(false);
+  const [ocrError, setOcrError] = useState("");
+  const fileInputRef = useRef(null);
+
   const handlePatient = (e) =>
     setPatient({ ...patient, [e.target.name]: e.target.value });
   const handleVisit = (e) =>
     setVisit({ ...visit, [e.target.name]: e.target.value });
+
+  const handleIdImage = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setOcrPreview(URL.createObjectURL(file));
+    setOcrError("");
+  };
+
+  const handleScan = async () => {
+    const file = fileInputRef.current?.files[0];
+    if (!file) return;
+    setOcrLoading(true);
+    setOcrError("");
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await fetch(OCR_ENDPOINT, { method: "POST", body: form });
+      if (!res.ok) throw new Error(`Server error: ${res.status}`);
+      const json = await res.json();
+      const data = json.extracted_data ?? {};
+      setPatient((prev) => ({
+        ...prev,
+        name:       data.full_name   ?? prev.name,
+        nationalId: data.national_id ?? prev.nationalId,
+        address:    data.address     ?? prev.address,
+      }));
+    } catch (err) {
+      setOcrError(err.message || "OCR failed");
+    } finally {
+      setOcrLoading(false);
+    }
+  };
 
   const handleCreateVisit = (e) => {
     e.preventDefault();
@@ -27,20 +68,20 @@ export default function ReceptionScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-blue-50 flex items-start justify-center py-5 px-4 font-sans">
+    <div className="h-full overflow-y-auto bg-gradient-to-br from-slate-100 to-blue-50 flex items-start justify-center py-5 px-4 font-sans">
       <div className="w-full ">
         {/* Header */}
-              <div className=" relative overflow-hidden bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900  rounded-2xl">
+              <div className=" relative overflow-hidden bg-gradient-to-br from-slate-900 via-teal-900/80 to-slate-900  rounded-2xl">
       {/* Animated gradient orbs */}
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute top-1/2 -right-20 w-72 h-72 bg-cyan-500/15 rounded-full blur-3xl animate-pulse [animation-delay:2s]" />
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute top-1/2 -right-20 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl animate-pulse [animation-delay:2s]" />
         <div className="absolute -bottom-20 left-1/3 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl animate-pulse [animation-delay:4s]" />
 
         {/* Grid overlay */}
         <div className="absolute inset-0 opacity-[0.03]" />
 
 
-        <div className="text-center py-10  relative overflow-hidden bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900" style={{
+        <div className="text-center py-10  relative overflow-hidden bg-gradient-to-br from-slate-900 via-teal-900/80 to-slate-900" style={{
           backgroundImage: 'linear-gradient(rgb(255 255 255 / 11%) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 5%) 1px, transparent 1px)',
           backgroundSize: '60px 60px',
         }}>
@@ -57,7 +98,7 @@ export default function ReceptionScreen() {
 
             {/* Patient Search & Registration */}
             <div className="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
-              <div className="bg-gradient-to-r  from-[#13534c] to-[#1f7e74] px-6 py-4 ">
+              <div className="bg-gradient-to-r  from-[#13534c]/80 to-[#1f7e74]/80 px-6 py-4 ">
                 <h2 className="text-white font-bold text-lg tracking-tight flex items-center gap-2">
                    Patient Search & Registration
                 </h2>
@@ -65,6 +106,57 @@ export default function ReceptionScreen() {
               <div className="p-6 space-y-4">
                 <Field label="MRN" name="mrn" value={patient.mrn} onChange={handlePatient} placeholder="e.g. MRN-00123" />
                 <Field label="Name" name="name" value={patient.name} onChange={handlePatient} placeholder="Full name" required />
+
+                {/* ── ID Card OCR Scanner ── */}
+                <div className="border-2 border-dashed border-slate-300 rounded-xl p-4 bg-slate-50 space-y-3">
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Scan National ID Card</p>
+
+                  <div
+                    className="cursor-pointer flex flex-col items-center justify-center gap-2 py-4 rounded-lg bg-white border border-slate-200 hover:border-teal-400 transition"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    {ocrPreview ? (
+                      <img src={ocrPreview} alt="ID preview" className="max-h-32 rounded-lg object-contain" />
+                    ) : (
+                      <>
+                        <svg className="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                        </svg>
+                        <span className="text-xs text-slate-400">Click to upload ID image</span>
+                      </>
+                    )}
+                  </div>
+
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleIdImage}
+                  />
+
+                  <button
+                    type="button"
+                    onClick={handleScan}
+                    disabled={!ocrPreview || ocrLoading}
+                    className="w-full py-2 rounded-lg text-sm font-semibold bg-teal-600/80 text-white hover:bg-teal-700/80 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
+                  >
+                    {ocrLoading ? (
+                      <>
+                        <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                        </svg>
+                        Scanning…
+                      </>
+                    ) : "Scan & Fill Fields"}
+                  </button>
+
+                  {ocrError && (
+                    <p className="text-xs text-red-500 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{ocrError}</p>
+                  )}
+                </div>
+
                 <Field label="National ID" name="nationalId" value={patient.nationalId} onChange={handlePatient} placeholder="National ID number" />
                 <Field label="Mobile" name="mobile" value={patient.mobile} onChange={handlePatient} type="tel" placeholder="+20 1xx xxx xxxx" />
 
@@ -113,7 +205,7 @@ export default function ReceptionScreen() {
 
             {/* Visit Registration */}
             <div className="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden flex flex-col">
-              <div className="bg-gradient-to-r  from-[#1f7e74] to-[#13534c]  px-6 py-4">
+              <div className="bg-gradient-to-r  from-[#1f7e74]/80 to-[#13534c]/80  px-6 py-4">
                 <h2 className="text-white font-bold text-lg tracking-tight flex items-center gap-2">
                    Visit Registration
                 </h2>
@@ -173,7 +265,7 @@ export default function ReceptionScreen() {
                         onClick={() => setVisit({ ...visit, visitType: t })}
                         className={`px-4 py-2 rounded-lg text-sm font-semibold border transition-all ${
                           visit.visitType === t
-                            ? "bg-teal-600 text-white border-teal-600 shadow"
+                            ? "bg-teal-600/80 text-white border-teal-600/80 shadow"
                             : "bg-white text-slate-600 border-slate-300 hover:border-blue-400"
                         }`}
                       >
@@ -195,7 +287,7 @@ export default function ReceptionScreen() {
                         onClick={() => setVisit({ ...visit, payment: p })}
                         className={`px-4 py-2 rounded-lg text-sm font-semibold border transition-all ${
                           visit.payment === p
-                            ? "bg-teal-600 text-white border-teal-600 shadow"
+                            ? "bg-teal-600/80 text-white border-teal-600/80 shadow"
                             : "bg-white text-slate-600 border-slate-300 hover:border-teal-400"
                         }`}
                       >
@@ -210,7 +302,7 @@ export default function ReceptionScreen() {
               <div className="px-6 pb-6 pt-2 flex flex-col sm:flex-row gap-3">
                 <button
                   type="submit"
-                  className="flex-1 bg-[#1c6a60] hover:bg-[#048171] active:scale-95 text-white font-bold py-3 rounded-xl shadow transition-all flex items-center justify-center gap-2"
+                  className="flex-1 bg-[#1c6a60]/80 hover:bg-[#048171]/80 active:scale-95 text-white font-bold py-3 rounded-xl shadow transition-all flex items-center justify-center gap-2"
                 >
                    Create Visit
                 </button>
@@ -223,7 +315,7 @@ export default function ReceptionScreen() {
                 </button>
                 <button
                   type="button"
-                  className="flex-1 bg-teal-600 hover:bg-teal-700 active:scale-95 text-white font-bold py-3 rounded-xl shadow transition-all flex items-center justify-center gap-2"
+                  className="flex-1 bg-teal-600/80 hover:bg-teal-700/80 active:scale-95 text-white font-bold py-3 rounded-xl shadow transition-all flex items-center justify-center gap-2"
                 >
                    Send to Queue
                 </button>
@@ -232,10 +324,13 @@ export default function ReceptionScreen() {
           </div>
         </form>
         <div>
-          <button id="arButton" className="mt-6 bg-teal-900 text-white hover:text-white hover:bg-teal-700  text-base  rounded-2xl transition-colors px-6 py-3">
-            <a href="/agial/AR/ReceptionPage">
+          <button
+            id="arButton"
+            type="button"
+            onClick={() => navigate("/agial/AR/ReceptionPage")}
+            className="mt-6 bg-teal-900/80 text-white hover:bg-teal-700/80 text-base rounded-2xl transition-colors px-6 py-3"
+          >
             AR
-            </a>
           </button>
         </div>
       </div>
