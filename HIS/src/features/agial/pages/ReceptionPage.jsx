@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import useAgialStore from "../store";
 
 const OCR_ENDPOINT = "/id_scanner";
 
@@ -11,6 +12,7 @@ const today = new Date().toISOString().split("T")[0];
 
 export default function ReceptionScreen() {
   const navigate = useNavigate();
+  const addToQueue = useAgialStore((s) => s.addToQueue);
   const [patient, setPatient] = useState({
     mrn: "", name: "", nationalId: "", mobile: "",
     dob: "", gender: "", insurance: "", address: "",
@@ -315,6 +317,7 @@ export default function ReceptionScreen() {
                 </button>
                 <button
                   type="button"
+                  onClick={() => { addToQueue({ patient, visit }); alert("Patient sent to queue!"); }}
                   className="flex-1 bg-teal-600/80 hover:bg-teal-700/80 active:scale-95 text-white font-bold py-3 rounded-xl shadow transition-all flex items-center justify-center gap-2"
                 >
                    Send to Queue

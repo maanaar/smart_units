@@ -131,7 +131,7 @@ export default function UnitDashboard() {
       <div className="flex-shrink-0 px-6 py-3 bg-white border-b border-gray-200 flex items-center gap-3">
         <div className="w-1 h-7 rounded-full bg-emerald-600" />
         <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-900 to-teal-700 bg-clip-text text-transparent">
-          CentCom Dashboard
+          CentCom Dashboard (Central Command)
         </h1>
         <span className="ml-auto text-xs text-gray-400 font-mono">
           {new Date().toLocaleString('en-GB')}

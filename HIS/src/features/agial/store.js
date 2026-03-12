@@ -1,10 +1,14 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 /**
  * Agial unit store.
  * Holds the currently viewed patient and their loaded data.
+ * queuePatients is persisted to localStorage.
  */
-const useAgialStore = create((set) => ({
+const useAgialStore = create(
+  persist(
+    (set) => ({
   // ── Unit identity ──────────────────────────────────────────────
   unitName: 'Agial Hospital',
   unitCode: 'agial',
@@ -23,6 +27,23 @@ const useAgialStore = create((set) => ({
   diagnosis: '',
   drugAllergies: '',
   generalNotes: '',
+
+  // ── Reception queue ────────────────────────────────────────────
+  queuePatients: [],
+  addToQueue: (entry) =>
+    set((state) => ({
+      queuePatients: [...state.queuePatients, { ...entry, qid: Date.now() }],
+    })),
+  removeFromQueue: (qid) =>
+    set((state) => ({
+      queuePatients: state.queuePatients.filter((p) => p.qid !== qid),
+    })),
+  updateQueueStatus: (qid, status) =>
+    set((state) => ({
+      queuePatients: state.queuePatients.map((p) =>
+        p.qid === qid ? { ...p, _status: status } : p
+      ),
+    })),
 
   // ── Actions ────────────────────────────────────────────────────
   setPatientLoading: (loading) => set({ patientLoading: loading }),
@@ -50,6 +71,11 @@ const useAgialStore = create((set) => ({
       patientError: null,
       visitsError: null,
     }),
-}));
+}),
+{
+  name: 'agial-queue',          // localStorage key
+  partialize: (state) => ({ queuePatients: state.queuePatients }),
+}
+));
 
 export default useAgialStore;

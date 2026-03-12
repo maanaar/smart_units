@@ -4,6 +4,7 @@ import { Search, X, User } from 'lucide-react';
 
 import useAgialStore from '../store';
 import { MOCK_PATIENT, MOCK_VISITS, MOCK_PATIENTS_LIST } from '../mockData';
+
 import PatientHeader from '../components/PatientHeader';
 import VisitHistory from '../components/VisitHistory';
 import DiagnosisPanel from '../components/DiagnosisPanel';
@@ -98,12 +99,20 @@ function PatientSearchBar({ onSelect }) {
 
 function PatientList({ onSelect }) {
   const [query, setQuery] = useState('');
+  const queuePatients = useAgialStore((s) => s.queuePatients);
 
   const filtered = MOCK_PATIENTS_LIST.filter((p) =>
     p.name.includes(query) ||
     p.english_name.toLowerCase().includes(query.toLowerCase()) ||
     p.mrn.toLowerCase().includes(query.toLowerCase()) ||
     p.mobile.includes(query)
+  );
+
+  const filteredQueue = queuePatients.filter((e) =>
+    !query.trim() ||
+    e.patient.name.toLowerCase().includes(query.toLowerCase()) ||
+    (e.patient.mrn || '').toLowerCase().includes(query.toLowerCase()) ||
+    (e.patient.mobile || '').includes(query)
   );
 
   return (
@@ -139,7 +148,38 @@ function PatientList({ onSelect }) {
 
       {/* List */}
       <div className="max-w-5xl mx-auto px-6 py-5 space-y-2">
-        {filtered.length === 0 && (
+        {/* Today's reception queue */}
+        {filteredQueue.length > 0 && (
+          <>
+            <p className="text-xs font-bold text-teal-700 uppercase tracking-wider mb-1">Today's Registrations</p>
+            {filteredQueue.map((entry) => (
+              <button
+                key={entry.qid}
+                onClick={() => onSelect(`q-${entry.qid}`)}
+                className="w-full flex items-center gap-4 bg-teal-50 border border-teal-200 rounded-xl px-5 py-4 hover:border-teal-400 hover:shadow-sm transition-all text-left group"
+              >
+                <div className="w-10 h-10 rounded-full bg-teal-100 border border-teal-300 flex items-center justify-center flex-shrink-0">
+                  <User className="w-5 h-5 text-teal-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-gray-900 group-hover:text-teal-700 transition-colors">{entry.patient.name}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{entry.visit?.clinic} · {entry.visit?.doctor}</p>
+                </div>
+                <div className="text-right flex-shrink-0">
+                  <p className="text-xs font-mono font-medium text-gray-600">{entry.patient.mrn || "—"}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{entry.patient.mobile}</p>
+                </div>
+                <span className="text-xs font-semibold bg-teal-200 text-teal-800 px-2 py-0.5 rounded-full">New</span>
+                <svg className="w-4 h-4 text-gray-300 group-hover:text-teal-500 transition-colors flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            ))}
+            {filtered.length > 0 && <div className="border-t border-gray-200 my-2" />}
+          </>
+        )}
+
+        {filtered.length === 0 && filteredQueue.length === 0 && (
           <div className="text-center py-16 text-gray-400 text-sm">No patients found</div>
         )}
         {filtered.map((p) => (
@@ -169,11 +209,80 @@ function PatientList({ onSelect }) {
   );
 }
 
+// ── Queue patient detail ────────────────────────────────────────────────────
+
+function QueuePatientDetail({ entry, onBack }) {
+  const { patient, visit } = entry;
+  const Row = ({ label, value }) => value ? (
+    <div className="flex flex-col gap-0.5">
+      <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{label}</span>
+      <span className="text-sm text-gray-800">{value}</span>
+    </div>
+  ) : null;
+
+  return (
+    <div className="h-full overflow-y-auto bg-gray-50">
+      {/* Top bar */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center gap-3">
+          <button onClick={onBack} className="text-gray-400 hover:text-teal-600 transition-colors">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <div className="w-1 h-7 rounded-full bg-emerald-700/80" />
+          <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-emerald-900 to-teal-700 bg-clip-text text-transparent">
+            Patient Profile
+          </h1>
+          <span className="text-xs font-semibold bg-teal-100 text-teal-700 px-2 py-0.5 rounded-full ml-2">New Registration</span>
+        </div>
+      </div>
+
+      <div className="max-w-5xl mx-auto px-6 py-5 space-y-4">
+        {/* Patient card */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-14 h-14 rounded-full bg-teal-50 border-2 border-teal-200 flex items-center justify-center text-teal-700 font-bold text-xl flex-shrink-0">
+              {patient.name?.[0]?.toUpperCase()}
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-gray-900">{patient.name}</h2>
+              <p className="text-sm text-gray-400">{patient.mrn || "No MRN"} · {patient.mobile}</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-5 border-t border-gray-100 pt-5">
+            <Row label="National ID"   value={patient.nationalId} />
+            <Row label="Date of Birth" value={patient.dob} />
+            <Row label="Gender"        value={patient.gender} />
+            <Row label="Insurance"     value={patient.insurance} />
+            <Row label="Address"       value={patient.address} />
+            <Row label="Mobile"        value={patient.mobile} />
+          </div>
+        </div>
+
+        {/* Visit card */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Visit Details</h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
+            <Row label="Visit Date"  value={visit?.visitDate} />
+            <Row label="Clinic"      value={visit?.clinic} />
+            <Row label="Doctor"      value={visit?.doctor} />
+            <Row label="Visit Type"  value={visit?.visitType} />
+            <Row label="Payment"     value={visit?.payment} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Main page ──────────────────────────────────────────────────────────────
 
 export default function PatientInfo() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const queuePatients = useAgialStore((s) => s.queuePatients);
 
   const {
     selectedPatient,
@@ -185,16 +294,27 @@ export default function PatientInfo() {
 
   const [activeTab, setActiveTab] = useState('visits');
 
+  // Check if this is a queue patient (id starts with "q-")
+  const isQueueId = id?.startsWith('q-');
+  const queueEntry = isQueueId
+    ? queuePatients.find((e) => e.qid === Number(id.slice(2)))
+    : null;
+
   useEffect(() => {
-    if (!id) return;
+    if (!id || isQueueId) return;
     const match = MOCK_PATIENTS_LIST.find((p) => p.id === Number(id));
     setSelectedPatient(match ? { ...MOCK_PATIENT, ...match } : MOCK_PATIENT);
     setVisits(MOCK_VISITS);
   }, [id]);
 
-  // No ID selected → show patient list
+  // No ID → list
   if (!id) {
     return <PatientList onSelect={(pid) => navigate(`/agial/patients/${pid}`)} />;
+  }
+
+  // Queue patient → simple detail view
+  if (isQueueId && queueEntry) {
+    return <QueuePatientDetail entry={queueEntry} onBack={() => navigate('/agial/patients')} />;
   }
 
   return (

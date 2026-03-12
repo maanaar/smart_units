@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { ICD10 } from "../icd10";
+import useAgialStore from "../store";
+
+const INPATIENT_URL = "https://sys.agialhospital.net/web#action=634&model=inpatient.admission&view_type=list&cids=1&menu_id=435";
 
 // ── static data ─────────────────────────────────────────────────────────────
 const RISK_FACTORS = [
@@ -8,6 +11,16 @@ const RISK_FACTORS = [
 ];
 
 const ROUTES = ["Oral", "IV", "IM", "SC", "Topical", "Inhaled", "Sublingual"];
+
+const COMMON_LABS = [
+  "CBC", "BMP", "CMP", "LFT", "RFT", "HbA1c",
+  "Lipid Panel", "TSH", "PT/INR", "Urinalysis",
+];
+
+const COMMON_RAD = [
+  "Chest X-Ray", "Abdominal X-Ray", "CT Head", "CT Chest",
+  "CT Abdomen/Pelvis", "MRI Brain", "MRI Spine", "Ultrasound Abdomen", "Echocardiogram",
+];
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 const inputCls =
@@ -229,21 +242,93 @@ function MedicationProfile({ rows, setRows }) {
   );
 }
 
+// ── Orders Panel (Lab / Rad) ──────────────────────────────────────────────────
+function OrdersPanel({ presets, selected, setSelected, custom, setCustom }) {
+  const [input, setInput] = useState("");
+
+  const toggle = (item) =>
+    setSelected((prev) =>
+      prev.includes(item) ? prev.filter((x) => x !== item) : [...prev, item]
+    );
+
+  const addCustom = () => {
+    const val = input.trim();
+    if (val && !custom.includes(val)) setCustom([...custom, val]);
+    setInput("");
+  };
+
+  const removeCustom = (item) => setCustom(custom.filter((x) => x !== item));
+
+  return (
+    <div className="p-4 space-y-3">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+        {presets.map((item) => (
+          <label key={item} className="flex items-center gap-2 cursor-pointer group">
+            <input
+              type="checkbox"
+              checked={selected.includes(item)}
+              onChange={() => toggle(item)}
+              className="w-4 h-4 rounded border-slate-300 accent-teal-600 cursor-pointer"
+            />
+            <span className="text-xs text-slate-600 group-hover:text-slate-900 transition">{item}</span>
+          </label>
+        ))}
+      </div>
+
+      {custom.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {custom.map((item) => (
+            <span key={item} className="inline-flex items-center gap-1 bg-teal-50 border border-teal-200 text-teal-700 text-xs font-medium px-2 py-0.5 rounded-full">
+              {item}
+              <button onClick={() => removeCustom(item)} className="hover:text-red-500 leading-none">×</button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      <input
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        onKeyDown={(e) => (e.key === "Enter") && (e.preventDefault(), addCustom())}
+        placeholder="Add custom order and press Enter…"
+        className={inputCls}
+      />
+    </div>
+  );
+}
+
+const EMPTY_FORM = {
+  chiefComplaint: "", allergies: [],
+  vitals: { bpSys: "", bpDia: "", pulse: "", temp: "", o2sat: "", weight: "", height: "" },
+  riskFactors: [], diagnoses: [],
+  medications: [{ drug: "", dose: "", freq: "", duration: "", route: "" }],
+  labSelected: [], labCustom: [], radSelected: [], radCustom: [],
+};
+
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function DoctorScreen() {
-  const [activePatient] = useState({
-    queue: 15, name: "Ahmed Ali", age: 35, complaint: "Chest pain", status: "Waiting",
-  });
+  const queuePatients      = useAgialStore((s) => s.queuePatients);
+  const updateQueueStatus  = useAgialStore((s) => s.updateQueueStatus);
 
+  const queueRows = queuePatients.length > 0 ? queuePatients : [
+    { qid: 0, patient: { name: "Ahmed Ali", dob: "", mrn: "", mobile: "" }, visit: { doctor: "Dr. Hassan", clinic: "General Medicine" }, _status: "Waiting" },
+  ];
+
+  // ── selected patient ──────────────────────────────────────────────────────
+  const [selectedQid, setSelectedQid] = useState(null);
+  const [savedData,   setSavedData]   = useState({}); // qid → form snapshot
+
+  // ── live form state ───────────────────────────────────────────────────────
   const [chiefComplaint, setChiefComplaint] = useState("");
   const [allergies,      setAllergies]      = useState([]);
-  const [vitals, setVitals] = useState({
-    bpSys: "", bpDia: "", pulse: "", temp: "", o2sat: "", weight: "", height: "",
-  });
-  const [riskFactors,  setRiskFactors]  = useState([]);
-  const [diagnoses,    setDiagnoses]    = useState([]);
-  const [medications,  setMedications]  = useState([{ drug: "", dose: "", freq: "", duration: "", route: "" }]);
-  const [visitStarted, setVisitStarted] = useState(false);
+  const [vitals,         setVitals]         = useState(EMPTY_FORM.vitals);
+  const [riskFactors,    setRiskFactors]    = useState([]);
+  const [diagnoses,      setDiagnoses]      = useState([]);
+  const [medications,    setMedications]    = useState(EMPTY_FORM.medications);
+  const [labSelected,    setLabSelected]    = useState([]);
+  const [labCustom,      setLabCustom]      = useState([]);
+  const [radSelected,    setRadSelected]    = useState([]);
+  const [radCustom,      setRadCustom]      = useState([]);
 
   const bmi = vitals.weight && vitals.height
     ? (vitals.weight / ((vitals.height / 100) ** 2)).toFixed(1)
@@ -252,8 +337,40 @@ export default function DoctorScreen() {
   const toggleRisk = (r) =>
     setRiskFactors((prev) => prev.includes(r) ? prev.filter((x) => x !== r) : [...prev, r]);
 
-  const handleSave     = () => alert("Saved!");
-  const handleComplete = () => alert("Visit completed!");
+  // ── helpers ────────────────────────────────────────────────────────────────
+  const selectedEntry = queueRows.find((e) => e.qid === selectedQid) ?? null;
+  const isReadOnly    = selectedEntry?._status === "Complete";
+
+  const loadForm = (d) => {
+    setChiefComplaint(d.chiefComplaint); setAllergies(d.allergies);
+    setVitals(d.vitals);                 setRiskFactors(d.riskFactors);
+    setDiagnoses(d.diagnoses);           setMedications(d.medications);
+    setLabSelected(d.labSelected);       setLabCustom(d.labCustom);
+    setRadSelected(d.radSelected);       setRadCustom(d.radCustom);
+  };
+
+  const selectPatient = (entry) => {
+    setSelectedQid(entry.qid);
+    loadForm(savedData[entry.qid] ?? EMPTY_FORM);
+  };
+
+  const snapshot = () => ({
+    chiefComplaint, allergies, vitals, riskFactors, diagnoses,
+    medications, labSelected, labCustom, radSelected, radCustom,
+  });
+
+  const handleSave = () => {
+    if (!selectedQid) return alert("Select a patient from the queue first.");
+    setSavedData((prev) => ({ ...prev, [selectedQid]: snapshot() }));
+    alert("Saved!");
+  };
+
+  const handleComplete = () => {
+    if (!selectedQid) return alert("Select a patient from the queue first.");
+    setSavedData((prev) => ({ ...prev, [selectedQid]: snapshot() }));
+    updateQueueStatus(selectedQid, "Complete");
+    alert("Visit completed!");
+  };
 
   return (
     <div className="h-full overflow-y-auto bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50/40">
@@ -280,34 +397,83 @@ export default function DoctorScreen() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-100">
-                  {["Queue", "Patient", "Age", "Complaint", "Status", "Action"].map((h) => (
+                  {["Queue", "Patient", "Clinic", "Doctor", "Status", "Action"].map((h) => (
                     <th key={h} className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                <tr className="border-b border-slate-50 hover:bg-emerald-50/50 transition">
-                  <td className="px-4 py-3 font-bold text-teal-700">{activePatient.queue}</td>
-                  <td className="px-4 py-3 font-semibold text-slate-700">{activePatient.name}</td>
-                  <td className="px-4 py-3 text-slate-600">{activePatient.age}</td>
-                  <td className="px-4 py-3 text-slate-600">{activePatient.complaint}</td>
-                  <td className="px-4 py-3">
-                    <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-700 text-xs font-semibold px-2.5 py-1 rounded-full">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                      {activePatient.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-2">
-                      <button onClick={() => setVisitStarted(true)} className="px-3 py-1.5 text-xs font-bold border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-100 transition">Start</button>
-                      <button className="px-3 py-1.5 text-xs font-bold bg-teal-700/80 text-white rounded-lg hover:bg-teal-800/80 transition shadow">Open</button>
-                    </div>
-                  </td>
-                </tr>
+                {queueRows.map((entry, i) => {
+                  const isSelected  = entry.qid === selectedQid;
+                  const isCompleted = entry._status === "Complete";
+                  return (
+                    <tr
+                      key={entry.qid}
+                      onClick={() => selectPatient(entry)}
+                      className={`border-b border-slate-50 cursor-pointer transition ${
+                        isSelected ? "bg-teal-50 border-l-4 border-l-teal-500" : "hover:bg-emerald-50/50"
+                      }`}
+                    >
+                      <td className="px-4 py-3 font-bold text-teal-700">{i + 1}</td>
+                      <td className="px-4 py-3 font-semibold text-slate-700">{entry.patient.name}</td>
+                      <td className="px-4 py-3 text-slate-600">{entry.visit?.clinic || "—"}</td>
+                      <td className="px-4 py-3 text-slate-600">{entry.visit?.doctor || "—"}</td>
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${
+                          isCompleted
+                            ? "bg-emerald-100 text-emerald-700"
+                            : "bg-amber-100 text-amber-700"
+                        }`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${isCompleted ? "bg-emerald-400" : "bg-amber-400 animate-pulse"}`} />
+                          {entry._status || "Waiting"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex gap-2">
+                          <button className="px-3 py-1.5 text-xs font-bold border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-100 transition">Open</button>
+                          <button
+                            onClick={() => window.open(INPATIENT_URL, "_blank")}
+                            className="px-3 py-1.5 text-xs font-bold bg-violet-600/80 text-white rounded-lg hover:bg-violet-700/80 transition shadow"
+                          >
+                            Inpatient
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         </div>
+        {/* Patient info banner */}
+        {selectedEntry ? (
+          <div className={`rounded-2xl border px-5 py-3 flex items-center gap-4 ${
+            isReadOnly
+              ? "bg-emerald-50 border-emerald-200"
+              : "bg-teal-50 border-teal-200"
+          }`}>
+            <div className="w-9 h-9 rounded-full bg-teal-100 border border-teal-300 flex items-center justify-center flex-shrink-0 text-teal-700 font-bold text-sm">
+              {selectedEntry.patient.name?.[0]?.toUpperCase()}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-slate-800">{selectedEntry.patient.name}</p>
+              <p className="text-xs text-slate-500">{selectedEntry.visit?.clinic} · {selectedEntry.visit?.doctor}</p>
+            </div>
+            {selectedEntry.patient.mrn && <span className="text-xs font-mono text-slate-500">{selectedEntry.patient.mrn}</span>}
+            {isReadOnly && (
+              <span className="text-xs font-bold bg-emerald-200 text-emerald-800 px-2.5 py-1 rounded-full">Visit Complete — Read Only</span>
+            )}
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-5 py-4 text-center text-sm text-slate-400">
+            Click a patient row above to open their visit
+          </div>
+        )}
+
+        {/* Clinical sections — disabled when visit is complete */}
+        <div className={isReadOnly ? "pointer-events-none opacity-60 select-none" : ""}>
+
         {/* Diagnoses — full width row */}
         <div className={sectionCls}>
           <div className={headerCls}>
@@ -317,6 +483,39 @@ export default function DoctorScreen() {
           </div>
           <DiagnosesPanel selected={diagnoses} setSelected={setDiagnoses} />
         </div>
+        {/* Lab + Radiology — 2 columns */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <div className={sectionCls}>
+            <div className={headerCls}>
+              <span className="w-2 h-2 rounded-full bg-cyan-400" />
+              <h3 className="text-sm font-bold text-slate-700">Lab Orders</h3>
+              <span className="ml-auto text-xs text-slate-400">ALB</span>
+            </div>
+            <OrdersPanel
+              presets={COMMON_LABS}
+              selected={labSelected}
+              setSelected={setLabSelected}
+              custom={labCustom}
+              setCustom={setLabCustom}
+            />
+          </div>
+
+          <div className={sectionCls}>
+            <div className={headerCls}>
+              <span className="w-2 h-2 rounded-full bg-violet-400" />
+              <h3 className="text-sm font-bold text-slate-700">Radiology Orders</h3>
+              <span className="ml-auto text-xs text-slate-400">RAD</span>
+            </div>
+            <OrdersPanel
+              presets={COMMON_RAD}
+              selected={radSelected}
+              setSelected={setRadSelected}
+              custom={radCustom}
+              setCustom={setRadCustom}
+            />
+          </div>
+        </div>
+
         {/* Clinical Grid — 3 columns */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
@@ -425,7 +624,7 @@ export default function DoctorScreen() {
           </div>
         </div>
 
-        
+        </div>{/* end clinical read-only wrapper */}
 
         {/* Footer actions */}
         <div className="flex justify-end gap-3 pb-4">
