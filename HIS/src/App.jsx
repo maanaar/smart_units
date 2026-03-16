@@ -11,6 +11,9 @@ import Sidebar from './components/layout/Sidebar';
 import useAuthStore from './features/auth/store';
 import NursingPage from './features/agial/pages/NursingPage';
 import ReceptionScreenAr from './features/agial/pages/ReceptionPageAR';
+import LabTests from './features/agial/pages/LabTests';
+import LabTestsAR from './features/agial/pages/LabTests';
+import RadTestsAR from './features/agial/pages/RadTests';
 
 function Protected() {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
@@ -42,7 +45,9 @@ export default function App() {
           <Route path="/agial/doctorscreen"  element={<DoctorScreen />} />
           <Route path="/agial/unitcentcom"     element={<AgialDashboard />} />
           <Route path="/agial/centcom"   element={<UnitDashboard />} />
-          <Route path="/agial/nationalcentcom"             element={<CentComPage />} />
+          <Route path="/agial/nationalcentcom" element={<CentComPage />} />
+          <Route path="/agial/labTests" element={<LabTestsAR />} />
+          <Route path="/agial/radTests" element={<RadTestsAR />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/agial/centcom" replace />} />

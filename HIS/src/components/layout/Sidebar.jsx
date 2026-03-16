@@ -27,7 +27,9 @@ const NAV = [
   { to: '/agial/ReceptionPage',  icon: Users,       label: 'Reception' },
   { to: '/agial/patients',  icon: Users,            label: 'Patients'  },
   { to: '/agial/nursing',   icon: ClipboardPlus,     label: 'Nursing'   },
-  { to:'/agial/doctorscreen',  icon: Stethoscope,  label: 'Doctor'     },
+  { to: '/agial/doctorscreen', icon: Stethoscope, label: 'Doctor' },
+  { to: '/agial/labTests',   icon: ClipboardPlus,     label: 'Lab Requests'   },
+  { to:'/agial/radTests',  icon: Stethoscope,  label: 'Rad Requests'     },
 // { to: '/agial/reports',   icon: FileBarChart,     label: 'Reports'   },
 ];
 

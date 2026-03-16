@@ -10,7 +10,7 @@ export default function PatientComplaint() {
 
   return (
      <div className="">
-          <div className="bg-gradient-to-r  from-[#13534c] to-[#1f7e74] px-6 py-4">
+          <div className="bg-gradient-to-r  from-[#13534c]/80 to-[#1f7e74]/80 px-6 py-4">
             <h2 className="text-xl font-semibold text-white">Patient Complaint</h2>
           </div>
           <div className="px-4 py-3 space-y-3">
