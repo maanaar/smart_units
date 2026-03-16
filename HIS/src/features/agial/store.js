@@ -4,11 +4,11 @@ import { persist } from 'zustand/middleware';
 /**
  * Agial unit store.
  * Holds the currently viewed patient and their loaded data.
- * queuePatients is persisted to localStorage.
+ * queuePatients and appointments are persisted to localStorage.
  */
 const useAgialStore = create(
   persist(
-    (set) => ({
+    (set, get) => ({
   // ── Unit identity ──────────────────────────────────────────────
   unitName: 'Agial Hospital',
   unitCode: 'agial',
@@ -45,6 +45,43 @@ const useAgialStore = create(
       ),
     })),
 
+  // ── Appointments (calendar) ────────────────────────────────────
+  appointments: [],  // saved appointments array
+
+  addAppointment: (appt) =>
+    set((state) => ({
+      appointments: [...state.appointments, { ...appt, id: appt.id || String(Date.now()) }],
+    })),
+
+  updateAppointment: (id, updates) =>
+    set((state) => ({
+      appointments: state.appointments.map((a) =>
+        a.id === id ? { ...a, ...updates } : a
+      ),
+    })),
+
+  removeAppointment: (id) =>
+    set((state) => ({
+      appointments: state.appointments.filter((a) => a.id !== id),
+    })),
+
+  // ── Patients registry (persisted) ──────────────────────────────
+  patients: [],  // saved patient records
+
+  upsertPatient: (patient) =>
+    set((state) => {
+      const key = patient.nationalId || patient.mrn;
+      const exists = state.patients.findIndex(
+        (p) => (p.nationalId && p.nationalId === patient.nationalId) || (p.mrn && p.mrn === patient.mrn)
+      );
+      if (exists >= 0) {
+        const updated = [...state.patients];
+        updated[exists] = { ...updated[exists], ...patient };
+        return { patients: updated };
+      }
+      return { patients: [...state.patients, patient] };
+    }),
+
   // ── Actions ────────────────────────────────────────────────────
   setPatientLoading: (loading) => set({ patientLoading: loading }),
   setPatientError:   (err)     => set({ patientError: err }),
@@ -73,8 +110,12 @@ const useAgialStore = create(
     }),
 }),
 {
-  name: 'agial-queue',          // localStorage key
-  partialize: (state) => ({ queuePatients: state.queuePatients }),
+  name: 'agial-store',
+  partialize: (state) => ({
+    queuePatients: state.queuePatients,
+    appointments: state.appointments,
+    patients: state.patients,
+  }),
 }
 ));
 
