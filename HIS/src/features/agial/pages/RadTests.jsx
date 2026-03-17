@@ -1,4 +1,5 @@
 import React from 'react'
+import ListView from '../components/ListView';
 
 // export  function RadTests() {
 
@@ -94,7 +95,26 @@ import React from 'react'
 
 
 export default function RadTestsAR() {
-
+const columnsRad = [
+  { key: 'daterad', title: 'التاريخ', type:'date' },
+  { key: 'patientName', title: 'اسم المريض',  type:'text' },
+  { key: 'category', title: 'الفئه', type:'tag1' },
+  { key: 'testsRad', title: 'الأشعة', type:'tag2' },
+  ];
+   const dataRab = [
+    {
+      daterad:'16/03/2026',
+      patientName:'فاطمة أحمد محمود',
+      category: ['CT','MRI','XRay'],
+     testsRad: ['١٧ هيدروكسي ب٤', '١٧ هيدروكسي ب', '١٧ هيدروكسي ب٤', '١٧ هيدروكسي ب'],
+    },
+     {
+      daterad:'17/03/2026',
+      patientName:'فاطمة أحمد محمود',
+      category: ['CT','MRI','XRay'],
+      testsRad: ['١٧ هيدروكسي ب٤', '١٧ هيدروكسي ب', '١٧ هيدروكسي ب٤', '١٧ هيدروكسي ب'],
+    }
+  ];
   return (
       <div>
           <div className="h-screen py-5 px-4 overflow-auto bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50/40" dir="rtl">
@@ -111,8 +131,9 @@ export default function RadTestsAR() {
                   </div>
               </div>
 
-              {/* Content */}
-              <div className="my-5 rounded-2xl overflow-hidden border border-gray-200">
+        {/* Content */}
+         <ListView columns={columnsRad} data={dataRab}/>
+              {/* <div className="my-5 rounded-2xl overflow-hidden border border-gray-200">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="text-white bg-teal-700">
@@ -181,7 +202,7 @@ export default function RadTestsAR() {
                       </tr>
                   </tbody>
                 </table>
-              </div>
+              </div> */}
           </div>
       </div>
   )
