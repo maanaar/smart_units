@@ -1,20 +1,20 @@
 // ── mock data ──────────────────────────────────────────────────────────────────
 const STATS = [
-  { label: 'TOTAL PATIENTS TODAY', value: '47,832', change: '+12% vs yesterday', up: true,  color: 'teal',  spark: [20,35,28,45,30,50,40,60,45,70] },
-  { label: 'LAB CASES TODAY',      value: '12,450', change: '+4.2% vs yesterday', up: true,  color: 'teal',  spark: [30,25,40,35,50,45,55,50,60,55] },
-  { label: 'RADIOLOGY ORDERS',     value: '3,218',  change: '-1.5% vs yesterday', up: false, color: 'red',   spark: [60,55,50,58,45,50,40,48,35,42] },
-  { label: 'PHARMACY DISPENSES',   value: '28,940', change: '+8.1% vs yesterday', up: true,  color: 'teal',  spark: [20,30,25,40,35,55,45,60,55,70] },
-  { label: 'INVENTORY ALERTS',     value: '47 units', change: 'Requires restock action', up: null, color: 'amber', spark: null },
-  { label: 'INTEGRATION STATUS',   value: '12/14 active', change: '2 connections failed (HL7)', up: null, color: 'red', spark: null },
+  { label: 'إجمالي المرضى اليوم', value: '47,832',      change: '+١٢٪ مقارنة بالأمس',        up: true,  color: 'teal',  spark: [20,35,28,45,30,50,40,60,45,70] },
+  { label: 'حالات المختبر اليوم', value: '12,450',      change: '+٤.٢٪ مقارنة بالأمس',       up: true,  color: 'teal',  spark: [30,25,40,35,50,45,55,50,60,55] },
+  { label: 'طلبات الأشعة',        value: '3,218',       change: '-١.٥٪ مقارنة بالأمس',       up: false, color: 'red',   spark: [60,55,50,58,45,50,40,48,35,42] },
+  { label: 'صرف الصيدلية',        value: '28,940',      change: '+٨.١٪ مقارنة بالأمس',       up: true,  color: 'teal',  spark: [20,30,25,40,35,55,45,60,55,70] },
+  { label: 'تنبيهات المخزون',     value: '٤٧ وحدة',    change: 'يستلزم إعادة تخزين',         up: null,  color: 'amber', spark: null },
+  { label: 'حالة التكامل',        value: '١٢/١٤ نشطة', change: 'اتصالان فشلا (HL7)',          up: null,  color: 'red',   spark: null },
 ];
 
 const UNITS = [
-  { id: 1, label: 'Alexandria — 98%',  status: 'online',  x: 148, y: 52  },
-  { id: 2, label: 'Cairo — 4 Alerts',  status: 'alert',   x: 232, y: 118 },
-  { id: 3, label: 'Giza — 100%',       status: 'online',  x: 205, y: 148 },
-  { id: 4, label: 'Assiut — 100%',     status: 'online',  x: 238, y: 278 },
-  { id: 5, label: 'Red Sea — 100%',    status: 'online',  x: 332, y: 248 },
-  { id: 6, label: 'Aswan — 2 Offline', status: 'offline', x: 270, y: 420 },
+  { id: 1, label: 'الإسكندرية — ٩٨٪',      status: 'online',  x: 148, y: 52  },
+  { id: 2, label: 'القاهرة — ٤ تنبيهات',   status: 'alert',   x: 232, y: 118 },
+  { id: 3, label: 'الجيزة — ١٠٠٪',         status: 'online',  x: 205, y: 148 },
+  { id: 4, label: 'أسيوط — ١٠٠٪',          status: 'online',  x: 238, y: 278 },
+  { id: 5, label: 'البحر الأحمر — ١٠٠٪',   status: 'online',  x: 332, y: 248 },
+  { id: 6, label: 'أسوان — ٢ غير متصلة',   status: 'offline', x: 270, y: 420 },
 ];
 
 const CONNECTIVITY = { connected: 284, total: 300 };
@@ -134,7 +134,7 @@ export default function UnitDashboard() {
           CentCom Dashboard (Central Command)
         </h1>
         <span className="ml-auto text-xs text-gray-400 font-mono">
-          {new Date().toLocaleString('en-GB')}
+          {new Date().toLocaleString('ar-EG')}
         </span>
       </div>
 
@@ -154,7 +154,7 @@ export default function UnitDashboard() {
 
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm px-5 py-3">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-xs text-gray-500 font-medium">Network Connectivity</span>
+              <span className="text-xs text-gray-500 font-medium">اتصال الشبكة</span>
               <span className="text-sm font-bold text-gray-800">
                 {CONNECTIVITY.connected}/{CONNECTIVITY.total} ({pct}%)
               </span>

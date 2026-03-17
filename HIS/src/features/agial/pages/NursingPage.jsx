@@ -7,7 +7,7 @@ import PatientComplaint from '../components/PatientComplaint';
 
 export default function NursingPage() {
   return (
-    <div className="min-h-screen bg-gray-100  py-5 px-4 font-sans w-full bg-gradient-to-br from-slate-100 to-blue-50">
+    <div className="h-full overflow-y-auto bg-gray-100  py-5 px-4 font-sans w-full bg-gradient-to-br from-slate-100 to-blue-50">
       <div className="w-full ">
         {/* Header */}
      

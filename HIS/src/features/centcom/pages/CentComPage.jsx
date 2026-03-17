@@ -1,41 +1,43 @@
 import { useState } from 'react';
+import Card from '../../dashboards/components/cards';
+import SearchBar from '../../../components/ui/SearchBar';
 
 // ── mock data ──────────────────────────────────────────────────────────────────
 const SUMMARY = [
-  { label: 'Health Units',       value: '42',    sub: '38 Online',  sub2: '4 Offline', subColor: 'text-emerald-500', sub2Color: 'text-red-500' },
-  { label: 'Patients Today',     value: '12,450',sub: '+5% vs yesterday', subColor: 'text-emerald-500' },
-  { label: 'Lab Cases',          value: '3,420', sub: '120 Pending', subColor: 'text-amber-500' },
-  { label: 'Radiology',          value: '890',   sub: '15 Pending',  subColor: 'text-amber-500' },
-  { label: 'Pharmacy Dispenses', value: '7,120', sub: 'Normal volume', subColor: 'text-emerald-500' },
-  { label: 'Alerts',             value: '14',    sub: '3 Critical issues', subColor: 'text-red-500' },
+  { label: 'الوحدات الصحية',  value: '42',    sub: '٣٨ متصلة',              sub2: '٤ غير متصلة',    subColor: 'text-emerald-500', sub2Color: 'text-red-500' },
+  { label: 'المرضى اليوم',    value: '12,450',sub: '+٥٪ مقارنة بالأمس',     subColor: 'text-emerald-500' },
+  { label: 'حالات المختبر',   value: '3,420', sub: '١٢٠ معلقة',             subColor: 'text-amber-500' },
+  { label: 'الأشعة',          value: '890',   sub: '١٥ معلقة',              subColor: 'text-amber-500' },
+  { label: 'صرف الصيدلية',    value: '7,120', sub: 'حجم طبيعي',             subColor: 'text-emerald-500' },
+  { label: 'التنبيهات',       value: '14',    sub: '٣ مشاكل حرجة',          subColor: 'text-red-500' },
 ];
 
 const TOP_UNITS = [
-  { name: 'Heliopolis', count: 450 },
-  { name: 'Nasr City',  count: 420 },
-  { name: 'Maadi',      count: 380 },
-  { name: 'N. Cairo',   count: 310 },
-  { name: 'Shubra',     count: 290 },
+  { name: 'مصر الجديدة', count: 450 },
+  { name: 'مدينة نصر',   count: 420 },
+  { name: 'المعادي',      count: 380 },
+  { name: 'شمال القاهرة',count: 310 },
+  { name: 'شبرا',         count: 290 },
 ];
 
 const TRIAGE = [
-  { label: 'Red',    pct: 15, color: '#ef4444' },
-  { label: 'Yellow', pct: 30, color: '#f59e0b' },
-  { label: 'Green',  pct: 55, color: '#10b981' },
+  { label: 'أحمر',  pct: 15, color: '#ef4444' },
+  { label: 'أصفر',  pct: 30, color: '#f59e0b' },
+  { label: 'أخضر',  pct: 55, color: '#10b981' },
 ];
 
 const WEEKLY = [
-  { day: 'Mon', v: 320 }, { day: 'Tue', v: 380 }, { day: 'Wed', v: 350 },
-  { day: 'Thu', v: 460 }, { day: 'Fri', v: 420 }, { day: 'Sat', v: 490 }, { day: 'Sun', v: 460 },
+  { day: 'الإثنين',   v: 320 }, { day: 'الثلاثاء',  v: 380 }, { day: 'الأربعاء', v: 350 },
+  { day: 'الخميس',    v: 460 }, { day: 'الجمعة',    v: 420 }, { day: 'السبت',    v: 490 }, { day: 'الأحد', v: 460 },
 ];
 
 const HEALTH_UNITS = [
-  { id: 1, name: 'Heliopolis Primary Care', address: 'Oruba St, Heliopolis', status: 'online',  patients: 450, labPend: 12, radPend: 5  },
-  { id: 2, name: 'Nasr City Medical Center', address: 'Abbas El-Akkad, Nasr City', status: 'online',  patients: 420, labPend: 8,  radPend: 3  },
-  { id: 3, name: 'Maadi General Hospital',   address: 'Road 9, Maadi',          status: 'online',  patients: 380, labPend: 15, radPend: 7  },
-  { id: 4, name: 'North Cairo Clinic',       address: 'Shubra El-Kheima',       status: 'alert',   patients: 310, labPend: 22, radPend: 4  },
-  { id: 5, name: 'Shubra Health Unit',       address: 'Shubra St, Cairo',        status: 'offline', patients: 290, labPend: 0,  radPend: 0  },
-  { id: 6, name: 'Dokki Medical Branch',     address: 'Tahrir Sq, Dokki',        status: 'online',  patients: 260, labPend: 6,  radPend: 2  },
+  { id: 1, name: 'رعاية أولية مصر الجديدة', address: 'شارع العروبة، مصر الجديدة',       status: 'online',  patients: 450, labPend: 12, radPend: 5  },
+  { id: 2, name: 'المركز الطبي بمدينة نصر', address: 'شارع عباس العقاد، مدينة نصر',    status: 'online',  patients: 420, labPend: 8,  radPend: 3  },
+  { id: 3, name: 'مستشفى المعادي العام',     address: 'شارع ٩، المعادي',                status: 'online',  patients: 380, labPend: 15, radPend: 7  },
+  { id: 4, name: 'عيادة شمال القاهرة',       address: 'شبرا الخيمة',                    status: 'alert',   patients: 310, labPend: 22, radPend: 4  },
+  { id: 5, name: 'وحدة صحة شبرا',           address: 'شارع شبرا، القاهرة',             status: 'offline', patients: 290, labPend: 0,  radPend: 0  },
+  { id: 6, name: 'فرع الدقي الطبي',          address: 'ميدان التحرير، الدقي',           status: 'online',  patients: 260, labPend: 6,  radPend: 2  },
 ];
 
 // ── Bar Chart ──────────────────────────────────────────────────────────────────
@@ -101,7 +103,7 @@ function DonutChart() {
           />
         ))}
         <text x={cx} y={cy - 6} textAnchor="middle" fontSize="18" fontWeight="700" fill="#111827">12.4k</text>
-        <text x={cx} y={cy + 12} textAnchor="middle" fontSize="10" fill="#9ca3af">Total</text>
+        <text x={cx} y={cy + 12} textAnchor="middle" fontSize="10" fill="#9ca3af">الإجمالي</text>
       </svg>
       <div className="flex flex-col gap-2">
         {TRIAGE.map(t => (
@@ -153,7 +155,7 @@ function LineChart() {
 // ── UnitCard ───────────────────────────────────────────────────────────────────
 function UnitCard({ unit }) {
   const dot   = unit.status === 'online' ? 'bg-emerald-500' : unit.status === 'alert' ? 'bg-amber-400' : 'bg-red-500';
-  const label = unit.status === 'online' ? 'Online' : unit.status === 'alert' ? 'Alert' : 'Offline';
+  const label = unit.status === 'online' ? 'متصلة' : unit.status === 'alert' ? 'تنبيه' : 'غير متصلة';
   const lc    = unit.status === 'online' ? 'text-emerald-600' : unit.status === 'alert' ? 'text-amber-600' : 'text-red-500';
 
   return (
@@ -171,15 +173,15 @@ function UnitCard({ unit }) {
       <div className="flex gap-5">
         <div>
           <p className="text-xl font-bold text-gray-900">{unit.patients}</p>
-          <p className="text-[9px] font-semibold text-gray-400 uppercase tracking-wider">Patients</p>
+          <p className="text-[9px] font-semibold text-gray-400 uppercase tracking-wider">المرضى</p>
         </div>
         <div>
           <p className="text-xl font-bold text-gray-900">{unit.labPend}</p>
-          <p className="text-[9px] font-semibold text-gray-400 uppercase tracking-wider">Lab Pend.</p>
+          <p className="text-[9px] font-semibold text-gray-400 uppercase tracking-wider">مختبر معلق</p>
         </div>
         <div>
           <p className="text-xl font-bold text-gray-900">{unit.radPend}</p>
-          <p className="text-[9px] font-semibold text-gray-400 uppercase tracking-wider">Rad Pend.</p>
+          <p className="text-[9px] font-semibold text-gray-400 uppercase tracking-wider">أشعة معلقة</p>
         </div>
       </div>
     </div>
@@ -212,54 +214,49 @@ export default function CentComPage() {
         {/* ── Summary cards ── */}
         <div className="grid grid-cols-6 gap-3">
           {SUMMARY.map(s => (
-            <div key={s.label} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-              <p className="text-xs text-gray-400 mb-1">{s.label}</p>
-              <p className="text-3xl font-bold text-gray-900 leading-tight">{s.value}</p>
-              <p className={`text-xs font-medium mt-1 ${s.subColor}`}>{s.sub}
-                {s.sub2 && <><span className="text-gray-300 mx-1">,</span><span className={s.sub2Color}>{s.sub2}</span></>}
-              </p>
-            </div>
+            <Card
+              key={s.label}
+              title={s.label}
+              stat={s.value}
+              description={s.sub2 ? `${s.sub} ، ${s.sub2}` : s.sub}
+              descriptionColor={s.subColor}
+            />
           ))}
         </div>
 
         {/* ── Charts row ── */}
         <div className="grid grid-cols-3 gap-4">
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
-            <p className="text-sm font-bold text-gray-800 mb-4">Patients per Unit (Top 5)</p>
+            <p className="text-sm font-bold text-gray-800 mb-4">المرضى لكل وحدة (أعلى ٥)</p>
             <BarChart />
           </div>
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
-            <p className="text-sm font-bold text-gray-800 mb-4">Triage Distribution</p>
+            <p className="text-sm font-bold text-gray-800 mb-4">توزيع الفرز</p>
             <DonutChart />
           </div>
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
-            <p className="text-sm font-bold text-gray-800 mb-4">Weekly Visit Trend</p>
+            <p className="text-sm font-bold text-gray-800 mb-4">اتجاه الزيارات الأسبوعي</p>
             <LineChart />
           </div>
         </div>
 
         {/* ── Health Units ── */}
         <div>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-base font-bold text-gray-900">Health Units</h2>
-            <div className="flex items-center gap-2">
-              <input
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                placeholder="Search units..."
-                className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg bg-white outline-none focus:ring-2 focus:ring-emerald-300 w-44"
-              />
-              <select
-                value={filter}
-                onChange={e => setFilter(e.target.value)}
-                className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg bg-white outline-none focus:ring-2 focus:ring-emerald-300"
-              >
-                <option value="all">All Status</option>
-                <option value="online">Online</option>
-                <option value="alert">Alert</option>
-                <option value="offline">Offline</option>
-              </select>
-            </div>
+          <div className="flex items-center justify-between mb-3" w-full>
+            <h2 className="text-base font-bold text-gray-900">الوحدات الصحية</h2>
+            <SearchBar
+              value={search}
+              onChange={setSearch}
+              placeholder="ابحث عن وحدة..."
+              filterValue={filter}
+              onFilterChange={setFilter}
+              filters={[
+                { label: 'جميع الحالات', value: 'all'     },
+                { label: 'متصلة',        value: 'online'  },
+                { label: 'تنبيه',        value: 'alert'   },
+                { label: 'غير متصلة',   value: 'offline' },
+              ]}
+            />
           </div>
 
           <div className="grid grid-cols-3 gap-4">
