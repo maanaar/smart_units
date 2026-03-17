@@ -119,7 +119,7 @@ function PatientList({ onSelect }) {
     <div className="h-full overflow-y-auto bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+        <div className=" mx-auto px-4 py-5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-1 h-7 rounded-full bg-emerald-700/80" />
             <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-emerald-900 to-teal-700 bg-clip-text text-transparent">
@@ -147,7 +147,7 @@ function PatientList({ onSelect }) {
       </div>
 
       {/* List */}
-      <div className="max-w-5xl mx-auto px-6 py-5 space-y-2">
+      <div className="mx-auto px-6 py-5 space-y-2">
         {/* Today's reception queue */}
         {filteredQueue.length > 0 && (
           <>
@@ -224,7 +224,7 @@ function QueuePatientDetail({ entry, onBack }) {
     <div className="h-full overflow-y-auto bg-gray-50">
       {/* Top bar */}
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center gap-3">
+        <div className=" mx-auto px-6 py-4 flex items-center gap-3">
           <button onClick={onBack} className="text-gray-400 hover:text-teal-600 transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -321,7 +321,7 @@ export default function PatientInfo() {
     <div className="h-full overflow-y-auto bg-gray-50">
       {/* Top bar */}
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className=" mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate('/agial/patients')}
