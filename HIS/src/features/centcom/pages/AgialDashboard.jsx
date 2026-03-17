@@ -1,47 +1,48 @@
 import useAuthStore from '../../auth/store';
+import Card from '../../dashboards/components/cards';
 
 // ── mock data ──────────────────────────────────────────────────────────────────
 const STATS = [
-  { label: 'Visits Today',        value: '450',  sub: '+12% vs avg',  subColor: 'text-emerald-500' },
-  { label: 'Lab Cases',           value: '120',  sub: '15 Pending',   subColor: 'text-amber-500'   },
-  { label: 'Radiology Orders',    value: '45',   sub: 'All reported', subColor: 'text-emerald-500' },
-  { label: 'Pharmacy Dispenses',  value: '320',  sub: 'High volume',  subColor: 'text-emerald-500' },
-  { label: 'Inventory Alerts',    value: '3',    sub: 'Critical items', subColor: 'text-red-500'   },
-  { label: 'Integration Status',  value: '100%', sub: 'Fully Synced', subColor: 'text-emerald-500' },
+  { label: 'الزيارات اليوم',      value: '450',  sub: '+١٢٪ مقارنة بالمتوسط', subColor: 'text-emerald-500' },
+  { label: 'حالات المختبر',       value: '120',  sub: '١٥ معلقة',              subColor: 'text-amber-500'   },
+  { label: 'طلبات الأشعة',        value: '45',   sub: 'تم الإبلاغ عن الكل',   subColor: 'text-emerald-500' },
+  { label: 'صرف الصيدلية',        value: '320',  sub: 'حجم مرتفع',             subColor: 'text-emerald-500' },
+  { label: 'تنبيهات المخزون',     value: '3',    sub: 'عناصر حرجة',            subColor: 'text-red-500'     },
+  { label: 'حالة التكامل',        value: '100%', sub: 'متزامن بالكامل',        subColor: 'text-emerald-500' },
 ];
 
 const HOURLY = [
-  { h: '8a', v: 20 }, { h: '10a', v: 55 }, { h: '12p', v: 90 },
-  { h: '2p', v: 70 }, { h: '4p',  v: 75 }, { h: '6p',  v: 40 }, { h: '8p', v: 25 },
+  { h: '8ص', v: 20 }, { h: '10ص', v: 55 }, { h: '12ظ', v: 90 },
+  { h: '2م', v: 70 }, { h: '4م',  v: 75 }, { h: '6م',  v: 40 }, { h: '8م', v: 25 },
 ];
 
 const TRIAGE = [
-  { label: 'Red',    pct: 15, color: '#ef4444' },
-  { label: 'Yellow', pct: 30, color: '#f59e0b' },
-  { label: 'Green',  pct: 55, color: '#10b981' },
+  { label: 'أحمر',   pct: 15, color: '#ef4444' },
+  { label: 'أصفر',   pct: 30, color: '#f59e0b' },
+  { label: 'أخضر',   pct: 55, color: '#10b981' },
 ];
 
 const DEPT = [
-  { name: 'Gen. Pract.', pct: 85, color: '#0ea5e9' },
-  { name: 'Pediatrics',  pct: 72, color: '#0ea5e9' },
-  { name: 'Dentistry',   pct: 64, color: '#8b5cf6' },
-  { name: 'Gynecology',  pct: 45, color: '#8b5cf6' },
+  { name: 'طب عام',       pct: 85, color: '#0ea5e9' },
+  { name: 'طب أطفال',     pct: 72, color: '#0ea5e9' },
+  { name: 'طب أسنان',     pct: 64, color: '#8b5cf6' },
+  { name: 'أمراض النساء', pct: 45, color: '#8b5cf6' },
 ];
 
 const WEEKLY_THIS = [38, 32, 28, 42, 45, 38, 40];
 const WEEKLY_LAST = [30, 28, 35, 30, 36, 30, 34];
-const WEEKLY_DAYS = ['Mon', 'Wed', 'Fri', 'Sun'];
+const WEEKLY_DAYS = ['الإثنين', 'الأربعاء', 'الجمعة', 'الأحد'];
 
 const MODULES = [
-  { name: 'Polyclinics', status: 'ACTIVE', updated: '1m ago',  label: 'PATIENTS IN QUEUE', value: '24 Waiting'  },
-  { name: 'Laboratory',  status: 'ACTIVE', updated: '2m ago',  label: 'PENDING RESULTS',   value: '15 Samples'  },
-  { name: 'Radiology',   status: 'ACTIVE', updated: '5m ago',  label: 'UNREAD STUDIES',    value: '0 Pending'   },
+  { name: 'العيادات',  status: 'نشط', updated: 'منذ دقيقة',   label: 'المرضى في الانتظار', value: '٢٤ في الانتظار' },
+  { name: 'المختبر',   status: 'نشط', updated: 'منذ دقيقتين', label: 'نتائج معلقة',         value: '١٥ عينة'         },
+  { name: 'الأشعة',    status: 'نشط', updated: 'منذ ٥ دقائق', label: 'دراسات غير مقروءة',  value: '٠ معلق'          },
 ];
 
 const ALERTS = [
-  { id: 1, msg: 'Paracetamol 500mg stock critically low (Below min threshold)', source: 'Supply Chain', time: '10 mins ago', critical: true  },
-  { id: 2, msg: 'Insulin syringes out of stock in Main Pharmacy',               source: 'Pharmacy',     time: '22 mins ago', critical: true  },
-  { id: 3, msg: 'Lab result turnaround exceeded 4 hours for 3 samples',         source: 'Laboratory',   time: '35 mins ago', critical: false },
+  { id: 1, msg: 'مخزون باراسيتامول ٥٠٠ مجم منخفض بشكل حرج (أقل من الحد الأدنى)', source: 'سلسلة الإمداد', time: 'منذ ١٠ دقائق', critical: true  },
+  { id: 2, msg: 'محاقن الأنسولين نفدت من الصيدلية الرئيسية',                        source: 'الصيدلية',      time: 'منذ ٢٢ دقيقة', critical: true  },
+  { id: 3, msg: 'تجاوزت مدة نتائج المختبر ٤ ساعات لـ ٣ عينات',                     source: 'المختبر',       time: 'منذ ٣٥ دقيقة', critical: false },
 ];
 
 // ── Charts ─────────────────────────────────────────────────────────────────────
@@ -58,7 +59,7 @@ function HourlyChart() {
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
-      <text x={pad.l} y={22} fontSize="11" fontWeight="700" fill="#111827">Peak (11am)</text>
+      <text x={pad.l} y={22} fontSize="11" fontWeight="700" fill="#111827">الذروة (١١ص)</text>
       <polyline points={poly} fill="none" stroke="#0ea5e9" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
       {pts.map(p => (
         <g key={p.h}>
@@ -95,7 +96,7 @@ function DonutChart() {
           />
         ))}
         <text x={cx} y={cy - 5} textAnchor="middle" fontSize="16" fontWeight="700" fill="#111827">{STATS[0].value}</text>
-        <text x={cx} y={cy + 12} textAnchor="middle" fontSize="9" fill="#9ca3af">Visits</text>
+        <text x={cx} y={cy + 12} textAnchor="middle" fontSize="9" fill="#9ca3af">زيارات</text>
       </svg>
       <div className="flex flex-col gap-2">
         {TRIAGE.map(t => (
@@ -169,12 +170,12 @@ export default function AgialDashboard() {
             <div className="w-1 h-7 rounded-full bg-emerald-600" />
             <div>
               <p className="text-base font-bold text-gray-900 leading-tight capitalize">{unit || 'Unit'} Dashboard</p>
-              <p className="text-[11px] text-gray-400">{new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+              <p className="text-[11px] text-gray-400">{new Date().toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1.5 text-sm font-semibold text-emerald-600 border border-emerald-200 rounded-full px-3 py-1">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" /> Synced
+              <span className="w-2 h-2 rounded-full bg-emerald-500" /> متزامن
             </span>
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-bold text-sm">{initials}</div>
@@ -189,30 +190,32 @@ export default function AgialDashboard() {
         {/* ── 6 stat cards ── */}
         <div className="grid grid-cols-6 gap-3">
           {STATS.map(s => (
-            <div key={s.label} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-              <p className="text-xs text-gray-400 mb-1">{s.label}</p>
-              <p className="text-3xl font-bold text-gray-900 leading-tight">{s.value}</p>
-              <p className={`text-xs font-medium mt-1 ${s.subColor}`}>{s.sub}</p>
-            </div>
+            <Card
+              key={s.label}
+              title={s.label}
+              stat={s.value}
+              description={s.sub}
+              descriptionColor={s.subColor}
+            />
           ))}
         </div>
 
         {/* ── 4 charts ── */}
         <div className="grid grid-cols-4 gap-4">
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-            <p className="text-sm font-bold text-gray-800 mb-2">Hourly Visit Flow</p>
+            <p className="text-sm font-bold text-gray-800 mb-2">تدفق الزيارات بالساعة</p>
             <HourlyChart />
           </div>
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-            <p className="text-sm font-bold text-gray-800 mb-2">Triage Distribution</p>
+            <p className="text-sm font-bold text-gray-800 mb-2">توزيع الفرز</p>
             <DonutChart />
           </div>
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-            <p className="text-sm font-bold text-gray-800 mb-3">Dept Utilization</p>
+            <p className="text-sm font-bold text-gray-800 mb-3">استخدام الأقسام</p>
             <DeptBars />
           </div>
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-            <p className="text-sm font-bold text-gray-800 mb-2">Weekly Comparison</p>
+            <p className="text-sm font-bold text-gray-800 mb-2">المقارنة الأسبوعية</p>
             <WeeklyChart />
           </div>
         </div>
@@ -222,7 +225,7 @@ export default function AgialDashboard() {
 
           {/* Module Status Panel */}
           <div>
-            <h2 className="text-base font-bold text-gray-900 mb-3">Module Status Panel</h2>
+            <h2 className="text-base font-bold text-gray-900 mb-3">لوحة حالة الوحدات</h2>
             <div className="grid grid-cols-3 gap-4">
               {MODULES.map(m => (
                 <div key={m.name} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
@@ -233,11 +236,11 @@ export default function AgialDashboard() {
                     <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">{m.status}</span>
                   </div>
                   <p className="text-sm font-bold text-gray-900 mt-2">{m.name}</p>
-                  <p className="text-[10px] text-gray-400 mb-3">Updated {m.updated}</p>
+                  <p className="text-[10px] text-gray-400 mb-3">تحديث {m.updated}</p>
                   <p className="text-[9px] font-semibold text-gray-400 uppercase tracking-wider">{m.label}</p>
                   <p className="text-xl font-bold text-gray-900">{m.value}</p>
                   <button className="mt-3 w-full py-1.5 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                    Open Module
+                    فتح الوحدة
                   </button>
                 </div>
               ))}
@@ -247,11 +250,11 @@ export default function AgialDashboard() {
           {/* Active Alerts */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-base font-bold text-gray-900">Active Alerts</h2>
-              <span className="text-xs font-bold text-red-600 bg-red-50 border border-red-200 px-2 py-0.5 rounded">3 Critical</span>
+              <h2 className="text-base font-bold text-gray-900">التنبيهات النشطة</h2>
+              <span className="text-xs font-bold text-red-600 bg-red-50 border border-red-200 px-2 py-0.5 rounded">٣ حرجة</span>
             </div>
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-              <p className="text-xs font-semibold text-gray-500 mb-3">Recent Activity</p>
+              <p className="text-xs font-semibold text-gray-500 mb-3">النشاط الأخير</p>
               <div className="flex flex-col gap-3">
                 {ALERTS.map(a => (
                   <div key={a.id} className="flex gap-3">
