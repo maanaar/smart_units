@@ -23,6 +23,7 @@ const NAV = [
       { to: '/agial/nationalcentcom', label: 'National CentCom Dashboard' },
       { to: '/agial/unitcentcom', label: 'Unit CentCom Dashboard' },
     ],
+<<<<<<< HEAD
   },
   {
     icon: Users,
@@ -37,6 +38,17 @@ const NAV = [
   { to: '/agial/patients', icon: Users, label: 'المرضى' },
   { to: '/agial/nursing', icon: ClipboardPlus, label: 'التمريض' },
   { to: '/agial/doctorscreen', icon: Stethoscope, label: 'الطبيب' },
+=======
+  },  
+  { to: '/agial/calendar',  icon: CalendarDays,     label: 'Calendar'  },
+  { to: '/agial/ReceptionPage',  icon: Users,       label: 'Reception' },
+  { to: '/agial/patients',  icon: Users,            label: 'Patients'  },
+  { to: '/agial/nursing',   icon: ClipboardPlus,     label: 'Nursing'   },
+  { to: '/agial/doctorscreen', icon: Stethoscope, label: 'Doctor' },
+  { to: '/agial/labTests',   icon: ClipboardPlus,     label: 'Lab Requests'   },
+  { to:'/agial/radTests',  icon: Stethoscope,  label: 'Rad Requests'     },
+// { to: '/agial/reports',   icon: FileBarChart,     label: 'Reports'   },
+>>>>>>> 27c37cbe50c431b26a80312f29519156744c2f8f
 ];
 
 export default function Sidebar() {
