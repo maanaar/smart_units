@@ -65,6 +65,7 @@ export default function PharmacyDashboard() {
         dateValue={date}
         onDateChange={setDate}
         onAdd={() => navigate('/agial/ReceptionPage')}
+        filters={<LocationFilters />}
       />
       <div className="flex-1 overflow-y-auto">
       <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -77,9 +78,6 @@ export default function PharmacyDashboard() {
         <MiniChart title="الوصفات (أسبوعي)" type="area" data={rxTrend} dataKey="value" nameKey="name" color="#3b82f6" />
         <MiniChart title="الأدوية الأكثر صرفاً" type="bar" data={topDrugs} dataKey="value" nameKey="name" color="#8b5cf6" />
         <MiniChart title="حالة الوصفات" type="pie" data={rxStatus} dataKey="value" nameKey="name" />
-      </div>
-      <div className="px-6 pb-3">
-        <LocationFilters />
       </div>
       <div className="px-6">
         <SearchBar

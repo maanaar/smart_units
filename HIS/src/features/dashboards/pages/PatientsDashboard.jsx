@@ -67,6 +67,7 @@ export default function PatientsDashboard() {
         dateValue={date}
         onDateChange={setDate}
         onAdd={() => {}}
+        filters={<LocationFilters />}
       />
       <div className="flex-1 overflow-y-auto">
       <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -79,9 +80,6 @@ export default function PatientsDashboard() {
         <MiniChart title="قبول المرضى (أسبوعي)" type="area" data={admissionsTrend} dataKey="value" nameKey="name" color="#0d9488" />
         <MiniChart title="توزيع الأجنحة" type="bar" data={wardData} dataKey="value" nameKey="name" color="#6366f1" />
         <MiniChart title="توزيع الحالات" type="pie" data={statusData} dataKey="value" nameKey="name" />
-      </div>
-      <div className="px-6 pb-3">
-        <LocationFilters />
       </div>
       <div className="px-6">
         <SearchBar

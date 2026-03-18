@@ -45,22 +45,21 @@ export default function LocationFilters({ onChange }) {
         </select>
       </div>
 
-      {/* Unit — only shown when governorate selected */}
-      {gov && (
-        <div className="relative flex items-center">
-          <Building2 className="absolute right-3 w-3.5 h-3.5 text-emerald-500 pointer-events-none" />
-          <select
-            value={unit}
-            onChange={e => handleUnit(e.target.value)}
-            className="pr-8 pl-3 py-2 text-sm border border-gray-200 rounded-xl bg-white outline-none focus:ring-2 focus:ring-emerald-300 text-gray-700 shadow-sm min-w-[180px]"
-          >
-            <option value="">كل الوحدات</option>
-            {units.map(u => (
-              <option key={u.value} value={u.value}>{u.label}</option>
-            ))}
-          </select>
-        </div>
-      )}
+      {/* Unit — always visible */}
+      <div className="relative flex items-center">
+        <Building2 className="absolute right-3 w-3.5 h-3.5 text-emerald-500 pointer-events-none" />
+        <select
+          value={unit}
+          onChange={e => handleUnit(e.target.value)}
+          disabled={!gov}
+          className="pr-8 pl-3 py-2 text-sm border border-gray-200 rounded-xl bg-white outline-none focus:ring-2 focus:ring-emerald-300 text-gray-700 shadow-sm min-w-[180px] disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <option value="">{gov ? 'كل الوحدات' : 'اختر المحافظة أولاً'}</option>
+          {units.map(u => (
+            <option key={u.value} value={u.value}>{u.label}</option>
+          ))}
+        </select>
+      </div>
 
       {/* Clear */}
       {hasFilter && (

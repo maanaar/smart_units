@@ -64,6 +64,7 @@ export default function OperationsDashboard() {
         dateValue={date}
         onDateChange={setDate}
         onAdd={() => navigate('/agial/ReceptionPage')}
+        filters={<LocationFilters />}
       />
       <div className="flex-1 overflow-y-auto">
       <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -76,9 +77,6 @@ export default function OperationsDashboard() {
         <MiniChart title="العمليات (أسبوعي)" type="area" data={opsTrend} dataKey="value" nameKey="name" color="#10b981" />
         <MiniChart title="توزيع العيادات" type="bar" data={clinicData} dataKey="value" nameKey="name" color="#f59e0b" />
         <MiniChart title="حالة العمليات" type="pie" data={opsStatus} dataKey="value" nameKey="name" />
-      </div>
-      <div className="px-6 pb-3">
-        <LocationFilters />
       </div>
       <div className="px-6">
         <SearchBar
