@@ -16,7 +16,7 @@ import useAuthStore from '../../features/auth/store';
 const NAV = [
   {
     icon: LayoutDashboard,
-    label: 'لوحة التحكم',
+    label: 'Dashboards',
     key: 'dashboard',
     children: [
       // { to: '/agial/centcom',             label: 'لوحة التحكم المركزية'    },
