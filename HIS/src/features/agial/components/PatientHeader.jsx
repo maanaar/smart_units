@@ -4,14 +4,14 @@ export default function PatientHeader({ patient, onEdit, onNewVisit }) {
   if (!patient) return null;
 
   const infoItems = [
-    { label: 'MRN',       value: patient.mrn },
-    { label: 'Age',       value: patient.age ? `${patient.age} yrs` : null },
-    { label: 'Gender',    value: patient.gender },
-    { label: 'DOB',       value: patient.date_of_birth || null },
-    { label: 'Phone',     value: patient.mobile },
-    { label: 'Insurance', value: patient.insurance_company || null },
-    { label: 'Plan',      value: patient.insurance_plan || null },
-    { label: 'Type',      value: patient.patient_type },
+    { label: 'رقم الملف',      value: patient.mrn },
+    { label: 'العمر',          value: patient.age ? `${patient.age} سنة` : null },
+    { label: 'الجنس',          value: patient.gender },
+    { label: 'تاريخ الميلاد',  value: patient.date_of_birth || null },
+    { label: 'الجوال',         value: patient.mobile },
+    { label: 'التأمين',        value: patient.insurance_company || null },
+    { label: 'الخطة',          value: patient.insurance_plan || null },
+    { label: 'النوع',          value: patient.patient_type },
   ].filter((i) => i.value);
 
   return (
@@ -35,7 +35,7 @@ export default function PatientHeader({ patient, onEdit, onNewVisit }) {
           )}
           {/* MRN pill */}
           <span className="inline-block mt-1.5 text-xs font-semibold bg-white/10 text-emerald-200 px-2.5 py-0.5 rounded-full border border-white/10">
-            MRN: {patient.mrn}
+            رقم الملف: {patient.mrn}
           </span>
         </div>
 
@@ -54,14 +54,14 @@ export default function PatientHeader({ patient, onEdit, onNewVisit }) {
             className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-white/10 border border-white/20 text-white rounded-lg hover:bg-white/20 transition-colors"
           >
             <Pencil className="w-3.5 h-3.5" />
-            Edit
+            تعديل
           </button>
           <button
             onClick={onNewVisit}
             className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold bg-teal-400 text-emerald-900 rounded-lg hover:bg-teal-300 transition-colors"
           >
             <PlusCircle className="w-3.5 h-3.5" />
-            New Visit
+            زيارة جديدة
           </button>
         </div>
       </div>

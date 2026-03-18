@@ -37,11 +37,11 @@ export default function VisitHistory({ visits, loading, error }) {
       <table className="w-full text-sm border-collapse">
         <thead>
           <tr className="border-b border-gray-200">
-            <th className="text-left py-2.5 px-3 font-semibold text-gray-700 w-32">Date</th>
-            <th className="text-left py-2.5 px-3 font-semibold text-gray-700">Clinic</th>
-            <th className="text-left py-2.5 px-3 font-semibold text-gray-700">Doctor</th>
-            <th className="text-left py-2.5 px-3 font-semibold text-gray-700">Diagnosis</th>
-            <th className="text-left py-2.5 px-3 font-semibold text-gray-700 w-28">Status</th>
+            <th className="text-left py-2.5 px-3 font-semibold text-gray-700 w-32">التاريخ</th>
+            <th className="text-left py-2.5 px-3 font-semibold text-gray-700">العيادة</th>
+            <th className="text-left py-2.5 px-3 font-semibold text-gray-700">الطبيب</th>
+            <th className="text-left py-2.5 px-3 font-semibold text-gray-700">التشخيص</th>
+            <th className="text-left py-2.5 px-3 font-semibold text-gray-700 w-28">الحالة</th>
           </tr>
         </thead>
         <tbody>
@@ -49,7 +49,7 @@ export default function VisitHistory({ visits, loading, error }) {
             <tr>
               <td colSpan={5} className="py-12 text-center text-gray-400">
                 <Calendar className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                No visit records found
+                لا توجد سجلات زيارات
               </td>
             </tr>
           ) : (

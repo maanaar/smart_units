@@ -8,14 +8,15 @@ import { MOCK_PATIENT, MOCK_VISITS, MOCK_PATIENTS_LIST } from '../mockData';
 import PatientHeader from '../components/PatientHeader';
 import VisitHistory from '../components/VisitHistory';
 import DiagnosisPanel from '../components/DiagnosisPanel';
+import ListView from '../components/ListView';
 
 const TABS = [
-  { id: 'visits',      label: 'Visits History' },
-  { id: 'diagnoses',   label: 'Diagnoses' },
-  { id: 'medications', label: 'Medications' },
-  { id: 'lab',         label: 'Lab Results' },
-  { id: 'radiology',   label: 'Radiology' },
-  { id: 'attachments', label: 'Attachments' },
+  { id: 'visits',      label: 'سجل الزيارات' },
+  { id: 'diagnoses',   label: 'التشخيصات'    },
+  { id: 'medications', label: 'الأدوية'       },
+  { id: 'lab',         label: 'نتائج المختبر' },
+  { id: 'radiology',   label: 'الأشعة'        },
+  { id: 'attachments', label: 'المرفقات'      },
 ];
 
 function ComingSoon({ label }) {
@@ -24,7 +25,7 @@ function ComingSoon({ label }) {
       <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mb-3">
         <span className="text-lg">📋</span>
       </div>
-      {label} — coming soon
+      {label} — قريباً
     </div>
   );
 }
@@ -59,7 +60,7 @@ function PatientSearchBar({ onSelect }) {
           onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
           onFocus={() => setOpen(true)}
           onBlur={() => setTimeout(() => setOpen(false), 150)}
-          placeholder="Search patient…"
+          placeholder="ابحث عن مريض..."
           className="w-full pl-9 pr-8 py-1.5 text-sm rounded-md border border-gray-300 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
         />
         {query && (
@@ -97,6 +98,13 @@ function PatientSearchBar({ onSelect }) {
 
 // ── Patient List ────────────────────────────────────────────────────────────
 
+const PATIENT_LIST_COLUMNS = [
+  { key: 'name',         title: 'الاسم'               },
+  { key: 'english_name', title: 'الاسم بالإنجليزية'   },
+  { key: 'mrn',          title: 'رقم الملف'           },
+  { key: 'mobile',       title: 'الجوال'              },
+];
+
 function PatientList({ onSelect }) {
   const [query, setQuery] = useState('');
   const queuePatients = useAgialStore((s) => s.queuePatients);
@@ -123,7 +131,7 @@ function PatientList({ onSelect }) {
           <div className="flex items-center gap-3">
             <div className="w-1 h-7 rounded-full bg-emerald-700/80" />
             <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-emerald-900 to-teal-700 bg-clip-text text-transparent">
-              Patients
+              المرضى
             </h1>
             <span className="text-xs font-semibold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
               {filtered.length}
@@ -134,7 +142,7 @@ function PatientList({ onSelect }) {
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by name, MRN, mobile…"
+              placeholder="ابحث بالاسم، رقم الملف، الجوال..."
               className="w-full pl-9 pr-3 py-1.5 text-sm rounded-md border border-gray-300 bg-white focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 transition-all"
             />
             {query && (
@@ -146,12 +154,21 @@ function PatientList({ onSelect }) {
         </div>
       </div>
 
-      {/* List */}
-      <div className="mx-auto px-6 py-5 space-y-2">
+      {/* Table view */}
+      <div className="mx-auto px-6 py-5">
+        <ListView
+          columns={PATIENT_LIST_COLUMNS}
+          data={filtered}
+          onRowClick={(p) => onSelect(p.id)}
+        />
+      </div>
+
+      {/* Queue cards */}
+      <div className="mx-auto px-6 pb-5 space-y-2">
         {/* Today's reception queue */}
         {filteredQueue.length > 0 && (
           <>
-            <p className="text-xs font-bold text-teal-700 uppercase tracking-wider mb-1">Today's Registrations</p>
+            <p className="text-xs font-bold text-teal-700 uppercase tracking-wider mb-1">تسجيلات اليوم</p>
             {filteredQueue.map((entry) => (
               <button
                 key={entry.qid}
@@ -169,7 +186,7 @@ function PatientList({ onSelect }) {
                   <p className="text-xs font-mono font-medium text-gray-600">{entry.patient.mrn || "—"}</p>
                   <p className="text-xs text-gray-400 mt-0.5">{entry.patient.mobile}</p>
                 </div>
-                <span className="text-xs font-semibold bg-teal-200 text-teal-800 px-2 py-0.5 rounded-full">New</span>
+                <span className="text-xs font-semibold bg-teal-200 text-teal-800 px-2 py-0.5 rounded-full">جديد</span>
                 <svg className="w-4 h-4 text-gray-300 group-hover:text-teal-500 transition-colors flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                 </svg>
@@ -180,30 +197,8 @@ function PatientList({ onSelect }) {
         )}
 
         {filtered.length === 0 && filteredQueue.length === 0 && (
-          <div className="text-center py-16 text-gray-400 text-sm">No patients found</div>
+          <div className="text-center py-16 text-gray-400 text-sm">لا يوجد مرضى</div>
         )}
-        {filtered.map((p) => (
-          <button
-            key={p.id}
-            onClick={() => onSelect(p.id)}
-            className="w-full flex items-center gap-4 bg-white border border-gray-200 rounded-xl px-5 py-4 hover:border-teal-400 hover:shadow-sm transition-all text-left group"
-          >
-            <div className="w-10 h-10 rounded-full bg-teal-50 border border-teal-200 flex items-center justify-center flex-shrink-0">
-              <User className="w-5 h-5 text-teal-600" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-gray-900 group-hover:text-teal-700 transition-colors">{p.name}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{p.english_name}</p>
-            </div>
-            <div className="text-right flex-shrink-0">
-              <p className="text-xs font-mono font-medium text-gray-600">{p.mrn}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{p.mobile}</p>
-            </div>
-            <svg className="w-4 h-4 text-gray-300 group-hover:text-teal-500 transition-colors flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        ))}
       </div>
     </div>
   );
@@ -234,7 +229,7 @@ function QueuePatientDetail({ entry, onBack }) {
           <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-emerald-900 to-teal-700 bg-clip-text text-transparent">
             Patient Profile
           </h1>
-          <span className="text-xs font-semibold bg-teal-100 text-teal-700 px-2 py-0.5 rounded-full ml-2">New Registration</span>
+          <span className="text-xs font-semibold bg-teal-100 text-teal-700 px-2 py-0.5 rounded-full ml-2">تسجيل جديد</span>
         </div>
       </div>
 
@@ -252,24 +247,24 @@ function QueuePatientDetail({ entry, onBack }) {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-5 border-t border-gray-100 pt-5">
-            <Row label="National ID"   value={patient.nationalId} />
-            <Row label="Date of Birth" value={patient.dob} />
-            <Row label="Gender"        value={patient.gender} />
-            <Row label="Insurance"     value={patient.insurance} />
-            <Row label="Address"       value={patient.address} />
-            <Row label="Mobile"        value={patient.mobile} />
+            <Row label="الهوية الوطنية"  value={patient.nationalId} />
+            <Row label="تاريخ الميلاد"  value={patient.dob} />
+            <Row label="الجنس"          value={patient.gender} />
+            <Row label="التأمين"        value={patient.insurance} />
+            <Row label="العنوان"        value={patient.address} />
+            <Row label="الجوال"         value={patient.mobile} />
           </div>
         </div>
 
         {/* Visit card */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Visit Details</h3>
+          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">تفاصيل الزيارة</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
-            <Row label="Visit Date"  value={visit?.visitDate} />
-            <Row label="Clinic"      value={visit?.clinic} />
-            <Row label="Doctor"      value={visit?.doctor} />
-            <Row label="Visit Type"  value={visit?.visitType} />
-            <Row label="Payment"     value={visit?.payment} />
+            <Row label="تاريخ الزيارة"  value={visit?.visitDate} />
+            <Row label="العيادة"         value={visit?.clinic} />
+            <Row label="الطبيب"          value={visit?.doctor} />
+            <Row label="نوع الزيارة"     value={visit?.visitType} />
+            <Row label="الدفع"           value={visit?.payment} />
           </div>
         </div>
       </div>
@@ -333,7 +328,7 @@ export default function PatientInfo() {
             </button>
             <div className="w-1 h-7 rounded-full bg-emerald-700/80" />
             <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-emerald-900 to-teal-700 bg-clip-text text-transparent">
-              Patient Profile
+              ملف المريض
             </h1>
           </div>
           <PatientSearchBar onSelect={(pid) => navigate(`/agial/patients/${pid}`)} />

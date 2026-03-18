@@ -2,8 +2,11 @@ import { CalendarDays, Plus } from 'lucide-react'
 
 export default function DashboardHeader({ title, onAdd, addLabel = 'إضافة موعد جديد', dateValue, onDateChange }) {
   return (
-    <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100">
-      <h1 className="text-xl font-bold text-gray-800">{title}</h1>
+    <div className="flex-shrink-0 flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100 shadow-sm" dir="rtl">
+      <div className="flex items-center gap-3">
+        <div className="w-1.5 h-8 rounded-full bg-gradient-to-b from-emerald-500 to-teal-600" />
+        <h1 className="text-xl font-bold bg-gradient-to-l from-emerald-800 to-teal-600 bg-clip-text text-transparent">{title}</h1>
+      </div>
 
       <div className="flex items-center gap-3">
         {/* Date filter */}
@@ -13,14 +16,14 @@ export default function DashboardHeader({ title, onAdd, addLabel = 'إضافة �
             type="date"
             value={dateValue}
             onChange={e => onDateChange?.(e.target.value)}
-            className="pr-9 pl-4 py-2 text-sm border border-gray-200 rounded-lg bg-white outline-none focus:ring-2 focus:ring-emerald-300 text-gray-600"
+            className="pr-9 pl-4 py-2 text-sm border border-gray-200 rounded-xl bg-white outline-none focus:ring-2 focus:ring-emerald-300 text-gray-600 shadow-sm"
           />
         </div>
 
         {/* Add button */}
         <button
           onClick={onAdd}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-l from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 rounded-xl transition-all shadow-sm"
         >
           <Plus className="w-4 h-4" />
           {addLabel}

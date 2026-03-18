@@ -176,48 +176,67 @@ export default function CalendarPage() {
     <div className="flex flex-col h-full bg-gray-50">
 
       {/* ── Header ── */}
-      <div className="bg-white border-b border-gray-200 flex-shrink-0">
-        <div className="px-6 py-3 flex items-center justify-between gap-4 flex-wrap">
+      <div className="bg-white border-b border-gray-200 flex-shrink-0 shadow-sm">
+        <div className="px-6 py-3 flex items-center justify-between gap-4 flex-wrap" dir="rtl">
           <div className="flex items-center gap-3">
-            <div className="w-1 h-7 rounded-full bg-emerald-700" />
-            <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-900 to-teal-700 bg-clip-text text-transparent">
+            <div className="w-1.5 h-7 rounded-full bg-gradient-to-b from-emerald-500 to-teal-600" />
+            <h1 className="text-xl font-bold bg-gradient-to-l from-emerald-800 to-teal-600 bg-clip-text text-transparent">
               تقويم المواعيد
             </h1>
           </div>
 
-          <div className="flex items-center gap-2">
-            <button onClick={() => setDate(d => addDays(d, -1))} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-600">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          {/* Date navigator */}
+          <div className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-xl px-2 py-1">
+            {/* RTL: right arrow = go back (previous day) */}
+            <button
+              onClick={() => setDate(d => addDays(d, -1))}
+              className="p-1.5 rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-teal-600 transition-all"
+              title="اليوم السابق"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
             </button>
-            <button onClick={() => setDate(new Date())} className="px-3 py-1 text-sm font-medium rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-700">
+
+            <button
+              onClick={() => setDate(new Date())}
+              className="px-3 py-1 text-sm font-semibold rounded-lg hover:bg-white hover:shadow-sm text-gray-700 hover:text-teal-700 transition-all"
+            >
               اليوم
             </button>
-            <button onClick={() => setDate(d => addDays(d, 1))} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-600">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+
+            {/* left arrow = go forward (next day) */}
+            <button
+              onClick={() => setDate(d => addDays(d, 1))}
+              className="p-1.5 rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-teal-600 transition-all"
+              title="اليوم التالي"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <span className="text-sm font-semibold text-gray-800 ml-1">{fmtDate(date)}</span>
+
+            <span className="text-sm font-semibold text-gray-800 px-2 border-r border-gray-200 mr-1">
+              {fmtDate(date)}
+            </span>
           </div>
 
-          <span className="text-sm text-gray-500">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block mr-1.5" />
+          <span className="flex items-center gap-2 text-sm text-gray-500">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
             {events.length} موعد · {doctors.length} طبيب
           </span>
         </div>
       </div>
 
       {/* status legend */}
-      <div className="px-6 py-2 bg-white border-b border-gray-100 flex-shrink-0 flex flex-wrap gap-x-5 gap-y-1">
+      <div className="px-6 py-2 bg-white border-b border-gray-100 flex-shrink-0 flex flex-wrap gap-x-5 gap-y-1" dir="rtl">
         {Object.entries(STATUS).map(([key, s]) => (
           <span key={key} className="flex items-center gap-1.5 text-xs text-gray-500">
             <span className={`w-2 h-2 rounded-full ${s.dot}`} />
             {s.label}
           </span>
         ))}
-        <span className="ml-auto text-xs text-teal-600 font-medium">
+        <span className="mr-auto text-xs text-teal-600 font-medium">
           اضغط على خانة فارغة لحجز موعد · اضغط على موعد لعرضه/تعديله
         </span>
       </div>

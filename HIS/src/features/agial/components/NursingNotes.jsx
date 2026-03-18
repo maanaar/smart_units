@@ -1,22 +1,19 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 export default function NursingNotes() {
-     const [nursingNotes, setNursingNotes] = useState("");
+  const [notes, setNotes] = useState('');
+
   return (
-      <div className="">
-          <div className="bg-gradient-to-r  from-[#13534c]/80 to-[#1f7e74]/80 px-6 py-4">
-            <h2 className="text-xl font-semibold text-white">Nursing Notes</h2>
-           
-          </div>
-          <div className="px-4 py-3">
-            <textarea
-              value={nursingNotes}
-              onChange={(e) => setNursingNotes(e.target.value)}
-              rows={4}
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-slate-50 transition"
-              placeholder="Enter nursing notes here..."
-            />
-          </div>
-                  </div>
-  )
+    <div>
+      <div className="p-5" dir="rtl">
+        <textarea
+          value={notes}
+          onChange={e => setNotes(e.target.value)}
+          rows={5}
+          placeholder="أدخل ملاحظات التمريض هنا..."
+          className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm text-gray-800 bg-white outline-none focus:ring-2 focus:ring-teal-300 focus:border-teal-400 transition resize-none"
+        />
+      </div>
+    </div>
+  );
 }

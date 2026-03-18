@@ -4,47 +4,43 @@ import {
   HeartPulse,
   Users,
   LayoutDashboard,
-  CalendarDays,
   Stethoscope,
   ChevronDown,
   LogOut,
   ClipboardPlus,
-  ClipboardList,
+  FlaskConical,
+  Scan,
 } from 'lucide-react';
 import useAuthStore from '../../features/auth/store';
 
 const NAV = [
   {
     icon: LayoutDashboard,
-    label: 'Dashboard',
+    label: 'لوحة التحكم',
     key: 'dashboard',
     children: [
-      { to: '/agial/centcom', label: 'CentCom Dashboard' },
-      { to: '/agial/nationalcentcom', label: 'National CentCom Dashboard' },
-      { to: '/agial/unitcentcom', label: 'Unit CentCom Dashboard' },
+      // { to: '/agial/centcom',             label: 'لوحة التحكم المركزية'    },
+      // { to: '/agial/nationalcentcom',     label: 'لوحة التحكم الوطنية'     },
+      // { to: '/agial/unitcentcom',         label: 'لوحة الوحدة'              },
+      { to: '/agial/patientdashboard',    label: 'لوحة المرضى'              },
+      { to: '/agial/operationsdashboard', label: 'لوحة العمليات الطبية'     },
+      { to: '/agial/pharmacydashboard',   label: 'لوحة الصيدلية والأدوية'   },
     ],
   },
   {
     icon: Users,
-    label: 'Reception',
+    label: 'الاستقبال',
     key: 'reception',
     children: [
-      // { to: '/agial/ReceptionPage', label: 'Reception Form' },
-      { to: '/agial/calendar', label: 'Calendar' },
-      { to: '/agial/appointments', label: 'Appointments List' },
+      { to: '/agial/calendar',     label: 'التقويم'         },
+      { to: '/agial/appointments', label: 'قائمة المواعيد'  },
     ],
   },
-  { to: '/agial/patients', icon: Users, label: 'المرضى' },
-  { to: '/agial/nursing', icon: ClipboardPlus, label: 'التمريض' },
-  { to: '/agial/doctorscreen', icon: Stethoscope, label: 'الطبيب' },
-  // { to: '/agial/calendar',  icon: CalendarDays,     label: 'Calendar'  },
-  // { to: '/agial/ReceptionPage',  icon: Users,       label: 'Reception' },
-  // { to: '/agial/patients',  icon: Users,            label: 'Patients'  },
-  // { to: '/agial/nursing',   icon: ClipboardPlus,     label: 'Nursing'   },
-  // { to: '/agial/doctorscreen', icon: Stethoscope, label: 'Doctor' },
-  { to: '/agial/labTests',   icon: ClipboardPlus,     label: 'Lab Requests'   },
-  { to:'/agial/radTests',  icon: Stethoscope,  label: 'Rad Requests'     },
-// { to: '/agial/reports',   icon: FileBarChart,     label: 'Reports'   },
+  { to: '/agial/patients',     icon: Users,         label: 'المرضى'          },
+  { to: '/agial/nursing',      icon: ClipboardPlus, label: 'التمريض'         },
+  { to: '/agial/doctorscreen', icon: Stethoscope,   label: 'الطبيب'          },
+  { to: '/agial/labTests',     icon: FlaskConical,  label: 'طلبات التحاليل'  },
+  { to: '/agial/radTests',     icon: Scan,          label: 'طلبات الأشعة'    },
 ];
 
 export default function Sidebar() {
@@ -52,7 +48,7 @@ export default function Sidebar() {
   const location = useLocation();
   const { user, unit, logout } = useAuthStore();
 
-  const [openGroups, setOpenGroups] = useState({ dashboard: true, reception: true });
+  const [openGroups, setOpenGroups] = useState({ dashboard: true, reception: false });
 
   const toggleGroup = (key) =>
     setOpenGroups((prev) => ({ ...prev, [key]: !prev[key] }));

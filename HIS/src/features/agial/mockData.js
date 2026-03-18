@@ -90,8 +90,11 @@ export const MOCK_VISITS = [
 ];
 
 export const MOCK_PATIENTS_LIST = [
-  { id: 1,  name: 'فاطمة أحمد محمود',  english_name: 'Fatima Ahmed Mahmoud',  mrn: 'F001234', mobile: '01012345678' },
-  { id: 2,  name: 'محمد علي سالم',      english_name: 'Mohamed Ali Salem',      mrn: 'M001235', mobile: '01098765432' },
-  { id: 3,  name: 'نورهان يوسف',        english_name: 'Nourhan Youssef',        mrn: 'F001236', mobile: '01123456789' },
-  { id: 4,  name: 'أحمد حسن إبراهيم',  english_name: 'Ahmed Hassan Ibrahim',   mrn: 'M001237', mobile: '01234567890' },
+  { id: 1, name: 'فاطمة أحمد محمود',   english_name: 'Fatima Ahmed Mahmoud',   mrn: 'F001234', mobile: '01012345678', age: '٣٢', gender: 'أنثى', status: ['حرج'],   diagnosis: ['أمراض القلب'],              ward: 'العناية',  date: '١٦/٠٣/٢٠٢٦' },
+  { id: 2, name: 'محمد علي سالم',       english_name: 'Mohamed Ali Salem',       mrn: 'M001235', mobile: '01098765432', age: '٢٨', gender: 'ذكر',   status: ['خارج'],  diagnosis: ['كسر في الساق'],             ward: 'العظام',   date: '١٤/٠٣/٢٠٢٦' },
+  { id: 3, name: 'نورهان يوسف',         english_name: 'Nourhan Youssef',         mrn: 'F001236', mobile: '01123456789', age: '٤٠', gender: 'أنثى', status: ['مقبول'], diagnosis: ['التهاب رئوي'],              ward: 'الصدرية',  date: '١٧/٠٣/٢٠٢٦' },
+  { id: 4, name: 'أحمد حسن إبراهيم',   english_name: 'Ahmed Hassan Ibrahim',    mrn: 'M001237', mobile: '01234567890', age: '٤٥', gender: 'ذكر',   status: ['مقبول'], diagnosis: ['ضغط الدم', 'سكري'],        ward: 'الباطنة',  date: '١٥/٠٣/٢٠٢٦' },
+  { id: 5, name: 'خالد ناصر العتيبي',  english_name: 'Khaled Nasser Al-Otaibi', mrn: 'M001238', mobile: '01112345678', age: '٦٠', gender: 'ذكر',   status: ['مقبول'], diagnosis: ['فشل كلوي', 'سكري'],        ward: 'الكلى',    date: '١٢/٠٣/٢٠٢٦' },
+  { id: 6, name: 'نورة يوسف القحطاني', english_name: 'Noura Youssef Al-Qahtani',mrn: 'F001239', mobile: '01156789012', age: '٤٠', gender: 'أنثى', status: ['خارج'],  diagnosis: ['عملية زائدة دودية'],       ward: 'الجراحة',  date: '١٣/٠٣/٢٠٢٦' },
+  { id: 7, name: 'عبدالله مصطفى حسن',  english_name: 'Abdullah Mustafa Hassan', mrn: 'M001240', mobile: '01187654321', age: '١٨', gender: 'ذكر',   status: ['حرج'],   diagnosis: ['حادث مروري', 'نزيف داخلي'], ward: 'العناية', date: '١٨/٠٣/٢٠٢٦' },
 ];

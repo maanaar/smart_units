@@ -7,7 +7,7 @@ import { FileText, AlertTriangle, StickyNote } from 'lucide-react';
 function HtmlFrame({ html, minHeight = 160 }) {
   if (!html || html.trim() === '') {
     return (
-      <p className="text-sm text-gray-400 italic py-4 text-center">No content</p>
+      <p className="text-sm text-gray-400 italic py-4 text-center">لا يوجد محتوى</p>
     );
   }
 
@@ -50,7 +50,7 @@ export default function DiagnosisPanel({ diagnosis, drugAllergies, generalNotes 
     <div className="space-y-4">
       <Section
         icon={<FileText className="w-4 h-4" />}
-        title="Diagnosis"
+        title="التشخيص"
         accentClass="bg-teal-50 border-teal-100 text-teal-700"
       >
         <HtmlFrame html={diagnosis} />
@@ -58,7 +58,7 @@ export default function DiagnosisPanel({ diagnosis, drugAllergies, generalNotes 
 
       <Section
         icon={<AlertTriangle className="w-4 h-4" />}
-        title="Drug Allergies"
+        title="الحساسية الدوائية"
         accentClass="bg-red-50 border-red-100 text-red-600"
       >
         <HtmlFrame html={drugAllergies} />
@@ -66,7 +66,7 @@ export default function DiagnosisPanel({ diagnosis, drugAllergies, generalNotes 
 
       <Section
         icon={<StickyNote className="w-4 h-4" />}
-        title="General Notes"
+        title="ملاحظات عامة"
         accentClass="bg-amber-50 border-amber-100 text-amber-700"
       >
         <HtmlFrame html={generalNotes} />
