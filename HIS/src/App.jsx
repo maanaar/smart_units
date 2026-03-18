@@ -16,6 +16,7 @@ import LabTests from './features/agial/pages/LabTests';
 import LabTestsAR from './features/agial/pages/LabTests';
 import RadTestsAR from './features/agial/pages/RadTests';
 import PatientsDashboard from './features/dashboards/pages/PatientsDashboard';
+import OperationInternal from './features/agial/pages/OperationInternal';
 
 function Protected() {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
@@ -55,7 +56,8 @@ export default function App() {
           <Route path="/agial/nationalcentcom" element={<CentComPage />} />
           <Route path="/agial/labTests" element={<LabTestsAR />} />
           <Route path="/agial/radTests" element={<RadTestsAR />} />
-          <Route path="/agial/patientdashboard" element={<PatientsDashboard/>} />
+          <Route path="/agial/patientdashboard" element={<PatientsDashboard />} />
+           <Route path="/agial/operationInternal" element={<OperationInternal/>} />
         </Route>
 
         <Route path="*" element={<Navigate to="/agial/centcom" replace />} />
