@@ -11,7 +11,6 @@ import CentComPage from './features/centcom/pages/CentComPage';
 import Sidebar from './components/layout/Sidebar';
 import useAuthStore from './features/auth/store';
 import NursingPage from './features/agial/pages/NursingPage';
-import ReceptionScreenAr from './features/agial/pages/ReceptionPageAR';
 import LabTestsAR from './features/agial/pages/LabTests';
 import RadTestsAR from './features/agial/pages/RadTests';
 import PatientsDashboard from './features/dashboards/pages/PatientsDashboard';
