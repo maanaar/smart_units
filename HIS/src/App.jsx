@@ -57,7 +57,7 @@ export default function App() {
           <Route path="/agial/operationinternal"   element={<OperationInternal />} />
         </Route>
 
-        <Route path="*" element={<Navigate to="/agial/centcom" replace />} />
+        <Route path="*" element={<Navigate to="/agial/operationinternal" replace />} />
       </Routes>
     </BrowserRouter>
   );
