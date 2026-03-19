@@ -49,7 +49,7 @@ export default function Sidebar() {
   const location = useLocation();
   const { user, unit, logout } = useAuthStore();
 
-  const [openGroups, setOpenGroups] = useState({ dashboard: true, reception: false });
+  const [openGroups, setOpenGroups] = useState({ dashboard: true, reception: true });
 
   const toggleGroup = (key) =>
     setOpenGroups((prev) => ({ ...prev, [key]: !prev[key] }));
