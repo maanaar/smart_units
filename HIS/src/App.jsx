@@ -12,12 +12,12 @@ import Sidebar from './components/layout/Sidebar';
 import useAuthStore from './features/auth/store';
 import NursingPage from './features/agial/pages/NursingPage';
 import ReceptionScreenAr from './features/agial/pages/ReceptionPageAR';
-import LabTests from './features/agial/pages/LabTests';
 import LabTestsAR from './features/agial/pages/LabTests';
 import RadTestsAR from './features/agial/pages/RadTests';
 import PatientsDashboard from './features/dashboards/pages/PatientsDashboard';
 import OperationsDashboard from './features/dashboards/pages/OperationsDashboard';
 import PharmacyDashboard from './features/dashboards/pages/PharmacyDashboard';
+import OperationInternal from './features/agial/pages/OperationInternal';
 
 function Protected() {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
@@ -39,27 +39,23 @@ export default function App() {
         <Route path="/login" element={<Login />} />
 
         <Route element={<Protected />}>
-          <Route index element={<Navigate to="/centcom" replace />} />
-          <Route path="/agial/patients"         element={<PatientInfo />} />
-          <Route path="/agial/patients/:id"     element={<PatientInfo />} />
-          <Route path="/agial/calendar"         element={<CalendarPage />} />
-          <Route path="/agial/appointments"     element={<AppointmentsListPage />} />
-          <Route path="/agial/nursing"          element={<NursingPage />} />
-          <Route path="/agial/ReceptionPage"    element={<ReceptionPage />} />
-          <Route path="/agial/AR/ReceptionPage" element={<ReceptionScreenAr />} />
-          <Route path="/agial/doctorscreen"     element={<DoctorScreen />} />
-          <Route path="/agial/unitcentcom"      element={<AgialDashboard />} />
-          <Route path="/agial/centcom"          element={<UnitDashboard />} />
-          <Route path="/agial/nationalcentcom"  element={<CentComPage />} />
-          <Route path="/agial/doctorscreen"  element={<DoctorScreen />} />
-          {/* <Route path="/agial/unitcentcom"     element={<AgialDashboard />} /> */}
-          {/* <Route path="/agial/centcom"   element={<UnitDashboard />} /> */}
-          <Route path="/agial/nationalcentcom" element={<CentComPage />} />
-          <Route path="/agial/labTests" element={<LabTestsAR />} />
-          <Route path="/agial/radTests" element={<RadTestsAR />} />
-          <Route path="/agial/patientdashboard"    element={<PatientsDashboard/>}    />
-          <Route path="/agial/operationsdashboard" element={<OperationsDashboard/>} />
-          <Route path="/agial/pharmacydashboard"   element={<PharmacyDashboard/>}   />
+          <Route index element={<Navigate to="/agial/centcom" replace />} />
+          <Route path="/agial/patients"            element={<PatientInfo />} />
+          <Route path="/agial/patients/:id"        element={<PatientInfo />} />
+          <Route path="/agial/calendar"            element={<CalendarPage />} />
+          <Route path="/agial/appointments"        element={<AppointmentsListPage />} />
+          <Route path="/agial/nursing"             element={<NursingPage />} />
+          <Route path="/agial/ReceptionPage"       element={<ReceptionPage />} />
+          <Route path="/agial/doctorscreen"        element={<DoctorScreen />} />
+          <Route path="/agial/unitcentcom"         element={<AgialDashboard />} />
+          <Route path="/agial/centcom"             element={<UnitDashboard />} />
+          <Route path="/agial/nationalcentcom"     element={<CentComPage />} />
+          <Route path="/agial/labTests"            element={<LabTestsAR />} />
+          <Route path="/agial/radTests"            element={<RadTestsAR />} />
+          <Route path="/agial/patientdashboard"    element={<PatientsDashboard />} />
+          <Route path="/agial/operationsdashboard" element={<OperationsDashboard />} />
+          <Route path="/agial/pharmacydashboard"   element={<PharmacyDashboard />} />
+          <Route path="/agial/operationinternal"   element={<OperationInternal />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/agial/centcom" replace />} />

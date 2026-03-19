@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function DashboardBoxes({header, content=[{}], text}) {
   return (
-      <div className='bg-white shadow-md w-[50%] p-4 rounded-lg my-4 font-bold'>
+      <div className='bg-white shadow-sm w-full p-5 rounded-2xl border border-gray-100 font-bold'>
           {header && (
                <h3>
               {header}

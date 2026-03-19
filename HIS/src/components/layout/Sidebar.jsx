@@ -25,6 +25,7 @@ const NAV = [
       { to: '/agial/patientdashboard',    label: 'لوحة المرضى'              },
       { to: '/agial/operationsdashboard', label: 'لوحة العمليات الطبية'     },
       { to: '/agial/pharmacydashboard',   label: 'لوحة الصيدلية والأدوية'   },
+      { to: '/agial/operationinternal', label: 'مؤشرات العيادات الخارجية' },
     ],
   },
   {

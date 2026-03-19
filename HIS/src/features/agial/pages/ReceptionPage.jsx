@@ -218,7 +218,7 @@ export default function ReceptionScreen() {
   };
 
   return (
-    <div className="h-full overflow-y-auto bg-gradient-to-br from-slate-100 to-blue-50 flex items-start justify-center py-5 px-4 font-sans">
+    <div dir="rtl" className="h-full overflow-y-auto bg-gradient-to-br from-slate-100 to-blue-50 flex items-start justify-center py-5 px-4 font-sans">
       <div className="w-full">
         {/* Header */}
         <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-teal-900/80 to-slate-900 rounded-2xl">
@@ -270,7 +270,7 @@ export default function ReceptionScreen() {
             {/* Patient Search & Registration */}
             <div className="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
               <div className="bg-gradient-to-r from-[#13534c]/80 to-[#1f7e74]/80 px-6 py-4">
-                <h2 className="text-white font-bold text-lg tracking-tight flex items-center justify-end gap-2">
+                <h2 className="text-white font-bold text-lg tracking-tight flex items-center gap-2">
                   بحث وتسجيل المريض
                 </h2>
               </div>
@@ -290,7 +290,7 @@ export default function ReceptionScreen() {
                   <div>
                     <label className="block text-xs font-semibold text-slate-500 mb-1 text-right">الجنسية <span className="text-red-400">*</span></label>
                     <SelectWrap>
-                      <select value={nationality} onChange={(e) => setNationality(e.target.value)} className={`${inputCls} pr-3 pl-9`} required>
+                      <select value={nationality} onChange={(e) => setNationality(e.target.value)} className={`${inputCls} pe-3 ps-9`} required>
                         <option value="">— اختر الجنسية —</option>
                         {nationalities.map((n) => <option key={n}>{n}</option>)}
                       </select>
@@ -364,7 +364,7 @@ export default function ReceptionScreen() {
                   <div>
                     <label className="block text-xs font-semibold text-slate-500 mb-1 text-right">النوع</label>
                     <SelectWrap>
-                      <select name="gender" value={patient.gender} onChange={handlePatient} className={`${inputCls} pr-3 pl-9`}>
+                      <select name="gender" value={patient.gender} onChange={handlePatient} className={`${inputCls} pe-3 ps-9`}>
                         <option value="">اختر</option>
                         {genderOptions.map((g) => <option key={g}>{g}</option>)}
                       </select>
@@ -375,7 +375,7 @@ export default function ReceptionScreen() {
                 <div>
                   <label className="block text-xs font-semibold text-slate-500 mb-1 text-right">التأمين</label>
                   <SelectWrap>
-                    <select name="insurance" value={patient.insurance} onChange={handlePatient} className={`${inputCls} pr-3 pl-9`}>
+                    <select name="insurance" value={patient.insurance} onChange={handlePatient} className={`${inputCls} pe-3 ps-9`}>
                       <option value="">— اختر شركة التأمين —</option>
                       {insuranceOptions.map((i) => <option key={i}>{i}</option>)}
                     </select>
@@ -389,7 +389,7 @@ export default function ReceptionScreen() {
             {/* Visit Registration */}
             <div className="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden flex flex-col">
               <div className="bg-gradient-to-r from-[#1f7e74]/80 to-[#13534c]/80 px-6 py-4">
-                <h2 className="text-white font-bold text-lg tracking-tight flex items-center justify-end gap-2">
+                <h2 className="text-white font-bold text-lg tracking-tight flex items-center gap-2">
                   تسجيل الزيارة
                 </h2>
               </div>
@@ -402,7 +402,7 @@ export default function ReceptionScreen() {
                 <div>
                   <label className="block text-xs font-semibold text-slate-500 mb-1 text-right">العيادة</label>
                   <SelectWrap>
-                    <select name="clinic" value={visit.clinic} onChange={handleVisit} className={`${inputCls} pr-3 pl-9`} required>
+                    <select name="clinic" value={visit.clinic} onChange={handleVisit} className={`${inputCls} pe-3 ps-9`} required>
                       <option value="">— اختر العيادة —</option>
                       {clinics.map((c) => <option key={c}>{c}</option>)}
                     </select>
@@ -412,7 +412,7 @@ export default function ReceptionScreen() {
                 <div>
                   <label className="block text-xs font-semibold text-slate-500 mb-1 text-right">الطبيب</label>
                   <SelectWrap>
-                    <select name="doctor" value={visit.doctor} onChange={handleVisit} className={`${inputCls} pr-3 pl-9`} required>
+                    <select name="doctor" value={visit.doctor} onChange={handleVisit} className={`${inputCls} pe-3 ps-9`} required>
                       <option value="">— اختر الطبيب —</option>
                       {MOCK_DOCTORS.map((d) => <option key={d.id} value={d.name}>{d.name}</option>)}
                     </select>
@@ -422,7 +422,7 @@ export default function ReceptionScreen() {
                 <div>
                   <label className="block text-xs font-semibold text-slate-500 mb-1 text-right">التخصص</label>
                   <SelectWrap>
-                    <select name="specialty" value={visit.specialty} onChange={handleVisit} className={`${inputCls} pr-3 pl-9`}>
+                    <select name="specialty" value={visit.specialty} onChange={handleVisit} className={`${inputCls} pe-3 ps-9`}>
                       <option value="">— اختر التخصص —</option>
                       {specialties.map((s) => <option key={s}>{s}</option>)}
                     </select>
@@ -468,23 +468,21 @@ export default function ReceptionScreen() {
                   </div>
 
                   <div className="p-4 space-y-4">
-                    {/* Payment type toggle buttons */}
-                    <div className="flex gap-2 flex-wrap">
-                      {paymentTypes.map((p) => (
-                        <button
-                          type="button"
-                          key={p}
-                          onClick={() => setVisit({ ...visit, payment: p })}
-                          className={`px-4 py-2 rounded-lg text-sm font-semibold border transition-all ${
-                            visit.payment === p
-                              ? "bg-teal-600 text-white border-teal-600 shadow"
-                              : "bg-white text-slate-600 border-slate-300 hover:border-teal-400"
-                          }`}
-                        >
-                          {p}
-                        </button>
-                      ))}
-                    </div>
+                    {/* Payment type dropdown */}
+                    <SelectWrap>
+                      <select
+                        name="payment"
+                        value={visit.payment}
+                        onChange={handleVisit}
+                        className={`${inputCls} pe-3 ps-9`}
+                        required
+                      >
+                        <option value="">— اختر طريقة الدفع —</option>
+                        {paymentTypes.map((p) => (
+                          <option key={p}>{p}</option>
+                        ))}
+                      </select>
+                    </SelectWrap>
 
                     {/* ── تأمين صحي fields ── */}
                     {visit.payment === "تأمين صحي" && (
@@ -532,7 +530,7 @@ export default function ReceptionScreen() {
                         <div>
                           <label className="block text-xs font-semibold text-slate-500 mb-1 text-right">اختر جهة التعاقد <span className="text-red-400">*</span></label>
                           <SelectWrap>
-                            <select name="contractEntity" value={financial.contractEntity} onChange={handleFinancial} className={`${inputCls} pr-3 pl-9`} required>
+                            <select name="contractEntity" value={financial.contractEntity} onChange={handleFinancial} className={`${inputCls} pe-3 ps-9`} required>
                               <option value="">-- اختر الجهة --</option>
                               {contractEntities.map((c) => <option key={c}>{c}</option>)}
                             </select>
@@ -627,7 +625,7 @@ function Checkbox({ label, checked, onChange, color = "blue" }) {
 }
 
 const dropdownArrow = (
-  <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2">
+  <div className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2">
     <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
     </svg>
