@@ -22,10 +22,10 @@ const NAV = [
       // { to: '/agial/centcom',             label: 'لوحة التحكم المركزية'    },
       // { to: '/agial/nationalcentcom',     label: 'لوحة التحكم الوطنية'     },
       // { to: '/agial/unitcentcom',         label: 'لوحة الوحدة'              },
+      { to: '/agial/operationinternal', label: 'مؤشرات العيادات الخارجية' },
       { to: '/agial/patientdashboard',    label: 'لوحة المرضى'              },
       { to: '/agial/operationsdashboard', label: 'لوحة العمليات الطبية'     },
       { to: '/agial/pharmacydashboard',   label: 'لوحة الصيدلية والأدوية'   },
-      { to: '/agial/operationinternal', label: 'مؤشرات العيادات الخارجية' },
     ],
   },
   {

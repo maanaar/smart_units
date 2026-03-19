@@ -59,7 +59,7 @@ export default function LoginForm() {
       return;
     }
     login({ name: 'Admin' }, 'static-token', 'agial');
-    navigate('/agial/centcom');
+    navigate('/agial/operationinternal');
   };
 
   const inputBase =
