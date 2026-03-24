@@ -13,6 +13,13 @@ const RISK_FACTORS = [
 
 const ROUTES = ["فموي", "وريدي", "عضلي", "تحت الجلد", "موضعي", "استنشاق", "تحت اللسان"];
 
+const SPECIALTIES = [
+  "الطب العام", "الباطنة", "الجراحة العامة", "طب الأطفال", "أمراض القلب",
+  "طب الأعصاب", "العظام والمفاصل", "النساء والتوليد", "طب العيون", "الأنف والأذن والحنجرة",
+  "الجلدية", "المسالك البولية", "الغدد الصماء", "الصدر والجهاز التنفسي",
+  "الطب النفسي", "طب الأسنان", "الأشعة التشخيصية", "التخدير والعناية المركزة",
+];
+
 const COMMON_LABS = [
   "صورة دم كاملة", "فحص الأيضات الأساسية", "فحص الأيضات الشامل", "وظائف الكبد",
   "وظائف الكلى", "الهيموغلوبين السكري", "الدهون الثلاثية", "هرمون الغدة الدرقية",
@@ -392,6 +399,7 @@ export default function DoctorScreen() {
     const [selectedRequiredRadtests, setRequiredRadtests]    = useState([]);
   const [showLaboratoryrequests,  Laboratoryrequests]  = useState(false);
   const [showXrayrequests, Xrayrequests] = useState(false);
+  const [referralSpecialty, setReferralSpecialty] = useState({});
 
   const bmi = vitals.weight && vitals.height
     ? (vitals.weight / ((vitals.height / 100) ** 2)).toFixed(1)
@@ -491,15 +499,16 @@ export default function DoctorScreen() {
                         </span>
                       </td>
                       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex gap-2">
-                          {/* <button className="px-3 py-1.5 text-sm font-bold border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-100 transition">فتح</button>
-                          <button
-                            onClick={() => window.open(INPATIENT_URL, "_blank")}
-                            className="px-3 py-1.5 text-sm font-bold bg-violet-600/80 text-white rounded-lg hover:bg-violet-700/80 transition shadow"
-                          >
-                            داخلي
-                          </button> */}
-                        </div>
+                        <select
+                          value={referralSpecialty[entry.qid] || ""}
+                          onChange={(e) => setReferralSpecialty((prev) => ({ ...prev, [entry.qid]: e.target.value }))}
+                          className="border border-slate-200 rounded-lg px-2 py-1.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-400/40 focus:border-violet-500 bg-white transition text-right"
+                        >
+                          <option value="">تحويل إلى...</option>
+                          {SPECIALTIES.map((s) => (
+                            <option key={s} value={s}>{s}</option>
+                          ))}
+                        </select>
                       </td>
                     </tr>
                   );
@@ -787,6 +796,21 @@ export default function DoctorScreen() {
               <span className="mr-auto text-sm text-slate-400">ICD-10</span>
             </div>
             <DiagnosesPanel selected={diagnoses} setSelected={setDiagnoses} />
+            
+          </div>
+          <div className="flex flex-row gap-x-4 justify-end">
+            <button
+                onClick={() => Laboratoryrequests(true)}
+                className="px-3 py-1.5 text-xs font-bold bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition shadow"
+              >
+                طلبات المختبر
+              </button>
+              <button
+                onClick={() => Xrayrequests(true)}
+                className="px-3 py-1.5 text-xs font-bold bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition shadow"
+              >
+              طلبات الأشعة
+              </button>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
 

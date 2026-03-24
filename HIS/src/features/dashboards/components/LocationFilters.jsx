@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { MapPin, Building2, X } from 'lucide-react'
+import { MapPin, Building2, X, ChevronDown } from 'lucide-react'
 import { EGYPT_GOVERNORATES, getUnits } from '../mockData/filtersMockData'
 
 export default function LocationFilters({ onChange }) {
@@ -32,11 +32,12 @@ export default function LocationFilters({ onChange }) {
 
       {/* Governorate */}
       <div className="relative flex items-center">
-        <MapPin className="absolute right-3 w-3.5 h-3.5 text-teal-500 pointer-events-none" />
+        <MapPin className="absolute right-3 w-3.5 h-3.5 text-teal-500 pointer-events-none z-10" />
+        <ChevronDown className="absolute left-2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
         <select
           value={gov}
           onChange={e => handleGov(e.target.value)}
-          className="pr-8 pl-3 py-2 text-sm border border-gray-200 rounded-xl bg-white outline-none focus:ring-2 focus:ring-teal-300 text-gray-700 shadow-sm min-w-[140px]"
+          className="appearance-none pr-8 pl-7 py-2 text-sm border border-gray-200 rounded-xl bg-white outline-none focus:ring-2 focus:ring-teal-300 text-gray-700 shadow-sm min-w-[140px]"
         >
           <option value="">كل المحافظات</option>
           {EGYPT_GOVERNORATES.map(g => (
@@ -47,12 +48,13 @@ export default function LocationFilters({ onChange }) {
 
       {/* Unit — always visible */}
       <div className="relative flex items-center">
-        <Building2 className="absolute right-3 w-3.5 h-3.5 text-emerald-500 pointer-events-none" />
+        <Building2 className="absolute right-3 w-3.5 h-3.5 text-emerald-500 pointer-events-none z-10" />
+        <ChevronDown className="absolute left-2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
         <select
           value={unit}
           onChange={e => handleUnit(e.target.value)}
           disabled={!gov}
-          className="pr-8 pl-3 py-2 text-sm border border-gray-200 rounded-xl bg-white outline-none focus:ring-2 focus:ring-emerald-300 text-gray-700 shadow-sm min-w-[180px] disabled:opacity-40 disabled:cursor-not-allowed"
+          className="appearance-none pr-8 pl-7 py-2 text-sm border border-gray-200 rounded-xl bg-white outline-none focus:ring-2 focus:ring-emerald-300 text-gray-700 shadow-sm min-w-[180px] disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <option value="">{gov ? 'كل الوحدات' : 'اختر المحافظة أولاً'}</option>
           {units.map(u => (
