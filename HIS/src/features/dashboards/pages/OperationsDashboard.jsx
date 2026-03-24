@@ -6,7 +6,7 @@ import MiniChart from '../components/MiniChart'
 import LocationFilters from '../components/LocationFilters'
 import SearchBar from '../../../components/ui/SearchBar'
 import DashboardHeader from '../../../components/ui/DashboardHeader'
-import ListView from '../../agial/components/ListView'
+import ListView from '../../unit/components/ListView'
 import { MOCK_OPERATIONS_STATS, MOCK_OPERATIONS_LIST } from '../mockData/operationsMockData'
 
 const opsTrend = [
@@ -63,7 +63,7 @@ export default function OperationsDashboard() {
         addLabel="طلب إجراء طبي"
         dateValue={date}
         onDateChange={setDate}
-        onAdd={() => navigate('/agial/ReceptionPage')}
+        onAdd={() => navigate('/unit/ReceptionPage')}
         filters={<LocationFilters />}
       />
       <div className="flex-1 overflow-y-auto">

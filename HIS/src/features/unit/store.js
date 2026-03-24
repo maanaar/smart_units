@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 /**
@@ -65,6 +65,16 @@ const useAgialStore = create(
       appointments: state.appointments.filter((a) => a.id !== id),
     })),
 
+  // ── Lab requests ───────────────────────────────────────────────
+  labRequests: [],
+  addLabRequest: (req) =>
+    set((state) => ({ labRequests: [...state.labRequests, { ...req, id: Date.now() }] })),
+
+  // ── Radiology requests ─────────────────────────────────────────
+  radRequests: [],
+  addRadRequest: (req) =>
+    set((state) => ({ radRequests: [...state.radRequests, { ...req, id: Date.now() }] })),
+
   // ── Patients registry (persisted) ──────────────────────────────
   patients: [],  // saved patient records
 
@@ -115,6 +125,8 @@ const useAgialStore = create(
     queuePatients: state.queuePatients,
     appointments: state.appointments,
     patients: state.patients,
+    labRequests: state.labRequests,
+    radRequests: state.radRequests,
   }),
 }
 ));

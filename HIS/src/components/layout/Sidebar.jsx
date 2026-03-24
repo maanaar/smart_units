@@ -19,13 +19,13 @@ const NAV = [
     label: 'Dashboards',
     key: 'dashboard',
     children: [
-      // { to: '/agial/centcom',             label: 'لوحة التحكم المركزية'    },
-      // { to: '/agial/nationalcentcom',     label: 'لوحة التحكم الوطنية'     },
-      // { to: '/agial/unitcentcom',         label: 'لوحة الوحدة'              },
-      { to: '/agial/operationinternal', label: 'مؤشرات العيادات الخارجية' },
-      { to: '/agial/patientdashboard',    label: 'لوحة المرضى'              },
-      { to: '/agial/operationsdashboard', label: 'لوحة العمليات الطبية'     },
-      { to: '/agial/pharmacydashboard',   label: 'لوحة الصيدلية والأدوية'   },
+      // { to: '/unit/centcom',             label: 'لوحة التحكم المركزية'    },
+      // { to: '/unit/nationalcentcom',     label: 'لوحة التحكم الوطنية'     },
+      // { to: '/unit/unitcentcom',         label: 'لوحة الوحدة'              },
+      { to: '/unit/operationinternal', label: 'مؤشرات العيادات الخارجية' },
+      { to: '/unit/patientdashboard',    label: 'لوحة المرضى'              },
+      { to: '/unit/operationsdashboard', label: 'لوحة العمليات الطبية'     },
+      { to: '/unit/pharmacydashboard',   label: 'لوحة الصيدلية والأدوية'   },
     ],
   },
   {
@@ -33,15 +33,15 @@ const NAV = [
     label: 'الاستقبال',
     key: 'reception',
     children: [
-      { to: '/agial/calendar',     label: 'التقويم'         },
-      { to: '/agial/appointments', label: 'قائمة المواعيد'  },
+      { to: '/unit/calendar',     label: 'التقويم'         },
+      { to: '/unit/appointments', label: 'قائمة المواعيد'  },
     ],
   },
-  { to: '/agial/patients',     icon: Users,         label: 'المرضى'          },
-  { to: '/agial/nursing',      icon: ClipboardPlus, label: 'التمريض'         },
-  { to: '/agial/doctorscreen', icon: Stethoscope,   label: 'الطبيب'          },
-  { to: '/agial/labTests',     icon: FlaskConical,  label: 'طلبات التحاليل'  },
-  { to: '/agial/radTests',     icon: Scan,          label: 'طلبات الأشعة'    },
+  { to: '/unit/patients',     icon: Users,         label: 'المرضى'          },
+  { to: '/unit/nursing',      icon: ClipboardPlus, label: 'التمريض'         },
+  { to: '/unit/doctorscreen', icon: Stethoscope,   label: 'الطبيب'          },
+  { to: '/unit/labTests',     icon: FlaskConical,  label: 'طلبات التحاليل'  },
+  { to: '/unit/radTests',     icon: Scan,          label: 'طلبات الأشعة'    },
 ];
 
 export default function Sidebar() {

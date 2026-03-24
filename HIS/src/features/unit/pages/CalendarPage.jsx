@@ -144,7 +144,7 @@ export default function CalendarPage() {
   // Navigate to reception page with slot data
   const handleEventClick = (event) => {
     const doctor = MOCK_DOCTORS.find(d => d.id === event.doctorId);
-    navigate('/agial/ReceptionPage', {
+    navigate('/unit/ReceptionPage', {
       state: {
         slot: {
           event,
@@ -158,7 +158,7 @@ export default function CalendarPage() {
 
   const handleSlotClick = (doctor, slot, dateStr) => {
     const time = `${String(slot.h).padStart(2, '0')}:${String(slot.m).padStart(2, '0')}`;
-    navigate('/agial/ReceptionPage', {
+    navigate('/unit/ReceptionPage', {
       state: {
         slot: {
           event: null,

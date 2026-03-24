@@ -214,7 +214,7 @@ export default function ReceptionScreen() {
   };
 
   const handleBackToCalendar = () => {
-    navigate("/agial/calendar");
+    navigate("/unit/calendar");
   };
 
   return (

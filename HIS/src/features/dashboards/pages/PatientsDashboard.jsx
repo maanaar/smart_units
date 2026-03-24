@@ -6,8 +6,8 @@ import MiniChart from '../../dashboards/components/MiniChart'
 import LocationFilters from '../../dashboards/components/LocationFilters'
 import SearchBar from '../../../components/ui/SearchBar'
 import DashboardHeader from '../../../components/ui/DashboardHeader'
-import ListView from '../../agial/components/ListView'
-import { MOCK_PATIENTS_LIST } from '../../agial/mockData'
+import ListView from '../../unit/components/ListView'
+import { MOCK_PATIENTS_LIST } from '../../unit/mockData'
 
 const admissionsTrend = [
   { name: 'الأحد', value: 28 }, { name: 'الاثنين', value: 34 },
@@ -98,7 +98,7 @@ export default function PatientsDashboard() {
         />
       </div>
       <div className="px-6 pb-6">
-        <ListView columns={patientColumns} data={filteredData} onRowClick={(row) => navigate(`/agial/patients/${row.id}`)} />
+        <ListView columns={patientColumns} data={filteredData} onRowClick={(row) => navigate(`/unit/patients/${row.id}`)} />
       </div>
       </div>
     </div>

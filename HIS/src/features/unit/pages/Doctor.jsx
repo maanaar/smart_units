@@ -308,6 +308,8 @@ const EMPTY_FORM = {
 export default function DoctorScreen() {
   const queuePatients      = useAgialStore((s) => s.queuePatients);
   const updateQueueStatus  = useAgialStore((s) => s.updateQueueStatus);
+  const addLabRequest      = useAgialStore((s) => s.addLabRequest);
+  const addRadRequest      = useAgialStore((s) => s.addRadRequest);
   const LAB_OPTIONS = [
   { id: 1, label: "معامل المختبر" },
   { id: 2, label: "معامل البرج" },
@@ -631,7 +633,20 @@ export default function DoctorScreen() {
           إلغاء
         </button>
         <button
-          // onClick={Laboratoryrequests(true)}
+          onClick={() => {
+            if (!selectedEntry) return;
+            addLabRequest({
+              date: new Date().toLocaleDateString('ar-EG'),
+              patientName: selectedEntry.patient.name,
+              lab: selectedTests.map((t) => t.label),
+              template: selectedModel.map((t) => t.label),
+              tests: selectedRequiredtests.map((t) => t.label),
+            });
+            setSelectedTests([]);
+            setSelectedModel([]);
+            setRequiredtests([]);
+            Laboratoryrequests(false);
+          }}
           className="px-5 py-2 text-sm rounded-lg bg-teal-600 text-white hover:bg-teal-700 transition-colors font-medium"
         >
           حفظ الطلب
@@ -726,7 +741,18 @@ export default function DoctorScreen() {
           إلغاء
         </button>
         <button
-          // onClick={Laboratoryrequests(true)}
+          onClick={() => {
+            if (!selectedEntry) return;
+            addRadRequest({
+              daterad: new Date().toLocaleDateString('ar-EG'),
+              patientName: selectedEntry.patient.name,
+              category: selectedRadcate.map((t) => t.label.trim()),
+              testsRad: selectedRequiredRadtests.map((t) => t.label.trim()),
+            });
+            setSelectedRad_cate([]);
+            setRequiredRadtests([]);
+            Xrayrequests(false);
+          }}
           className="px-5 py-2 text-sm rounded-lg bg-teal-600 text-white hover:bg-teal-700 transition-colors font-medium"
         >
           حفظ الطلب

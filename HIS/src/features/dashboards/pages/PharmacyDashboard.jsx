@@ -6,7 +6,7 @@ import MiniChart from '../components/MiniChart'
 import LocationFilters from '../components/LocationFilters'
 import SearchBar from '../../../components/ui/SearchBar'
 import DashboardHeader from '../../../components/ui/DashboardHeader'
-import ListView from '../../agial/components/ListView'
+import ListView from '../../unit/components/ListView'
 import { MOCK_PHARMACY_STATS, MOCK_PHARMACY_LIST } from '../mockData/pharmacyMockData'
 
 const rxTrend = [
@@ -64,7 +64,7 @@ export default function PharmacyDashboard() {
         addLabel="إضافة وصفة طبية"
         dateValue={date}
         onDateChange={setDate}
-        onAdd={() => navigate('/agial/ReceptionPage')}
+        onAdd={() => navigate('/unit/ReceptionPage')}
         filters={<LocationFilters />}
       />
       <div className="flex-1 overflow-y-auto">

@@ -79,7 +79,7 @@ export default function AppointmentsListPage() {
 
   const handleRowClick = (appt) => {
     const doctor = MOCK_DOCTORS.find(d => d.id === appt.doctorId);
-    navigate('/agial/ReceptionPage', {
+    navigate('/unit/ReceptionPage', {
       state: {
         slot: {
           event: appt,
@@ -141,7 +141,7 @@ export default function AppointmentsListPage() {
               {filtered.length} موعد
             </span>
             <button
-              onClick={() => navigate('/agial/ReceptionPage')}
+              onClick={() => navigate('/unit/ReceptionPage')}
               className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white bg-gradient-to-l from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 rounded-xl shadow-sm transition-all active:scale-95"
             >
               <span className="text-lg leading-none">+</span>

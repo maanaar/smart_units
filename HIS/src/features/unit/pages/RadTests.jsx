@@ -2,13 +2,7 @@ import { useState } from 'react'
 import { Scan, Clock, CheckCircle2, AlertTriangle, Search } from 'lucide-react'
 import ListView from '../components/ListView'
 import Card from '../../dashboards/components/cards'
-
-const radStats = [
-  { title: 'إجمالي الطلبات', stat: '٣',  description: 'جميع طلبات الأشعة اليوم',   icon: <Scan size={20} />          },
-  { title: 'قيد الانتظار',   stat: '٢',  description: 'طلبات لم تُنجز بعد',         icon: <Clock size={20} />         },
-  { title: 'مكتملة',         stat: '١',  description: 'أشعة جاهزة للاستلام',        icon: <CheckCircle2 size={20} />  },
-  { title: 'عاجلة',          stat: '١',  description: 'حالات تستدعي الأولوية',      icon: <AlertTriangle size={20} /> },
-]
+import useAgialStore from '../store'
 
 const columnsRad = [
   { key: 'daterad',     title: 'التاريخ',     type: 'date'  },
@@ -17,33 +11,20 @@ const columnsRad = [
   { key: 'testsRad',    title: 'الأشعة',      type: 'tag2'  },
 ]
 
-const dataRad = [
-  {
-    daterad: '16/03/2026',
-    patientName: 'فاطمة أحمد محمود',
-    category: ['CT', 'MRI'],
-    testsRad: ['أشعة الصدر', 'أشعة البطن'],
-  },
-  {
-    daterad: '17/03/2026',
-    patientName: 'محمد علي حسن',
-    category: ['XRay'],
-    testsRad: ['أشعة الركبة', 'أشعة العمود الفقري'],
-  },
-  {
-    daterad: '18/03/2026',
-    patientName: 'نورة سالم الغامدي',
-    category: ['Ultrasound'],
-    testsRad: ['سونار البطن', 'سونار الكلى'],
-  },
-]
-
 export default function RadTestsAR() {
+  const radRequests = useAgialStore((s) => s.radRequests)
   const [search, setSearch] = useState('')
 
-  const filtered = dataRad.filter(
+  const filtered = radRequests.filter(
     r => r.patientName.includes(search) || search === ''
   )
+
+  const radStats = [
+    { title: 'إجمالي الطلبات', stat: String(radRequests.length), description: 'جميع طلبات الأشعة اليوم',  icon: <Scan size={20} />          },
+    { title: 'قيد الانتظار',   stat: String(radRequests.length), description: 'طلبات لم تُنجز بعد',        icon: <Clock size={20} />         },
+    { title: 'مكتملة',         stat: '٠',                        description: 'أشعة جاهزة للاستلام',       icon: <CheckCircle2 size={20} />  },
+    { title: 'عاجلة',          stat: '٠',                        description: 'حالات تستدعي الأولوية',     icon: <AlertTriangle size={20} /> },
+  ]
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/30 to-teal-50/40" dir="rtl">
@@ -61,7 +42,7 @@ export default function RadTestsAR() {
         </div>
         <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold bg-blue-100 text-blue-800 border border-blue-200">
           <Scan size={14} />
-          {dataRad.length} طلبات
+          {radRequests.length} طلبات
         </span>
       </div>
 
