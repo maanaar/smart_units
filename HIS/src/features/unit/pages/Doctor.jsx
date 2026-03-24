@@ -453,13 +453,13 @@ export default function DoctorScreen() {
         {/* قائمة انتظار الطبيب */}
         <div className={sectionCls}>
           <div className="px-4 py-3 border-b border-slate-100 bg-gradient-to-l from-[#13534c]/80 to-[#1f7e74]/80 flex items-center gap-2">
-            <h2 className="text-white font-bold text-lg uppercase tracking-wide font-[Almarai]">قائمة انتظار الطبيب</h2>
+            <h2 className="text-white font-bold text-lg uppercase tracking-wide font-[Almarai]">قائمة انتظار </h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-100">
-                  {["الرقم", "المريض", "العيادة", "الطبيب", "الحالة", "الإجراء"].map((h) => (
+                  {["الرقم", "المريض", "العيادة", "الطبيب", "الحالة", "التحويل"].map((h) => (
                     <th key={h} className="px-4 py-3 text-right text-sm font-bold text-slate-500 uppercase tracking-wider">{h}</th>
                   ))}
                 </tr>
@@ -492,13 +492,13 @@ export default function DoctorScreen() {
                       </td>
                       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                         <div className="flex gap-2">
-                          <button className="px-3 py-1.5 text-sm font-bold border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-100 transition">فتح</button>
+                          {/* <button className="px-3 py-1.5 text-sm font-bold border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-100 transition">فتح</button>
                           <button
                             onClick={() => window.open(INPATIENT_URL, "_blank")}
                             className="px-3 py-1.5 text-sm font-bold bg-violet-600/80 text-white rounded-lg hover:bg-violet-700/80 transition shadow"
                           >
                             داخلي
-                          </button>
+                          </button> */}
                         </div>
                       </td>
                     </tr>
@@ -780,6 +780,14 @@ export default function DoctorScreen() {
         <div className={`space-y-5 ${isReadOnly ? "pointer-events-none opacity-60 select-none" : ""}`}>
 
           {/* الصف 1 — 3 أعمدة */}
+          <div className={sectionCls}>
+            <div className={headerCls}>
+              <span className="w-2 h-2 rounded-full bg-purple-400" />
+              <h3 className="text-lg font-bold text-slate-700">التشخيصات</h3>
+              <span className="mr-auto text-sm text-slate-400">ICD-10</span>
+            </div>
+            <DiagnosesPanel selected={diagnoses} setSelected={setDiagnoses} />
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
 
             {/* الشكوى الرئيسية */}
@@ -873,7 +881,14 @@ export default function DoctorScreen() {
               </div>
             {/* </div> */}
           </div>
-
+          {/* <div className={sectionCls}>
+            <div className={headerCls}>
+              <span className="w-2 h-2 rounded-full bg-purple-400" />
+              <h3 className="text-lg font-bold text-slate-700">التشخيصات</h3>
+              <span className="mr-auto text-sm text-slate-400">ICD-10</span>
+            </div>
+            <DiagnosesPanel selected={diagnoses} setSelected={setDiagnoses} />
+          </div> */}
           {/* الصف 2 — ملف الأدوية */}
           <div className={sectionCls}>
             <div className={headerCls}>
@@ -884,14 +899,14 @@ export default function DoctorScreen() {
           </div>
 
           {/* الصف 3 — التشخيصات */}
-          <div className={sectionCls}>
+          {/* <div className={sectionCls}>
             <div className={headerCls}>
               <span className="w-2 h-2 rounded-full bg-purple-400" />
               <h3 className="text-lg font-bold text-slate-700">التشخيصات</h3>
               <span className="mr-auto text-sm text-slate-400">ICD-10</span>
             </div>
             <DiagnosesPanel selected={diagnoses} setSelected={setDiagnoses} />
-          </div>
+          </div> */}
 
           {/* الصف 4 — طلبات المختبر والأشعة */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">

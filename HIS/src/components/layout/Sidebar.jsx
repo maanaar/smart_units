@@ -22,10 +22,10 @@ const NAV = [
       // { to: '/unit/centcom',             label: 'لوحة التحكم المركزية'    },
       // { to: '/unit/nationalcentcom',     label: 'لوحة التحكم الوطنية'     },
       // { to: '/unit/unitcentcom',         label: 'لوحة الوحدة'              },
-      { to: '/unit/operationinternal', label: 'مؤشرات العيادات الخارجية' },
-      { to: '/unit/patientdashboard',    label: 'لوحة المرضى'              },
-      { to: '/unit/operationsdashboard', label: 'لوحة العمليات الطبية'     },
-      { to: '/unit/pharmacydashboard',   label: 'لوحة الصيدلية والأدوية'   },
+      { to: '/unit/operationinternal', label: ' العيادات الخارجية' },
+      { to: '/unit/patientdashboard',    label: ' المرضى'              },
+      { to: '/unit/operationsdashboard', label: ' الاجراءات الطبية'     },
+      { to: '/unit/pharmacydashboard',   label: ' الصيدلية والأدوية'   },
     ],
   },
   {
@@ -33,7 +33,7 @@ const NAV = [
     label: 'الاستقبال',
     key: 'reception',
     children: [
-      { to: '/unit/calendar',     label: 'التقويم'         },
+      { to: '/unit/calendar',     label: 'الحجوزات'         },
       { to: '/unit/appointments', label: 'قائمة المواعيد'  },
     ],
   },

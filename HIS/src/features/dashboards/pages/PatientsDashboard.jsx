@@ -78,7 +78,7 @@ export default function PatientsDashboard() {
       {/* Charts */}
       <div className="px-6 pb-2 grid grid-cols-1 sm:grid-cols-3 gap-4">
         <MiniChart title="قبول المرضى (أسبوعي)" type="area" data={admissionsTrend} dataKey="value" nameKey="name" color="#0d9488" />
-        <MiniChart title="توزيع الأجنحة" type="bar" data={wardData} dataKey="value" nameKey="name" color="#6366f1" />
+        <MiniChart title="توزيع العيادات" type="bar" data={wardData} dataKey="value" nameKey="name" color="#6366f1" />
         <MiniChart title="توزيع الحالات" type="pie" data={statusData} dataKey="value" nameKey="name" />
       </div>
       <div className="px-6">
