@@ -14,8 +14,8 @@ const governorates = [
   "بني سويف", "الفيوم", "بورسعيد", "الإسماعيلية", "السويس", "دمياط",
   "شمال سيناء", "جنوب سيناء", "البحر الأحمر", "الوادي الجديد", "مطروح",
 ];
-const patientTypes = ["مريض عادي", "مريض VIP", "مريض تأمين"];
-const financialCategories = ["نقدي", "تأمين صحي", "نفقة دولة", "تعاقدات", "مجاني"];
+const patientTypes = ["مريض عادي", "ذوي الهمم", "مريض تأمين"];
+const financialCategories = ["نقدي (تحمل التكلفة كاملة)", "غير قادرين"];
 const financialTreatments = ["نقدي صباحي", "نقدي مسائي", "تأمين"];
 const visitTypes = ["كشف", "استشارة", "فتح ملف عائلي"];
 const contractEntities = [

@@ -13,8 +13,8 @@ const servicesByDept = {
   "المناظير": ["منظار معدة", "منظار قولون", "منظار مثانة"],
   "أخرى": ["خدمة أخرى"],
 };
-const patientTypes = ["مريض عادي", "مريض VIP", "مريض تأمين"];
-const financialCategories = ["نقدي (تحمل التكلفة كاملة)", "تأمين صحي", "نفقة دولة", "تعاقدات"];
+const patientTypes = ["مريض عادي", "ذوي الهمم", "مريض تأمين"];
+const financialCategories = ["نقدي (تحمل التكلفة كاملة)", "غير قادرين"];
 const financialTreatments = ["نقدي صباحي", "نقدي مسائي", "تأمين"];
 
 function dobFromNationalId(nid) {
