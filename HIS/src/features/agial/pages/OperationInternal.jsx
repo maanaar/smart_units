@@ -5,6 +5,8 @@ import Card from '../../dashboards/components/cards'
 import MiniChart from '../../dashboards/components/MiniChart'
 import DashboardHeader from '../../../components/ui/DashboardHeader'
 import LocationFilters from '../../dashboards/components/LocationFilters'
+import AlertCard from '../components/alert'
+import StatsCards from '../components/services'
 
 /* ───── أولاً: إجمالي زيارات العيادات الخارجية ───── */
 const visitStats = [
@@ -90,10 +92,39 @@ const doctorKPIs = [
   { label: 'متوسط زمن الكشف',                value: '12 دقيقة' },
   { label: 'إجمالي الكشوفات المسجلة بالنظام', value: '12,450' },
 ]
+const alerts = [
+  {
+    id: 1,
+    type: "outbreak",
+    severity: "critical",
+    titleAr: "تفشٍّ محتمل (Possible Outbreak)",
+    subtitleAr: "Gastroenteritis",
+    detailAr: "خلال 3 أيار 27 - بمنطقة السلام (El Salam)",
+    icon: "⚠️",
+    bg: "from-red-600 to-red-700",
+    border: "border-red-400",
+    badge: "bg-red-900/40 text-red-200",
+    badgeText: "حرج",
+    pulse: true,
+  },
+  {
+    id: 2,
+    type: "waiting",
+    severity: "warning",
+    titleAr: "وقت انتظار مرتفع (High Waiting Time)",
+    subtitleAr: "",
+    detailAr: "متوسط الطاولة الفردي: متوسط الانتظار > 45 دقيقة حالياً",
+    icon: "🕐",
+    bg: "from-orange-500 to-orange-600",
+    border: "border-orange-400",
+    badge: "bg-orange-900/40 text-orange-200",
+    badgeText: "تحذير",
+    pulse: false,
+  },
+];
 
 export default function OperationInternal() {
   const [date, setDate] = useState('')
-
   return (
     <div dir="rtl" className="flex flex-col h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/30 to-white">
       {/* Header */}
@@ -107,7 +138,8 @@ export default function OperationInternal() {
       />
 
       <div className="flex-1 overflow-y-auto p-6 space-y-8">
-
+        <AlertCard alerts={alerts} />
+        <StatsCards/>
         {/* ══════ أولاً: إجمالي الزيارات ══════ */}
         <section>
           <h2 className="text-lg font-bold text-gray-800 mb-4">أولاً: إجمالي زيارات العيادات الخارجية 👥</h2>
@@ -202,6 +234,7 @@ export default function OperationInternal() {
                 ))}
               </div>
             </div>
+            <StatsCards/>
             {/* Doctor KPIs */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
               <h3 className="font-bold text-gray-800 mb-4">(Doctor KPIs) مؤشرات أداء الأطباء</h3>
