@@ -2,11 +2,19 @@ const TODAY = new Date().toISOString().slice(0, 10);
 
 // These come from the API in production: fetchCalendarMeta() → { doctors, cycles }
 export const MOCK_DOCTORS = [
-  { id: '1', name: 'Dr. Ahmed Khalil' },
-  { id: '2', name: 'Dr. Sara Mansour' },
-  { id: '3', name: 'Dr. Omar Hassan' },
-  { id: '4', name: 'Dr. Nada Fares' },
-  { id: '5', name: 'Dr. Youssef Nabil' },
+  { id: '1', name: 'Dr. Ahmed Khalil',   specialty: 'باطنة' },
+  { id: '2', name: 'Dr. Sara Mansour',   specialty: 'قلب' },
+  { id: '3', name: 'Dr. Omar Hassan',    specialty: 'عظام' },
+  { id: '4', name: 'Dr. Nada Fares',     specialty: 'أطفال' },
+  { id: '5', name: 'Dr. Youssef Nabil',  specialty: 'جلدية' },
+];
+
+export const MOCK_SPECIALTIES = [
+  { id: 'باطنة',  label: 'باطنة' },
+  { id: 'قلب',    label: 'قلب' },
+  { id: 'عظام',   label: 'عظام' },
+  { id: 'أطفال',  label: 'أطفال' },
+  { id: 'جلدية',  label: 'جلدية' },
 ];
 
 export const MOCK_CYCLES = [

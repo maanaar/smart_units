@@ -225,7 +225,7 @@ export default function AgialDashboard() {
 
           {/* Module Status Panel */}
           <div>
-            <h2 className="text-base font-bold text-gray-900 mb-3">لوحة حالة الوحدات</h2>
+            <h2 className="text-base font-bold text-gray-900 mb-3">حالة الوحدات</h2>
             <div className="grid grid-cols-3 gap-4">
               {MODULES.map(m => (
                 <div key={m.name} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">

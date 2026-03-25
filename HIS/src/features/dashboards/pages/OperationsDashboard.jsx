@@ -32,7 +32,8 @@ export default function OperationsDashboard() {
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
-  const [date, setDate] = useState('')
+  const [dateFrom, setDateFrom] = useState('')
+  const [dateTo, setDateTo] = useState('')
   const [loc, setLoc] = useState({ governorate: '', unit: '' })
 
   const locData = OPERATIONS_DATA[loc.governorate] ?? OPERATIONS_DATA.default
@@ -50,10 +51,12 @@ export default function OperationsDashboard() {
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50/40" dir="rtl">
       <DashboardHeader
-        title="لوحة العمليات الطبية"
+        title="العمليات الطبية"
         addLabel="طلب إجراء طبي"
-        dateValue={date}
-        onDateChange={setDate}
+        dateFrom={dateFrom}
+        dateTo={dateTo}
+        onDateFromChange={setDateFrom}
+        onDateToChange={setDateTo}
         onAdd={() => navigate('/unit/ReceptionPage')}
         filters={<LocationFilters onChange={setLoc} />}
       />

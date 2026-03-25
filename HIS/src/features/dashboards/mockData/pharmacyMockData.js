@@ -1,7 +1,7 @@
 export const MOCK_PHARMACY_STATS = [
   { key: 'total',    stat: '3,842',    description: 'إجمالي الوصفات الطبية'         },
   { key: 'dispensed', stat: '8,420',  description: 'الأدوية المصروفة'               },
-  { key: 'top',      stat: 'Panadol', description: 'أكثر الأدوية استخداماً هذا الشهر' },
+  { key: 'top',      stat: 'Paracetamol', description: 'أكثر الأدوية استخداماً هذا الشهر' },
   { key: 'alerts',   stat: '14',      description: 'تنبيهات مخزون — دواء قارب على النفاد' },
 ];
 

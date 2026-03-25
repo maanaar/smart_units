@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Users, Stethoscope, AlertTriangle, Repeat } from 'lucide-react'
+import { Users, Stethoscope, AlertTriangle, Repeat, ShieldAlert } from 'lucide-react'
 import DashboardBoxes from '../components/DashboardBoxes'
 import Card from '../../dashboards/components/cards'
 import MiniChart from '../../dashboards/components/MiniChart'
@@ -84,6 +84,15 @@ const waitStats = [
   { label: 'أعلى انتظار (المنشأة)', value: '55', unit: 'دقيقة', highlight: true },
 ]
 
+/* ───── حالات الطوارئ ───── */
+const EMERGENCY_LIST = [
+  { id: 'E1', name: 'عبدالرحمن خالد', age: '٥٥', gender: 'ذكر', triage: 'أحمر – حرج',           triageCls: 'bg-red-100 text-red-700',       complaint: 'ألم حاد بالصدر',    time: '٠٨:١٥', destination: 'العناية المركزة' },
+  { id: 'E2', name: 'سارة محمود',     age: '٣٤', gender: 'أنثى', triage: 'برتقالي – طوارئ',       triageCls: 'bg-orange-100 text-orange-700', complaint: 'كسر مفتوح بالساق',  time: '٠٩:٣٠', destination: 'غرفة العمليات' },
+  { id: 'E3', name: 'مجهول الهوية',   age: '—',  gender: 'ذكر', triage: 'أحمر – حرج',           triageCls: 'bg-red-100 text-red-700',       complaint: 'حادث مروري — نزيف', time: '١٠:٠٥', destination: 'غرفة الطوارئ' },
+  { id: 'E4', name: 'فاطمة يوسف',     age: '٧٢', gender: 'أنثى', triage: 'أصفر – مستعجل',         triageCls: 'bg-yellow-100 text-yellow-700', complaint: 'ضيق تنفس حاد',      time: '١١:٢٠', destination: 'قسم الملاحظة' },
+  { id: 'E5', name: 'أحمد حسين',      age: '٢٨', gender: 'ذكر', triage: 'أخضر – أقل استعجالاً', triageCls: 'bg-green-100 text-green-700',   complaint: 'جرح قطعي بالذراع',  time: '١٢:٤٥', destination: 'غرفة الفرز' },
+]
+
 /* ───── سابعاً: مؤشرات أداء الأطباء ───── */
 const doctorKPIs = [
   { label: 'متوسط عدد المرضى يومياً / طبيب', value: '28' },
@@ -92,7 +101,8 @@ const doctorKPIs = [
 ]
 
 export default function OperationInternal() {
-  const [date, setDate] = useState('')
+  const [dateFrom, setDateFrom] = useState('')
+  const [dateTo, setDateTo] = useState('')
 
   return (
     <div dir="rtl" className="flex flex-col h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/30 to-white">
@@ -100,8 +110,10 @@ export default function OperationInternal() {
       <DashboardHeader
         title="مؤشرات أداء العيادات الخارجية"
         addLabel="تصدير التقرير"
-        dateValue={date}
-        onDateChange={setDate}
+        dateFrom={dateFrom}
+        dateTo={dateTo}
+        onDateFromChange={setDateFrom}
+        onDateToChange={setDateTo}
         onAdd={() => {}}
         filters={<LocationFilters />}
       />
@@ -110,11 +122,46 @@ export default function OperationInternal() {
 
         {/* ══════ أولاً: إجمالي الزيارات ══════ */}
         <section>
-          <h2 className="text-lg font-bold text-gray-800 mb-4">أولاً: إجمالي زيارات العيادات الخارجية 👥</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {visitStats.map((s) => (
               <Card key={s.title} title={s.title} stat={s.stat} description={s.description} descriptionColor={s.descColor} icon={s.icon} />
             ))}
+          </div>
+        </section>
+
+        {/* ══════ حالات الطوارئ ══════ */}
+        <section>
+          <div className="bg-white rounded-2xl border border-red-100 shadow-sm overflow-hidden">
+            <div className="px-5 py-3 bg-gradient-to-l from-red-600 to-red-700 flex items-center gap-2">
+              <ShieldAlert className="w-5 h-5 text-white" />
+              <h2 className="text-white font-bold text-sm">حالات الطوارئ الحالية</h2>
+              <span className="mr-auto bg-white/20 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">{EMERGENCY_LIST.length} حالة</span>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-red-50/50 border-b border-red-100">
+                    {['#', 'المريض', 'العمر', 'الجنس', 'مستوى الفرز', 'الشكوى', 'وقت الوصول', 'جهة التوجيه'].map(h => (
+                      <th key={h} className="px-3 py-2.5 text-right text-xs font-bold text-slate-500">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {EMERGENCY_LIST.map((p, i) => (
+                    <tr key={p.id} className="border-b border-slate-50 hover:bg-red-50/30 transition">
+                      <td className="px-3 py-2.5 font-bold text-slate-600">{i + 1}</td>
+                      <td className="px-3 py-2.5 font-semibold text-slate-700">{p.name}</td>
+                      <td className="px-3 py-2.5 text-slate-600">{p.age}</td>
+                      <td className="px-3 py-2.5 text-slate-600">{p.gender}</td>
+                      <td className="px-3 py-2.5"><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${p.triageCls}`}>{p.triage}</span></td>
+                      <td className="px-3 py-2.5 text-slate-600">{p.complaint}</td>
+                      <td className="px-3 py-2.5 text-slate-600 font-mono text-xs">{p.time}</td>
+                      <td className="px-3 py-2.5 text-slate-600">{p.destination}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
 
@@ -142,7 +189,6 @@ export default function OperationInternal() {
 
         {/* ══════ ثانياً: خدمات التشخيص ══════ */}
         <section>
-          <h2 className="text-lg font-bold text-gray-800 mb-4">ثانياً: إجمالي خدمات التشخيص</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <DashboardBoxes header={labHeader} content={labContent} text={labText} />
             <DashboardBoxes header={radHeader} content={radContent} text={radText} />
@@ -151,7 +197,6 @@ export default function OperationInternal() {
 
         {/* ══════ ثالثاً ورابعاً: الإجراءات والتشخيصات ══════ */}
         <section>
-          <h2 className="text-lg font-bold text-gray-800 mb-4">ثالثاً ورابعاً: الإجراءات والتشخيصات</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <DashboardBoxes header={procHeader} content={procContent} text={procText} />
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
@@ -181,13 +226,11 @@ export default function OperationInternal() {
 
         {/* ══════ خامساً: الأدوية ══════ */}
         <section>
-          <h2 className="text-lg font-bold text-gray-800 mb-4">خامساً: الأدوية والوصفات الطبية</h2>
           <DashboardBoxes header={medHeader} content={medContent} text={medText} />
         </section>
 
         {/* ══════ سادساً وسابعاً: الأداء وزمن الانتظار ══════ */}
         <section>
-          <h2 className="text-lg font-bold text-gray-800 mb-4">سادساً وسابعاً: الأداء وزمن الانتظار</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Waiting time */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">

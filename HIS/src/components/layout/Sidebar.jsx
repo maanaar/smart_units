@@ -30,11 +30,13 @@ const NAV = [
   },
   {
     icon: Users,
-    label: 'الاستقبال',
+    label: 'حجز المرضى',
     key: 'reception',
     children: [
-      { to: '/unit/calendar',     label: 'الحجوزات'         },
-      { to: '/unit/appointments', label: 'قائمة المواعيد'  },
+      { to: '/unit/calendar',     label: 'عيادات خارجية'    },
+      { to: '/unit/emergency',    label: 'طوارئ'            },
+      { to: '/unit/external',     label: 'خدمات خارجية'     },
+      { to: '/unit/appointments', label: 'قائمة الحجوزات'   },
     ],
   },
   { to: '/unit/patients',     icon: Users,         label: 'المرضى'          },

@@ -1,9 +1,10 @@
 import { Calendar } from 'lucide-react';
 
 const TYPE_BADGE = {
-  IVF:       'bg-teal-100 text-teal-700',
-  OPD:       'bg-blue-100 text-blue-700',
-  Inpatient: 'bg-indigo-100 text-indigo-700',
+  'عيادات خارجية': 'bg-blue-100 text-blue-700',
+  'طوارئ':         'bg-red-100 text-red-700',
+  'تحاليل':        'bg-teal-100 text-teal-700',
+  'أشعة':          'bg-indigo-100 text-indigo-700',
 };
 
 function formatDate(dateStr) {
@@ -65,7 +66,7 @@ export default function VisitHistory({ visits, loading, error }) {
                 </td>
                 <td className="py-2.5 px-3">
                   <div className="flex items-center gap-2">
-                    <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${TYPE_BADGE[v.type] || TYPE_BADGE.OPD}`}>
+                    <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${TYPE_BADGE[v.type] || 'bg-gray-100 text-gray-700'}`}>
                       {v.type}
                     </span>
                     <span className="text-gray-800">{v.clinic || '—'}</span>

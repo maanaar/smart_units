@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_DOCTORS, MOCK_EVENTS } from '../mockCalendar';
+import { MOCK_DOCTORS, MOCK_SPECIALTIES, MOCK_EVENTS } from '../mockCalendar';
 import useAgialStore from '../store';
 
 // ── Status colours ─────────────────────────────────────────────────────────────
@@ -61,8 +61,8 @@ function EventCard({ event, onClick }) {
   );
 }
 
-// ── DoctorColumn ───────────────────────────────────────────────────────────────
-function DoctorColumn({ doctor, events, dateStr, onEventClick, onSlotClick }) {
+// ── SpecialtyColumn ──────────────────────────────────────────────────────────
+function SpecialtyColumn({ specialty, events, dateStr, onEventClick, onSlotClick }) {
   return (
     <div className="relative border-r border-gray-100 last:border-0">
       {SLOTS.map((slot, i) => {
@@ -81,7 +81,7 @@ function DoctorColumn({ doctor, events, dateStr, onEventClick, onSlotClick }) {
             }`}
             style={{ height: SLOT_H }}
             onClick={() => {
-              if (!hasEvent) onSlotClick(doctor, slot, dateStr);
+              if (!hasEvent) onSlotClick(specialty, slot, dateStr);
             }}
           >
             {!hasEvent && (
@@ -119,13 +119,13 @@ function DoctorColumn({ doctor, events, dateStr, onEventClick, onSlotClick }) {
 // ── CalendarPage ───────────────────────────────────────────────────────────────
 export default function CalendarPage() {
   const navigate = useNavigate();
-  const [date,    setDate]    = useState(new Date());
-  const [doctors, setDoctors] = useState([]);
-  const [events,  setEvents]  = useState([]);
+  const [date,        setDate]        = useState(new Date());
+  const [specialties, setSpecialties] = useState([]);
+  const [events,      setEvents]      = useState([]);
 
   const storeAppointments = useAgialStore((s) => s.appointments);
 
-  useEffect(() => { setDoctors(MOCK_DOCTORS); }, []);
+  useEffect(() => { setSpecialties(MOCK_SPECIALTIES); }, []);
 
   // Merge mock + store appointments
   useEffect(() => {
@@ -149,6 +149,7 @@ export default function CalendarPage() {
         slot: {
           event,
           doctor,
+          specialty: doctor?.specialty || '',
           date: toISO(date),
           time: event.start?.slice(11, 16),
         },
@@ -156,13 +157,13 @@ export default function CalendarPage() {
     });
   };
 
-  const handleSlotClick = (doctor, slot, dateStr) => {
+  const handleSlotClick = (specialty, slot, dateStr) => {
     const time = `${String(slot.h).padStart(2, '0')}:${String(slot.m).padStart(2, '0')}`;
     navigate('/unit/ReceptionPage', {
       state: {
         slot: {
           event: null,
-          doctor,
+          specialty: specialty.id,
           date: dateStr,
           time,
         },
@@ -223,7 +224,7 @@ export default function CalendarPage() {
 
           <span className="flex items-center gap-2 text-sm text-gray-500">
             <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
-            {events.length} موعد · {doctors.length} طبيب
+            {events.length} موعد · {specialties.length} تخصص
           </span>
         </div>
       </div>
@@ -243,35 +244,39 @@ export default function CalendarPage() {
 
       {/* ── Grid ── */}
       <div className="flex-1 overflow-auto">
-        <div style={{ minWidth: `${80 + doctors.length * 180}px` }}>
+        <div style={{ minWidth: `${80 + specialties.length * 180}px` }}>
 
-          {/* doctor header */}
+          {/* specialty header */}
           <div
             className="grid sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm"
-            style={{ gridTemplateColumns: `80px repeat(${doctors.length}, 1fr)` }}
+            style={{ gridTemplateColumns: `80px repeat(${specialties.length}, 1fr)` }}
           >
             <div className="py-3 px-2 text-xs font-semibold text-gray-400 uppercase tracking-wide border-r border-gray-100">
               الوقت
             </div>
-            {doctors.map(doc => (
-              <div key={doc.id} className="py-3 px-3 border-r border-gray-100 last:border-0 flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-600 to-teal-700 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                  {doc.name.split(' ').pop()[0]}
-                </div>
-                <div>
-                  <div className="text-xs font-semibold text-gray-800 leading-tight">{doc.name}</div>
-                  <div className="text-[10px] text-emerald-600 font-medium">
-                    {events.filter(e => e.doctorId === doc.id).length} موعد
+            {specialties.map(spec => {
+              const specDoctors = MOCK_DOCTORS.filter(d => d.specialty === spec.id);
+              const specEvents  = events.filter(e => specDoctors.some(d => d.id === e.doctorId));
+              return (
+                <div key={spec.id} className="py-3 px-3 border-r border-gray-100 last:border-0 flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-600 to-teal-700 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                    {spec.label[0]}
+                  </div>
+                  <div>
+                    <div className="text-xs font-semibold text-gray-800 leading-tight">{spec.label}</div>
+                    <div className="text-[10px] text-emerald-600 font-medium">
+                      {specEvents.length} موعد · {specDoctors.length} طبيب
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
-          {/* time + doctor columns */}
+          {/* time + specialty columns */}
           <div
             className="grid"
-            style={{ gridTemplateColumns: `80px repeat(${doctors.length}, 1fr)` }}
+            style={{ gridTemplateColumns: `80px repeat(${specialties.length}, 1fr)` }}
           >
             {/* time gutter */}
             <div className="border-r border-gray-100">
@@ -284,16 +289,20 @@ export default function CalendarPage() {
               ))}
             </div>
 
-            {doctors.map(doc => (
-              <DoctorColumn
-                key={doc.id}
-                doctor={doc}
-                events={events.filter(e => e.doctorId === doc.id)}
-                dateStr={dateStr}
-                onEventClick={handleEventClick}
-                onSlotClick={handleSlotClick}
-              />
-            ))}
+            {specialties.map(spec => {
+              const specDoctors = MOCK_DOCTORS.filter(d => d.specialty === spec.id);
+              const specEvents  = events.filter(e => specDoctors.some(d => d.id === e.doctorId));
+              return (
+                <SpecialtyColumn
+                  key={spec.id}
+                  specialty={spec}
+                  events={specEvents}
+                  dateStr={dateStr}
+                  onEventClick={handleEventClick}
+                  onSlotClick={handleSlotClick}
+                />
+              );
+            })}
           </div>
         </div>
       </div>

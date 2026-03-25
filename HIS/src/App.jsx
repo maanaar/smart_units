@@ -17,6 +17,8 @@ import PatientsDashboard from './features/dashboards/pages/PatientsDashboard';
 import OperationsDashboard from './features/dashboards/pages/OperationsDashboard';
 import PharmacyDashboard from './features/dashboards/pages/PharmacyDashboard';
 import OperationInternal from './features/unit/pages/OperationInternal';
+import EmergencyPage from './features/unit/pages/EmergencyPage';
+import ExternalServicesPage from './features/unit/pages/ExternalServicesPage';
 
 function Protected() {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
@@ -55,6 +57,8 @@ export default function App() {
           <Route path="/unit/operationsdashboard" element={<OperationsDashboard />} />
           <Route path="/unit/pharmacydashboard"   element={<PharmacyDashboard />} />
           <Route path="/unit/operationinternal"   element={<OperationInternal />} />
+          <Route path="/unit/emergency"            element={<EmergencyPage />} />
+          <Route path="/unit/external"             element={<ExternalServicesPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/unit/operationinternal" replace />} />
