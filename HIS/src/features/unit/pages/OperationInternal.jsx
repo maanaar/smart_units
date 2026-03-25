@@ -108,7 +108,7 @@ export default function OperationInternal() {
     <div dir="rtl" className="flex flex-col h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/30 to-white">
       {/* Header */}
       <DashboardHeader
-        title="مؤشرات أداء العيادات الخارجية"
+        title=" أداء العيادات الخارجية"
         addLabel="تصدير التقرير"
         dateFrom={dateFrom}
         dateTo={dateTo}
@@ -129,7 +129,30 @@ export default function OperationInternal() {
           </div>
         </section>
 
-        {/* ══════ حالات الطوارئ ══════ */}
+
+
+        {/* ── التوزيعات + أعلى العيادات ── */}
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <MiniChart title="التوزيع حسب النوع والجنسية" type="pie" data={genderData} dataKey="value" nameKey="name" />
+          <MiniChart title="التوزيع حسب الفئات العمرية" type="bar" data={ageData} dataKey="value" nameKey="name" color="#3b82f6" />
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+            <p className="text-sm font-semibold text-gray-600 mb-4">أعلى العيادات والتخصصات تردداً</p>
+            <div className="space-y-3">
+              {topClinics.map((c) => (
+                <div key={c.name} className="flex items-center justify-between">
+                  <span className="text-sm text-gray-700">{c.name}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-gray-800">{c.value.toLocaleString()}</span>
+                    <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                      {Math.round((c.value / 12450) * 100)}%
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+                {/* ══════ حالات الطوارئ ══════ */}
         <section>
           <div className="bg-white rounded-2xl border border-red-100 shadow-sm overflow-hidden">
             <div className="px-5 py-3 bg-gradient-to-l from-red-600 to-red-700 flex items-center gap-2">
@@ -161,28 +184,6 @@ export default function OperationInternal() {
                   ))}
                 </tbody>
               </table>
-            </div>
-          </div>
-        </section>
-
-        {/* ── التوزيعات + أعلى العيادات ── */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <MiniChart title="التوزيع حسب النوع والجنسية" type="pie" data={genderData} dataKey="value" nameKey="name" />
-          <MiniChart title="التوزيع حسب الفئات العمرية" type="bar" data={ageData} dataKey="value" nameKey="name" color="#3b82f6" />
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-            <p className="text-sm font-semibold text-gray-600 mb-4">أعلى العيادات والتخصصات تردداً</p>
-            <div className="space-y-3">
-              {topClinics.map((c) => (
-                <div key={c.name} className="flex items-center justify-between">
-                  <span className="text-sm text-gray-700">{c.name}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-gray-800">{c.value.toLocaleString()}</span>
-                    <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
-                      {Math.round((c.value / 12450) * 100)}%
-                    </span>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </section>
