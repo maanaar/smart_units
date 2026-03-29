@@ -41,10 +41,10 @@ export default function PatientHeader({ patient, onEdit, onNewVisit }) {
 
         {/* Visit count badges */}
         <div className="hidden sm:flex items-center gap-3 flex-shrink-0">
-          <CountBadge label="IVF" value={patient.count_ivf_clinic} />
-          <CountBadge label="OPD" value={patient.count_opd_clinic} />
-          <CountBadge label="INP" value={patient.count_general_inpatient} />
-          <CountBadge label="Cycles" value={patient.count_ivf_cycle} />
+          <CountBadge label="عيادات خارجية" value={patient.count_outpatient} />
+          <CountBadge label="طوارئ" value={patient.count_emergency} />
+          <CountBadge label="تحاليل" value={patient.count_lab} />
+          <CountBadge label="أشعة" value={patient.count_radiology} />
         </div>
 
         {/* Action buttons */}
@@ -84,7 +84,7 @@ function CountBadge({ label, value }) {
   return (
     <div className="flex flex-col items-center bg-white/10 border border-white/15 rounded-xl px-3 py-1.5 min-w-[52px]">
       <span className="text-white font-bold text-lg leading-tight">{value ?? '—'}</span>
-      <span className="text-emerald-300 text-[10px] font-medium uppercase tracking-wide">{label}</span>
+      <span className="text-emerald-300 text-[10px] font-medium tracking-wide">{label}</span>
     </div>
   );
 }

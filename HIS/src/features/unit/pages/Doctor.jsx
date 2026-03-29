@@ -13,6 +13,13 @@ const RISK_FACTORS = [
 
 const ROUTES = ["فموي", "وريدي", "عضلي", "تحت الجلد", "موضعي", "استنشاق", "تحت اللسان"];
 
+const SPECIALTIES = [
+  "الطب العام", "الباطنة", "الجراحة العامة", "طب الأطفال", "أمراض القلب",
+  "طب الأعصاب", "العظام والمفاصل", "النساء والتوليد", "طب العيون", "الأنف والأذن والحنجرة",
+  "الجلدية", "المسالك البولية", "الغدد الصماء", "الصدر والجهاز التنفسي",
+  "الطب النفسي", "طب الأسنان", "الأشعة التشخيصية", "التخدير والعناية المركزة",
+];
+
 const COMMON_LABS = [
   "صورة دم كاملة", "فحص الأيضات الأساسية", "فحص الأيضات الشامل", "وظائف الكبد",
   "وظائف الكلى", "الهيموغلوبين السكري", "الدهون الثلاثية", "هرمون الغدة الدرقية",
@@ -308,6 +315,8 @@ const EMPTY_FORM = {
 export default function DoctorScreen() {
   const queuePatients      = useAgialStore((s) => s.queuePatients);
   const updateQueueStatus  = useAgialStore((s) => s.updateQueueStatus);
+  const addLabRequest      = useAgialStore((s) => s.addLabRequest);
+  const addRadRequest      = useAgialStore((s) => s.addRadRequest);
   const LAB_OPTIONS = [
   { id: 1, label: "معامل المختبر" },
   { id: 2, label: "معامل البرج" },
@@ -390,6 +399,8 @@ export default function DoctorScreen() {
     const [selectedRequiredRadtests, setRequiredRadtests]    = useState([]);
   const [showLaboratoryrequests,  Laboratoryrequests]  = useState(false);
   const [showXrayrequests, Xrayrequests] = useState(false);
+  const [referralSpecialty, setReferralSpecialty] = useState({});
+  const [referralBanner, setReferralBanner] = useState(null);
 
   const bmi = vitals.weight && vitals.height
     ? (vitals.weight / ((vitals.height / 100) ** 2)).toFixed(1)
@@ -451,13 +462,13 @@ export default function DoctorScreen() {
         {/* قائمة انتظار الطبيب */}
         <div className={sectionCls}>
           <div className="px-4 py-3 border-b border-slate-100 bg-gradient-to-l from-[#13534c]/80 to-[#1f7e74]/80 flex items-center gap-2">
-            <h2 className="text-white font-bold text-lg uppercase tracking-wide font-[Almarai]">قائمة انتظار الطبيب</h2>
+            <h2 className="text-white font-bold text-lg uppercase tracking-wide font-[Almarai]">قائمة انتظار </h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-100">
-                  {["الرقم", "المريض", "العيادة", "الطبيب", "الحالة", "الإجراء"].map((h) => (
+                  {["الرقم", "المريض", "العيادة", "الطبيب", "الحالة", "التحويل"].map((h) => (
                     <th key={h} className="px-4 py-3 text-right text-sm font-bold text-slate-500 uppercase tracking-wider">{h}</th>
                   ))}
                 </tr>
@@ -489,13 +500,28 @@ export default function DoctorScreen() {
                         </span>
                       </td>
                       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex gap-2">
-                          <button className="px-3 py-1.5 text-sm font-bold border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-100 transition">فتح</button>
-                          <button
-                            onClick={() => window.open(INPATIENT_URL, "_blank")}
-                            className="px-3 py-1.5 text-sm font-bold bg-violet-600/80 text-white rounded-lg hover:bg-violet-700/80 transition shadow"
+                        <div className="flex items-center gap-2">
+                          <select
+                            value={referralSpecialty[entry.qid] || ""}
+                            onChange={(e) => setReferralSpecialty((prev) => ({ ...prev, [entry.qid]: e.target.value }))}
+                            className="border border-slate-200 rounded-lg px-2 py-1.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-400/40 focus:border-violet-500 bg-white transition text-right"
                           >
-                            داخلي
+                            <option value="">تحويل إلى...</option>
+                            {SPECIALTIES.map((s) => (
+                              <option key={s} value={s}>{s}</option>
+                            ))}
+                          </select>
+                          <button
+                            type="button"
+                            disabled={!referralSpecialty[entry.qid]}
+                            onClick={() => {
+                              if (!referralSpecialty[entry.qid]) return;
+                              setReferralBanner({ qid: entry.qid, name: entry.patient.name, specialty: referralSpecialty[entry.qid] });
+                              setTimeout(() => setReferralBanner(null), 4000);
+                            }}
+                            className="px-3 py-1.5 text-xs font-bold bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition shadow disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+                          >
+                            تحويل
                           </button>
                         </div>
                       </td>
@@ -506,6 +532,17 @@ export default function DoctorScreen() {
             </table>
           </div>
         </div>
+
+        {/* بانر التحويل */}
+        {referralBanner && (
+          <div className="bg-violet-50 border border-violet-200 rounded-xl px-5 py-3 flex items-center justify-between animate-in fade-in">
+            <div className="flex items-center gap-2 text-violet-700 font-semibold text-sm">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+              تم تحويل المريض <span className="font-bold">{referralBanner.name}</span> إلى قسم <span className="font-bold">{referralBanner.specialty}</span> بنجاح
+            </div>
+            <button onClick={() => setReferralBanner(null)} className="text-violet-400 hover:text-violet-700 text-lg leading-none">×</button>
+          </div>
+        )}
 
         {/* بانر معلومات المريض */}
         {selectedEntry ? (
@@ -631,7 +668,20 @@ export default function DoctorScreen() {
           إلغاء
         </button>
         <button
-          // onClick={Laboratoryrequests(true)}
+          onClick={() => {
+            if (!selectedEntry) return;
+            addLabRequest({
+              date: new Date().toLocaleDateString('ar-EG'),
+              patientName: selectedEntry.patient.name,
+              lab: selectedTests.map((t) => t.label),
+              template: selectedModel.map((t) => t.label),
+              tests: selectedRequiredtests.map((t) => t.label),
+            });
+            setSelectedTests([]);
+            setSelectedModel([]);
+            setRequiredtests([]);
+            Laboratoryrequests(false);
+          }}
           className="px-5 py-2 text-sm rounded-lg bg-teal-600 text-white hover:bg-teal-700 transition-colors font-medium"
         >
           حفظ الطلب
@@ -726,7 +776,18 @@ export default function DoctorScreen() {
           إلغاء
         </button>
         <button
-          // onClick={Laboratoryrequests(true)}
+          onClick={() => {
+            if (!selectedEntry) return;
+            addRadRequest({
+              daterad: new Date().toLocaleDateString('ar-EG'),
+              patientName: selectedEntry.patient.name,
+              category: selectedRadcate.map((t) => t.label.trim()),
+              testsRad: selectedRequiredRadtests.map((t) => t.label.trim()),
+            });
+            setSelectedRad_cate([]);
+            setRequiredRadtests([]);
+            Xrayrequests(false);
+          }}
           className="px-5 py-2 text-sm rounded-lg bg-teal-600 text-white hover:bg-teal-700 transition-colors font-medium"
         >
           حفظ الطلب
@@ -753,14 +814,12 @@ export default function DoctorScreen() {
         {/* الأقسام السريرية */}
         <div className={`space-y-5 ${isReadOnly ? "pointer-events-none opacity-60 select-none" : ""}`}>
 
-          {/* الصف 1 — 3 أعمدة */}
+          {/* الصف 1 — الشكوى الرئيسية + الحساسية */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
-
-            {/* الشكوى الرئيسية */}
             <div className={`${sectionCls} flex flex-col`}>
               <div className={headerCls}>
                 <span className="w-2 h-2 rounded-full bg-teal-500" />
-                <h3 className="text-lg font-bold text-slate-700">الشكوى الرئيسية</h3>
+                <h3 className="text-lg font-bold text-slate-700">أولاً: الشكوى الرئيسية</h3>
               </div>
               <div className="p-4 flex-1 flex flex-col" dir="rtl">
                 <textarea
@@ -772,131 +831,110 @@ export default function DoctorScreen() {
               </div>
             </div>
 
-            {/* الحساسية */}
             <div className={`${sectionCls} flex flex-col`}>
               <div className={headerCls}>
                 <span className="w-2 h-2 rounded-full bg-red-400" />
-                <h3 className="text-lg font-bold text-slate-700">الحساسية</h3>
+                <h3 className="text-lg font-bold text-slate-700">ثانياً: الحساسية</h3>
               </div>
               <AllergyInput tags={allergies} setTags={setAllergies} />
-
-              
             </div>
-
-            {/* العلامات الحيوية + عوامل الخطر */}
-            {/* <div className="flex flex-col gap-5"> */}
-              <div className={sectionCls}>
-                <div className={headerCls}>
-                  <span className="w-2 h-2 rounded-full bg-blue-400" />
-                  <h3 className="text-lg font-bold text-slate-700">العلامات الحيوية</h3>
-                </div>
-                <div className="p-3 grid grid-cols-2 gap-2" dir="rtl">
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-600 mb-1">الضغط الانقباضي</label>
-                    <input value={vitals.bpSys} onChange={(e) => setVitals({ ...vitals, bpSys: e.target.value })} placeholder="mmHg" className={`${inputCls} text-xs py-1.5`} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-600 mb-1">الضغط الانبساطي</label>
-                    <input value={vitals.bpDia} onChange={(e) => setVitals({ ...vitals, bpDia: e.target.value })} placeholder="mmHg" className={`${inputCls} text-xs py-1.5`} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-600 mb-1">النبض</label>
-                    <input value={vitals.pulse} onChange={(e) => setVitals({ ...vitals, pulse: e.target.value })} placeholder="نبضة/دقيقة" className={`${inputCls} text-xs py-1.5`} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-600 mb-1">درجة الحرارة</label>
-                    <input value={vitals.temp} onChange={(e) => setVitals({ ...vitals, temp: e.target.value })} placeholder="°م" className={`${inputCls} text-xs py-1.5`} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-600 mb-1">تشبع الأكسجين</label>
-                    <input value={vitals.o2sat} onChange={(e) => setVitals({ ...vitals, o2sat: e.target.value })} placeholder="%" className={`${inputCls} text-xs py-1.5`} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold  text-slate-600 mb-1">الوزن (كجم)</label>
-                    <input value={vitals.weight} onChange={(e) => setVitals({ ...vitals, weight: e.target.value })} placeholder="كجم" className={`${inputCls} text-xs py-1.5`} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold  text-slate-600 mb-1">الطول (سم)</label>
-                    <input value={vitals.height} onChange={(e) => setVitals({ ...vitals, height: e.target.value })} placeholder="سم" className={`${inputCls} text-xs py-1.5`} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold  text-slate-600 mb-1">مؤشر كتلة الجسم</label>
-                    <div className={`${inputCls} text-sm py-1.5 bg-slate-50 text-slate-500`}>{bmi || "—"}</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className={sectionCls}>
-                <div className={headerCls}>
-                  <span className="w-2 h-2 rounded-full bg-amber-400" />
-                  <h3 className="text-lg font-bold text-slate-700">عوامل الخطر</h3>
-                </div>
-                <div className="p-5 grid grid-cols-2 gap-4" dir="rtl">
-                  {RISK_FACTORS.map((r) => (
-                    <label key={r} className="flex items-center gap-2 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={riskFactors.includes(r)}
-                        onChange={() => toggleRisk(r)}
-                        className="w-5 h-5 rounded border-slate-300 accent-teal-600 cursor-pointer"
-                      />
-                      <span className="text-sm font-semibold  text-slate-600 group-hover:text-slate-900 transition">{r}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            {/* </div> */}
           </div>
 
-          {/* الصف 2 — ملف الأدوية */}
-          <div className={sectionCls}>
-            <div className={headerCls}>
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
-              <h3 className="text-lg font-bold text-slate-700 font-[Alexandria]">ملف الأدوية</h3>
-            </div>
-            <MedicationProfile rows={medications} setRows={setMedications} />
-          </div>
-
-          {/* الصف 3 — التشخيصات */}
+          {/* الصف 2 — التشخيصات */}
           <div className={sectionCls}>
             <div className={headerCls}>
               <span className="w-2 h-2 rounded-full bg-purple-400" />
-              <h3 className="text-lg font-bold text-slate-700">التشخيصات</h3>
+              <h3 className="text-lg font-bold text-slate-700">ثالثاً: التشخيصات</h3>
               <span className="mr-auto text-sm text-slate-400">ICD-10</span>
             </div>
             <DiagnosesPanel selected={diagnoses} setSelected={setDiagnoses} />
           </div>
+          <div className="flex flex-row gap-x-4 justify-end">
+            <button
+              onClick={() => Laboratoryrequests(true)}
+              className="px-3 py-1.5 text-xs font-bold bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition shadow"
+            >
+              طلبات المختبر
+            </button>
+            <button
+              onClick={() => Xrayrequests(true)}
+              className="px-3 py-1.5 text-xs font-bold bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition shadow"
+            >
+              طلبات الأشعة
+            </button>
+          </div>
 
-          {/* الصف 4 — طلبات المختبر والأشعة */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-            {/* <div className={sectionCls}>
+          {/* الصف 3 — ملف الأدوية */}
+          <div className={sectionCls}>
+            <div className={headerCls}>
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              <h3 className="text-lg font-bold text-slate-700 font-[Alexandria]">رابعاً: ملف الأدوية</h3>
+            </div>
+            <MedicationProfile rows={medications} setRows={setMedications} />
+          </div>
+
+          {/* الصف 4 — العلامات الحيوية + عوامل الخطر */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
+            <div className={sectionCls}>
               <div className={headerCls}>
-                <span className="w-2 h-2 rounded-full bg-cyan-400" />
-                <h3 className="text-lg font-bold text-slate-700">طلبات المختبر</h3>
-                <span className="mr-auto text-sm text-slate-400">ALB</span>
+                <span className="w-2 h-2 rounded-full bg-blue-400" />
+                <h3 className="text-lg font-bold text-slate-700">خامساً: العلامات الحيوية</h3>
               </div>
-              <OrdersPanel
-                presets={COMMON_LABS}
-                selected={labSelected}
-                setSelected={setLabSelected}
-                custom={labCustom}
-                setCustom={setLabCustom}
-              />
-            </div> */}
-            {/* <div className={sectionCls}>
+              <div className="p-3 grid grid-cols-2 gap-2" dir="rtl">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-600 mb-1">الضغط الانقباضي</label>
+                  <input value={vitals.bpSys} onChange={(e) => setVitals({ ...vitals, bpSys: e.target.value })} placeholder="mmHg" className={`${inputCls} text-xs py-1.5`} />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-600 mb-1">الضغط الانبساطي</label>
+                  <input value={vitals.bpDia} onChange={(e) => setVitals({ ...vitals, bpDia: e.target.value })} placeholder="mmHg" className={`${inputCls} text-xs py-1.5`} />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-600 mb-1">النبض</label>
+                  <input value={vitals.pulse} onChange={(e) => setVitals({ ...vitals, pulse: e.target.value })} placeholder="نبضة/دقيقة" className={`${inputCls} text-xs py-1.5`} />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-600 mb-1">درجة الحرارة</label>
+                  <input value={vitals.temp} onChange={(e) => setVitals({ ...vitals, temp: e.target.value })} placeholder="°م" className={`${inputCls} text-xs py-1.5`} />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-600 mb-1">تشبع الأكسجين</label>
+                  <input value={vitals.o2sat} onChange={(e) => setVitals({ ...vitals, o2sat: e.target.value })} placeholder="%" className={`${inputCls} text-xs py-1.5`} />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-600 mb-1">الوزن (كجم)</label>
+                  <input value={vitals.weight} onChange={(e) => setVitals({ ...vitals, weight: e.target.value })} placeholder="كجم" className={`${inputCls} text-xs py-1.5`} />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-600 mb-1">الطول (سم)</label>
+                  <input value={vitals.height} onChange={(e) => setVitals({ ...vitals, height: e.target.value })} placeholder="سم" className={`${inputCls} text-xs py-1.5`} />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-600 mb-1">مؤشر كتلة الجسم</label>
+                  <div className={`${inputCls} text-sm py-1.5 bg-slate-50 text-slate-500`}>{bmi || "—"}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className={sectionCls}>
               <div className={headerCls}>
-                <span className="w-2 h-2 rounded-full bg-violet-400" />
-                <h3 className="text-lg font-bold text-slate-700">طلبات الأشعة</h3>
-                <span className="mr-auto text-sm text-slate-400">RAD</span>
+                <span className="w-2 h-2 rounded-full bg-amber-400" />
+                <h3 className="text-lg font-bold text-slate-700">سادساً: عوامل الخطر</h3>
               </div>
-              <OrdersPanel
-                presets={COMMON_RAD}
-                selected={radSelected}
-                setSelected={setRadSelected}
-                custom={radCustom}
-                setCustom={setRadCustom}
-              />
-            </div> */}
+              <div className="p-5 grid grid-cols-2 gap-4" dir="rtl">
+                {RISK_FACTORS.map((r) => (
+                  <label key={r} className="flex items-center gap-2 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={riskFactors.includes(r)}
+                      onChange={() => toggleRisk(r)}
+                      className="w-5 h-5 rounded border-slate-300 accent-teal-600 cursor-pointer"
+                    />
+                    <span className="text-sm font-semibold text-slate-600 group-hover:text-slate-900 transition">{r}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
           </div>
 
         </div>{/* نهاية القسم السريري */}

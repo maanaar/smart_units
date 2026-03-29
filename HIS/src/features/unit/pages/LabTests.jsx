@@ -2,13 +2,7 @@ import { useState } from 'react'
 import { FlaskConical, Clock, CheckCircle2, AlertTriangle, Search } from 'lucide-react'
 import ListView from '../components/ListView'
 import Card from '../../dashboards/components/cards'
-
-const labStats = [
-  { title: 'إجمالي الطلبات',  stat: '٣',  description: 'جميع طلبات التحاليل اليوم', icon: <FlaskConical size={20} /> },
-  { title: 'قيد الانتظار',    stat: '١',  description: 'طلبات لم تُنجز بعد',         icon: <Clock size={20} />       },
-  { title: 'مكتملة',          stat: '٢',  description: 'تحاليل جاهزة للاستلام',      icon: <CheckCircle2 size={20} /> },
-  { title: 'عاجلة',           stat: '٠',  description: 'حالات تستدعي الأولوية',      icon: <AlertTriangle size={20} /> },
-]
+import useAgialStore from '../store'
 
 const columnsLab = [
   { key: 'date',        title: 'التاريخ',     type: 'date'  },
@@ -18,36 +12,20 @@ const columnsLab = [
   { key: 'tests',       title: 'التحاليل',    type: 'tag3'  },
 ]
 
-const dataLab = [
-  {
-    date: '16/03/2026',
-    patientName: 'فاطمة أحمد محمود',
-    lab:      ['المختبر', 'ألفا'],
-    template: ['تعداد الدم الكامل', 'فحوصات تكيس المبايض'],
-    tests:    ['١٧ هيدروكسي ب٤', '١٧ هيدروكسي ب', '١٧ هيدروكسي ب٤', '١٧ هيدروكسي ب'],
-  },
-  {
-    date: '17/03/2026',
-    patientName: 'محمد علي حسن',
-    lab:      ['المختبر'],
-    template: ['فحص الكبد', 'الغدة الدرقية'],
-    tests:    ['ALT', 'AST', 'TSH', 'T4'],
-  },
-  {
-    date: '18/03/2026',
-    patientName: 'نورة سالم الغامدي',
-    lab:      ['ألفا'],
-    template: ['فحص السكر'],
-    tests:    ['HbA1c', 'Fasting Glucose'],
-  },
-]
-
 export default function LabTestsAR() {
+  const labRequests = useAgialStore((s) => s.labRequests)
   const [search, setSearch] = useState('')
 
-  const filtered = dataLab.filter(
+  const filtered = labRequests.filter(
     r => r.patientName.includes(search) || search === ''
   )
+
+  const labStats = [
+    { title: 'إجمالي الطلبات', stat: String(labRequests.length), description: 'جميع طلبات التحاليل اليوم', icon: <FlaskConical size={20} /> },
+    { title: 'قيد الانتظار',   stat: String(labRequests.length), description: 'طلبات لم تُنجز بعد',        icon: <Clock size={20} />       },
+    { title: 'مكتملة',         stat: '٠',                        description: 'تحاليل جاهزة للاستلام',     icon: <CheckCircle2 size={20} /> },
+    { title: 'عاجلة',          stat: '٠',                        description: 'حالات تستدعي الأولوية',     icon: <AlertTriangle size={20} /> },
+  ]
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50/40" dir="rtl">
@@ -65,7 +43,7 @@ export default function LabTestsAR() {
         </div>
         <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
           <FlaskConical size={14} />
-          {dataLab.length} طلبات
+          {labRequests.length} طلبات
         </span>
       </div>
 
