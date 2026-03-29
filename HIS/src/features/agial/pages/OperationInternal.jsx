@@ -122,7 +122,16 @@ const alerts = [
     pulse: false,
   },
 ];
-
+ const icdContent = [
+  { subtitle: 'إجمالي التشخيصات المسجلة', number: '10,800'},
+  { subtitle: 'تشخيصات الأمراض المزمنة', number: '4,200', percentage: '38%' },
+  { subtitle: 'أكثر التشخيصات شيوعاً', text: ['Gastroenteritis', 'Hypertension', 'Type 2 Diabetes'] },
+]
+const doctorContent = [
+  { subtitle: 'متوسط عدد المرضى يومياً / طبيب', number: '28' },
+  { subtitle: 'متوسط زمن الكشف', number: '12 دقيقة' },
+  { subtitle: 'إجمالي الكشوفات المسجلة بالنظام', number: '12,450' },
+]
 export default function OperationInternal() {
   const [date, setDate] = useState('')
   return (
@@ -139,7 +148,6 @@ export default function OperationInternal() {
 
       <div className="flex-1 overflow-y-auto p-6 space-y-8">
         <AlertCard alerts={alerts} />
-        <StatsCards/>
         {/* ══════ أولاً: إجمالي الزيارات ══════ */}
         <section>
           <h2 className="text-lg font-bold text-gray-800 mb-4">أولاً: إجمالي زيارات العيادات الخارجية 👥</h2>
@@ -186,7 +194,8 @@ export default function OperationInternal() {
           <h2 className="text-lg font-bold text-gray-800 mb-4">ثالثاً ورابعاً: الإجراءات والتشخيصات</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <DashboardBoxes header={procHeader} content={procContent} text={procText} />
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+            <StatsCards title={"التشخيصات المرضية (ICD-11)"} content={icdContent}/>
+            {/* <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
               <h3 className="font-bold text-gray-800 mb-4">التشخيصات المرضية (ICD-11)</h3>
               <div className="space-y-3">
                 {diagnosisItems.map((d) => (
@@ -207,7 +216,7 @@ export default function OperationInternal() {
                   ))}
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </section>
 
@@ -222,7 +231,7 @@ export default function OperationInternal() {
           <h2 className="text-lg font-bold text-gray-800 mb-4">سادساً وسابعاً: الأداء وزمن الانتظار</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Waiting time */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col justify-center">
               <h3 className="font-bold text-gray-800 mb-4">مؤشرات زمن الانتظار</h3>
               <div className="grid grid-cols-2 gap-6">
                 {waitStats.map((w) => (
@@ -234,9 +243,9 @@ export default function OperationInternal() {
                 ))}
               </div>
             </div>
-            <StatsCards/>
+            <StatsCards title={" مؤشرات أداء الأطباء (Doctor KPIs)"} content={doctorContent}/>
             {/* Doctor KPIs */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+            {/* <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
               <h3 className="font-bold text-gray-800 mb-4">(Doctor KPIs) مؤشرات أداء الأطباء</h3>
               <div className="space-y-4">
                 {doctorKPIs.map((k) => (
@@ -246,7 +255,7 @@ export default function OperationInternal() {
                   </div>
                 ))}
               </div>
-            </div>
+            </div> */}
           </div>
         </section>
 
