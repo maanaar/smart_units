@@ -1,24 +1,26 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
-import Login from './features/auth/pages/Login';
-import PatientInfo from './features/unit/pages/PatientInfo';
-import CalendarPage from './features/unit/pages/CalendarPage';
-import ReceptionPage from './features/unit/pages/ReceptionPage';
-import AppointmentsListPage from './features/unit/pages/AppointmentsListPage';
-import DoctorScreen from './features/unit/pages/Doctor';
-import AgialDashboard from './features/centcom/pages/AgialDashboard';
-import UnitDashboard from './features/centcom/pages/UnitDashboard';
-import CentComPage from './features/centcom/pages/CentComPage';
 import Sidebar from './components/layout/Sidebar';
 import useAuthStore from './features/auth/store';
-import NursingPage from './features/unit/pages/NursingPage';
-import LabTestsAR from './features/unit/pages/LabTests';
-import RadTestsAR from './features/unit/pages/RadTests';
-import PatientsDashboard from './features/dashboards/pages/PatientsDashboard';
-import OperationsDashboard from './features/dashboards/pages/OperationsDashboard';
-import PharmacyDashboard from './features/dashboards/pages/PharmacyDashboard';
-import OperationInternal from './features/unit/pages/OperationInternal';
-import EmergencyPage from './features/unit/pages/EmergencyPage';
-import ExternalServicesPage from './features/unit/pages/ExternalServicesPage';
+
+const Login = lazy(() => import('./features/auth/pages/Login'));
+const PatientInfo = lazy(() => import('./features/unit/pages/PatientInfo'));
+const CalendarPage = lazy(() => import('./features/unit/pages/CalendarPage'));
+const ReceptionPage = lazy(() => import('./features/unit/pages/ReceptionPage'));
+const AppointmentsListPage = lazy(() => import('./features/unit/pages/AppointmentsListPage'));
+const DoctorScreen = lazy(() => import('./features/unit/pages/Doctor'));
+const AgialDashboard = lazy(() => import('./features/centcom/pages/AgialDashboard'));
+const UnitDashboard = lazy(() => import('./features/centcom/pages/UnitDashboard'));
+const CentComPage = lazy(() => import('./features/centcom/pages/CentComPage'));
+const NursingPage = lazy(() => import('./features/unit/pages/NursingPage'));
+const LabTestsAR = lazy(() => import('./features/unit/pages/LabTests'));
+const RadTestsAR = lazy(() => import('./features/unit/pages/RadTests'));
+const PatientsDashboard = lazy(() => import('./features/dashboards/pages/PatientsDashboard'));
+const OperationsDashboard = lazy(() => import('./features/dashboards/pages/OperationsDashboard'));
+const PharmacyDashboard = lazy(() => import('./features/dashboards/pages/PharmacyDashboard'));
+const OperationInternal = lazy(() => import('./features/unit/pages/OperationInternal'));
+const EmergencyPage = lazy(() => import('./features/unit/pages/EmergencyPage'));
+const ExternalServicesPage = lazy(() => import('./features/unit/pages/ExternalServicesPage'));
 
 function Protected() {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
@@ -36,6 +38,7 @@ function Protected() {
 export default function App() {
   return (
     <BrowserRouter>
+      <Suspense fallback={<div className="flex h-screen items-center justify-center text-gray-400">جاري التحميل...</div>}>
       <Routes>
         <Route path="/login" element={<Login />} />
 
@@ -63,6 +66,7 @@ export default function App() {
 
         <Route path="*" element={<Navigate to="/unit/operationinternal" replace />} />
       </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }
