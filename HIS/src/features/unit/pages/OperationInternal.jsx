@@ -5,6 +5,8 @@ import Card from '../../dashboards/components/cards'
 import MiniChart from '../../dashboards/components/MiniChart'
 import DashboardHeader from '../../../components/ui/DashboardHeader'
 import LocationFilters from '../../dashboards/components/LocationFilters'
+import AlertCard from '../components/alert'
+import StatsCards from '../components/services'
 
 /* ───── أولاً: إجمالي زيارات العيادات الخارجية ───── */
 const visitStats = [
@@ -99,7 +101,46 @@ const doctorKPIs = [
   { label: 'متوسط زمن الكشف',                value: '12 دقيقة' },
   { label: 'إجمالي الكشوفات المسجلة بالنظام', value: '12,450' },
 ]
-
+const alerts = [
+  {
+    id: 1,
+    type: "outbreak",
+    severity: "critical",
+    titleAr: "تفشٍّ محتمل (Possible Outbreak)",
+    subtitleAr: "Gastroenteritis",
+    detailAr: "خلال 3 أيار 27 - بمنطقة السلام (El Salam)",
+    icon: "⚠️",
+    bg: "from-red-600 to-red-700",
+    border: "border-red-400",
+    badge: "bg-red-900/40 text-red-200",
+    badgeText: "حرج",
+    pulse: true,
+  },
+  {
+    id: 2,
+    type: "waiting",
+    severity: "warning",
+    titleAr: "وقت انتظار مرتفع (High Waiting Time)",
+    subtitleAr: "",
+    detailAr: "متوسط الطاولة الفردي: متوسط الانتظار > 45 دقيقة حالياً",
+    icon: "🕐",
+    bg: "from-orange-500 to-orange-600",
+    border: "border-orange-400",
+    badge: "bg-orange-900/40 text-orange-200",
+    badgeText: "تحذير",
+    pulse: false,
+  },
+];
+ const icdContent = [
+  { subtitle: 'إجمالي التشخيصات المسجلة', number: '10,800'},
+  { subtitle: 'تشخيصات الأمراض المزمنة', number: '4,200', percentage: '38%' },
+  { subtitle: 'أكثر التشخيصات شيوعاً', text: ['Gastroenteritis', 'Hypertension', 'Type 2 Diabetes'] },
+]
+const doctorContent = [
+  { subtitle: 'متوسط عدد المرضى يومياً / طبيب', number: '28' },
+  { subtitle: 'متوسط زمن الكشف', number: '12 دقيقة' },
+  { subtitle: 'إجمالي الكشوفات المسجلة بالنظام', number: '12,450' },
+]
 export default function OperationInternal() {
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
@@ -119,7 +160,7 @@ export default function OperationInternal() {
       />
 
       <div className="flex-1 overflow-y-auto p-6 space-y-8">
-
+        <AlertCard alerts={alerts} />
         {/* ══════ أولاً: إجمالي الزيارات ══════ */}
         <section>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -200,7 +241,8 @@ export default function OperationInternal() {
         <section>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <DashboardBoxes header={procHeader} content={procContent} text={procText} />
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+            <StatsCards title={"التشخيصات المرضية (ICD-11)"} content={icdContent}/>
+            {/* <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
               <h3 className="font-bold text-gray-800 mb-4">التشخيصات المرضية (ICD-11)</h3>
               <div className="space-y-3">
                 {diagnosisItems.map((d) => (
@@ -221,7 +263,7 @@ export default function OperationInternal() {
                   ))}
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </section>
 
@@ -234,7 +276,7 @@ export default function OperationInternal() {
         <section>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Waiting time */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col justify-center">
               <h3 className="font-bold text-gray-800 mb-4">مؤشرات زمن الانتظار</h3>
               <div className="grid grid-cols-2 gap-6">
                 {waitStats.map((w) => (
@@ -246,8 +288,9 @@ export default function OperationInternal() {
                 ))}
               </div>
             </div>
+            <StatsCards title={" مؤشرات أداء الأطباء (Doctor KPIs)"} content={doctorContent}/>
             {/* Doctor KPIs */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+            {/* <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
               <h3 className="font-bold text-gray-800 mb-4">(Doctor KPIs) مؤشرات أداء الأطباء</h3>
               <div className="space-y-4">
                 {doctorKPIs.map((k) => (
@@ -257,7 +300,7 @@ export default function OperationInternal() {
                   </div>
                 ))}
               </div>
-            </div>
+            </div> */}
           </div>
         </section>
 
