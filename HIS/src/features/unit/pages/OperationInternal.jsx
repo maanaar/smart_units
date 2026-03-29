@@ -21,6 +21,10 @@ const genderData = [
   { name: 'ذكور', value: 48 },
   { name: 'إناث', value: 52 },
 ]
+const nationalityData = [
+  { name: 'مصرى', value: 20 },
+  { name: 'غير مصرى', value: 52 },
+]
 
 /* ───── التوزيع حسب الفئات العمرية ───── */
 const ageData = [
@@ -174,8 +178,20 @@ export default function OperationInternal() {
 
         {/* ── التوزيعات + أعلى العيادات ── */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <MiniChart title="التوزيع حسب النوع والجنسية" type="pie" data={genderData} dataKey="value" nameKey="name" />
-          <MiniChart title="التوزيع حسب الفئات العمرية" type="bar" data={ageData} dataKey="value" nameKey="name" color="#3b82f6" />
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 " dir="rtl">
+            <p className="text-sm font-semibold text-gray-600 mb-3">التوزيع حسب النوع والجنسية</p>
+            <div className='flex w-100'>
+              <div className='w-[50%]'>
+                <MiniChart type="pie" data={genderData} dataKey="value" nameKey="name" />
+              </div>
+              <div className='w-[50%]'>
+              <MiniChart type="pie" data={nationalityData} dataKey="value" nameKey="name" />
+              </div>
+              </div>
+          </div>
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4" dir="rtl">
+            <MiniChart title="التوزيع حسب الفئات العمرية" type="bar" data={ageData} dataKey="value" nameKey="name" color="#3b82f6" />
+            </div>
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
             <p className="text-sm font-semibold text-gray-600 mb-4">أعلى العيادات والتخصصات تردداً</p>
             <div className="space-y-3">

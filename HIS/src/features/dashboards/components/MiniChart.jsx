@@ -24,7 +24,7 @@ function CustomTooltip({ active, payload, label }) {
 /** type: 'area' | 'bar' | 'pie' */
 export default function MiniChart({ title, type = 'area', data, dataKey, nameKey = 'name', color = '#0d9488', height = 130 }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4" dir="rtl">
+    <div className='w-full'>
       {title && <p className="text-sm font-semibold text-gray-600 mb-3">{title}</p>}
 
       {type === 'area' && (
@@ -79,6 +79,6 @@ export default function MiniChart({ title, type = 'area', data, dataKey, nameKey
           ))}
         </div>
       )}
-    </div>
+   </div>
   )
 }
