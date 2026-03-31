@@ -7,8 +7,8 @@ export default function StatsCards({ title, content }) {
 
           <div className="flex flex-col gap-4">
         {/* Row 1: إجمالي التشخيصات المسجلة */}
-        {content && content.map((item) => (
-  <div className="flex  justify-between border-b border-gray-100 pb-4 last:border-b-0 " >
+        {content && content.map((item, i) => (
+  <div key={item.subtitle ?? i} className="flex  justify-between border-b border-gray-100 pb-4 last:border-b-0 " >
                   <span className="text-gray-600 text-base">{item.subtitle}</span>
             <span className="text-gray-900 font-bold text-lg">
               {item.percentage && (

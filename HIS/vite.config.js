@@ -12,10 +12,14 @@ export default defineConfig({
   ],
   server: {
     proxy: {
+      '/smart_unit': {
+        target: 'http://localhost:8077',
+        changeOrigin: true,
+      },
       '/id_scanner': {
         target: 'http://209.38.41.253:8006',
         changeOrigin: true,
-      }
+      },
     }
   }
 })

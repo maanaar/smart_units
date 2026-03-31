@@ -1,7 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_DOCTORS, MOCK_SPECIALTIES, MOCK_EVENTS } from '../mockCalendar';
+import { getDoctors, listBookings } from '../../../services/odooClient';
 import useAgialStore from '../store';
+
+const ODOO_TO_STATUS = {
+  Draft: 'ON_THE_FLY', Confirmed: 'CONFIRMED', Arrived: 'ARRIVED',
+  'In Patient': 'IN_CHAIR', 'In Payment': 'IN_PAYMENT', Paid: 'PAID',
+  done: 'CLOSED', Cancelled: 'CLOSED', Missed: 'CLOSED', doc_cancel: 'CLOSED',
+};
+
+const addMins = (isoStr, mins) => {
+  const d = new Date(isoStr.replace(' ', 'T'));
+  d.setMinutes(d.getMinutes() + mins);
+  return d.toISOString().replace('T', ' ').slice(0, 19);
+};
 
 // ── Status colours ─────────────────────────────────────────────────────────────
 const STATUS = {
@@ -120,30 +132,55 @@ function SpecialtyColumn({ specialty, events, dateStr, onEventClick, onSlotClick
 export default function CalendarPage() {
   const navigate = useNavigate();
   const [date,        setDate]        = useState(new Date());
+  const [doctors,     setDoctors]     = useState([]);
   const [specialties, setSpecialties] = useState([]);
   const [events,      setEvents]      = useState([]);
 
   const storeAppointments = useAgialStore((s) => s.appointments);
 
-  useEffect(() => { setSpecialties(MOCK_SPECIALTIES); }, []);
+  // Fetch doctors once
+  useEffect(() => {
+    getDoctors().then(list => {
+      setDoctors(list);
+      const seen = new Set();
+      const specs = [];
+      list.forEach(d => {
+        if (d.specialty && !seen.has(d.specialty)) {
+          seen.add(d.specialty);
+          specs.push({ id: d.specialty, label: d.specialty });
+        }
+      });
+      setSpecialties(specs);
+    }).catch(() => {});
+  }, []);
 
-  // Merge mock + store appointments
+  // Fetch bookings for selected date + merge store appointments
   useEffect(() => {
     const dateStr = toISO(date);
-    const mockForDate = MOCK_EVENTS.filter(e => e.start.startsWith(dateStr));
-    const savedForDate = storeAppointments.filter(e => e.start?.startsWith(dateStr));
-    const merged = [...mockForDate];
-    savedForDate.forEach(sa => {
-      const idx = merged.findIndex(m => m.id === sa.id);
-      if (idx >= 0) merged[idx] = sa;
-      else merged.push(sa);
+    listBookings({ date: dateStr }).then(bookings => {
+      const fromOdoo = bookings.map(b => ({
+        id: String(b.id),
+        patientName: b.patientName || '',
+        doctorId: b.doctor_id,
+        start: b.start || '',
+        end: addMins(b.start || `${dateStr} 09:00:00`, 30),
+        status: ODOO_TO_STATUS[b.status] || 'ON_THE_FLY',
+        mrn: b.mrn || '',
+      }));
+      const savedForDate = storeAppointments.filter(e => e.start?.startsWith(dateStr));
+      const merged = [...fromOdoo];
+      savedForDate.forEach(sa => {
+        if (!merged.find(m => m.id === sa.id)) merged.push(sa);
+      });
+      setEvents(merged);
+    }).catch(() => {
+      const dateStr2 = toISO(date);
+      setEvents(storeAppointments.filter(e => e.start?.startsWith(dateStr2)));
     });
-    setEvents(merged);
   }, [date, storeAppointments]);
 
-  // Navigate to reception page with slot data
   const handleEventClick = (event) => {
-    const doctor = MOCK_DOCTORS.find(d => d.id === event.doctorId);
+    const doctor = doctors.find(d => d.id === event.doctorId);
     navigate('/unit/ReceptionPage', {
       state: {
         slot: {
@@ -255,7 +292,7 @@ export default function CalendarPage() {
               الوقت
             </div>
             {specialties.map(spec => {
-              const specDoctors = MOCK_DOCTORS.filter(d => d.specialty === spec.id);
+              const specDoctors = doctors.filter(d => d.specialty === spec.id);
               const specEvents  = events.filter(e => specDoctors.some(d => d.id === e.doctorId));
               return (
                 <div key={spec.id} className="py-3 px-3 border-r border-gray-100 last:border-0 flex items-center gap-2">
@@ -290,7 +327,7 @@ export default function CalendarPage() {
             </div>
 
             {specialties.map(spec => {
-              const specDoctors = MOCK_DOCTORS.filter(d => d.specialty === spec.id);
+              const specDoctors = doctors.filter(d => d.specialty === spec.id);
               const specEvents  = events.filter(e => specDoctors.some(d => d.id === e.doctorId));
               return (
                 <SpecialtyColumn

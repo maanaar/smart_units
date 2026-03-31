@@ -1,26 +1,23 @@
 import axios from 'axios';
 
-const BASE_URL = import.meta.env.VITE_ODOO_URL || 'http://localhost:8077';
+// Empty string = relative URL → goes through Vite proxy → no CORS.
+// Set VITE_ODOO_URL only for production (absolute URL to the server).
+const BASE_URL = import.meta.env.VITE_ODOO_URL || '';
 
 const client = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
 });
 
-/**
- * Odoo type='json' routes expect JSON-RPC wrapping.
- */
 async function call(endpoint, params = {}) {
-  const { data } = await client.post(endpoint, {
-    jsonrpc: '2.0',
-    method: 'call',
-    params,
-  });
-  if (data.error) {
-    throw new Error(data.error.data?.message || data.error.message || 'Request failed');
+  try {
+    const { data } = await client.post(endpoint, params);
+    if (data.error) throw new Error(data.error);
+    return data;
+  } catch (err) {
+    console.error(`[odoo] ${endpoint}`, err?.response?.status, err?.response?.data || err?.message);
+    throw err;
   }
-  return data.result;
 }
 
 // ── Auth ─────────────────────────────────────────────────────────────────────
@@ -30,6 +27,10 @@ export async function odooLogin(db, login, password) {
 }
 
 // ── Patient ───────────────────────────────────────────────────────────────────
+
+export async function listPatients({ limit = 20, offset = 0, gender = '', patient_type = '' } = {}) {
+  return call('/smart_unit/api/patients', { limit, offset, gender, patient_type });
+}
 
 export async function searchPatients(term, limit = 20) {
   const result = await call('/smart_unit/api/patient/search', { term, limit });

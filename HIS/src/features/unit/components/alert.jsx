@@ -140,6 +140,7 @@ export default function AlertCard({ alerts }) {
                 <div className="flex flex-col gap-3 sm:gap-4">
                     {alerts.map((alert, i) => (
                          <div
+      key={alert.id ?? i}
       className={`
         relative overflow-hidden rounded-2xl border ${alert.border}
         bg-gradient-to-r ${alert.bg}

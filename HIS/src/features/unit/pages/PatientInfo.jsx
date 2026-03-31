@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Search, X, User } from 'lucide-react';
+import { Search, X, User, ChevronLeft, ChevronRight } from 'lucide-react';
 
 import useAgialStore from '../store';
-import { MOCK_PATIENT, MOCK_VISITS, MOCK_PATIENTS_LIST } from '../mockData';
+import { searchPatients, getPatient, getPatientVisits, listPatients } from '../../../services/odooClient';
 
 import PatientHeader from '../components/PatientHeader';
 import VisitHistory from '../components/VisitHistory';
@@ -30,20 +30,20 @@ function ComingSoon({ label }) {
   );
 }
 
-// ── Search bar (filters mock list) ─────────────────────────────────────────
+// ── Search bar (queries Odoo) ─────────────────────────────────────────────
 
 function PatientSearchBar({ onSelect }) {
-  const [query, setQuery] = useState('');
-  const [open, setOpen]   = useState(false);
+  const [query, setQuery]     = useState('');
+  const [results, setResults] = useState([]);
+  const [open, setOpen]       = useState(false);
 
-  const results = query.trim().length >= 1
-    ? MOCK_PATIENTS_LIST.filter((p) =>
-        p.name.includes(query) ||
-        p.english_name.toLowerCase().includes(query.toLowerCase()) ||
-        p.mrn.toLowerCase().includes(query.toLowerCase()) ||
-        p.mobile.includes(query)
-      )
-    : [];
+  useEffect(() => {
+    if (query.trim().length < 2) { setResults([]); return; }
+    const t = setTimeout(() => {
+      searchPatients(query).then(setResults).catch(() => setResults([]));
+    }, 300);
+    return () => clearTimeout(t);
+  }, [query]);
 
   const pick = (patient) => {
     setQuery('');
@@ -96,54 +96,122 @@ function PatientSearchBar({ onSelect }) {
   );
 }
 
-// ── Patient List ────────────────────────────────────────────────────────────
+const PAGE_SIZE = 20;
 
-const PATIENT_LIST_COLUMNS = [
-  { key: 'name',         title: 'الاسم'               },
-  { key: 'english_name', title: 'الاسم بالإنجليزية'   },
-  { key: 'mrn',          title: 'رقم الملف'           },
-  { key: 'mobile',       title: 'الجوال'              },
-];
+const GENDER_STYLE = {
+  male:   { label: 'ذكر',   bg: 'bg-blue-50',   text: 'text-blue-700',   avatar: 'bg-blue-100 text-blue-700'   },
+  female: { label: 'أنثى',  bg: 'bg-pink-50',   text: 'text-pink-700',   avatar: 'bg-pink-100 text-pink-700'   },
+};
+const TYPE_STYLE = {
+  Normal:    { label: 'عادي',   bg: 'bg-gray-100',   text: 'text-gray-600'   },
+  Insurance: { label: 'تأمين',  bg: 'bg-amber-50',   text: 'text-amber-700'  },
+  VIP:       { label: 'VIP',    bg: 'bg-purple-50',  text: 'text-purple-700' },
+};
+
+function Avatar({ name, gender }) {
+  const st = GENDER_STYLE[gender?.toLowerCase()] || { avatar: 'bg-teal-100 text-teal-700' };
+  const initials = (name || '?').split(' ').map(w => w[0]).slice(0, 2).join('');
+  return (
+    <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${st.avatar}`}>
+      {initials}
+    </div>
+  );
+}
+
+function SkeletonRows() {
+  return Array.from({ length: 8 }).map((_, i) => (
+    <tr key={i} className="animate-pulse">
+      <td className="px-4 py-3"><div className="flex items-center gap-3"><div className="w-9 h-9 rounded-full bg-gray-200" /><div className="space-y-1.5"><div className="h-3 w-28 bg-gray-200 rounded" /><div className="h-2.5 w-20 bg-gray-100 rounded" /></div></div></td>
+      <td className="px-4 py-3"><div className="h-3 w-20 bg-gray-200 rounded" /></td>
+      <td className="px-4 py-3"><div className="h-3 w-24 bg-gray-200 rounded" /></td>
+      <td className="px-4 py-3"><div className="h-3 w-16 bg-gray-200 rounded" /></td>
+      <td className="px-4 py-3"><div className="h-5 w-12 bg-gray-200 rounded-full" /></td>
+      <td className="px-4 py-3"><div className="h-5 w-14 bg-gray-200 rounded-full" /></td>
+    </tr>
+  ));
+}
 
 function PatientList({ onSelect }) {
-  const [query, setQuery] = useState('');
-  const queuePatients = useAgialStore((s) => s.queuePatients);
+  const [query, setQuery]         = useState('');
+  const [genderFilter, setGender] = useState('');
+  const [typeFilter, setType]     = useState('');
+  const [patients, setPatients]   = useState([]);
+  const [total, setTotal]         = useState(0);
+  const [page, setPage]           = useState(0);
+  const [loading, setLoading]     = useState(false);
 
-  const filtered = MOCK_PATIENTS_LIST.filter((p) =>
-    p.name.includes(query) ||
-    p.english_name.toLowerCase().includes(query.toLowerCase()) ||
-    p.mrn.toLowerCase().includes(query.toLowerCase()) ||
-    p.mobile.includes(query)
-  );
+  const loadPage = useCallback((p, gender = genderFilter, type = typeFilter) => {
+    setLoading(true);
+    listPatients({ limit: PAGE_SIZE, offset: p * PAGE_SIZE, gender, patient_type: type })
+      .then(({ patients: rows, total: t }) => { setPatients(rows); setTotal(t); setPage(p); })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, [genderFilter, typeFilter]);
 
-  const filteredQueue = queuePatients.filter((e) =>
-    !query.trim() ||
-    e.patient.name.toLowerCase().includes(query.toLowerCase()) ||
-    (e.patient.mrn || '').toLowerCase().includes(query.toLowerCase()) ||
-    (e.patient.mobile || '').includes(query)
-  );
+  useEffect(() => { loadPage(0); }, []);
+
+  // Search with debounce
+  useEffect(() => {
+    if (query.trim().length === 0) { loadPage(0); return; }
+    if (query.trim().length < 2) return;
+    const t = setTimeout(() => {
+      setLoading(true);
+      searchPatients(query, 50)
+        .then((rows) => { setPatients(rows); setTotal(rows.length); setPage(0); })
+        .catch(console.error)
+        .finally(() => setLoading(false));
+    }, 300);
+    return () => clearTimeout(t);
+  }, [query]);
+
+  // Reload on filter change
+  const applyFilter = (gender, type) => {
+    setGender(gender);
+    setType(type);
+    setQuery('');
+    setLoading(true);
+    listPatients({ limit: PAGE_SIZE, offset: 0, gender, patient_type: type })
+      .then(({ patients: rows, total: t }) => { setPatients(rows); setTotal(t); setPage(0); })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  };
+
+  const isSearching = query.trim().length >= 2;
+  const totalPages  = Math.ceil(total / PAGE_SIZE);
+
+  // Page number buttons (show at most 5)
+  const pageButtons = () => {
+    const pages = [];
+    const start = Math.max(0, page - 2);
+    const end   = Math.min(totalPages - 1, start + 4);
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
+  };
 
   return (
-    <div className="h-full overflow-y-auto bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className=" mx-auto px-4 py-5 flex items-center justify-between gap-4">
+    <div className="h-full flex flex-col bg-gray-50" dir="rtl">
+
+      {/* ── Header ── */}
+      <div className="bg-white border-b border-gray-200 flex-shrink-0 px-6 py-4 space-y-3">
+        <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-1 h-7 rounded-full bg-emerald-700/80" />
             <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-emerald-900 to-teal-700 bg-clip-text text-transparent">
               المرضى
             </h1>
-            <span className="text-xs font-semibold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
-              {filtered.length}
+            <span className="text-xs font-semibold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full min-w-[2rem] text-center">
+              {loading ? '…' : total.toLocaleString('ar-SA')}
             </span>
           </div>
-          <div className="relative w-64">
+
+          {/* Search */}
+          <div className="relative w-80">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="ابحث بالاسم، رقم الملف، الجوال..."
-              className="w-full pl-9 pr-3 py-1.5 text-sm rounded-md border border-gray-300 bg-white focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 transition-all"
+              className="w-full pl-9 pr-8 py-2 text-sm rounded-lg border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/40 focus:border-teal-400 transition-all"
             />
             {query && (
               <button onClick={() => setQuery('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
@@ -152,54 +220,154 @@ function PatientList({ onSelect }) {
             )}
           </div>
         </div>
-      </div>
 
-      {/* Table view */}
-      <div className="mx-auto px-6 py-5">
-        <ListView
-          columns={PATIENT_LIST_COLUMNS}
-          data={filtered}
-          onRowClick={(p) => onSelect(p.id)}
-        />
-      </div>
+        {/* Filters */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs text-gray-400 font-medium">تصفية:</span>
 
-      {/* Queue cards */}
-      <div className="mx-auto px-6 pb-5 space-y-2">
-        {/* Today's reception queue */}
-        {filteredQueue.length > 0 && (
-          <>
-            <p className="text-xs font-bold text-teal-700 uppercase tracking-wider mb-1">تسجيلات اليوم</p>
-            {filteredQueue.map((entry) => (
+          {/* Gender */}
+          {['', 'male', 'female'].map((g) => {
+            const label = g === '' ? 'الكل' : GENDER_STYLE[g]?.label;
+            const active = genderFilter === g;
+            return (
               <button
-                key={entry.qid}
-                onClick={() => onSelect(`q-${entry.qid}`)}
-                className="w-full flex items-center gap-4 bg-teal-50 border border-teal-200 rounded-xl px-5 py-4 hover:border-teal-400 hover:shadow-sm transition-all text-left group"
-              >
-                <div className="w-10 h-10 rounded-full bg-teal-100 border border-teal-300 flex items-center justify-center flex-shrink-0">
-                  <User className="w-5 h-5 text-teal-600" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-900 group-hover:text-teal-700 transition-colors">{entry.patient.name}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">{entry.visit?.clinic} · {entry.visit?.doctor}</p>
-                </div>
-                <div className="text-right flex-shrink-0">
-                  <p className="text-xs font-mono font-medium text-gray-600">{entry.patient.mrn || "—"}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">{entry.patient.mobile}</p>
-                </div>
-                <span className="text-xs font-semibold bg-teal-200 text-teal-800 px-2 py-0.5 rounded-full">جديد</span>
-                <svg className="w-4 h-4 text-gray-300 group-hover:text-teal-500 transition-colors flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-            ))}
-            {filtered.length > 0 && <div className="border-t border-gray-200 my-2" />}
-          </>
-        )}
+                key={g || 'all-g'}
+                onClick={() => applyFilter(g, typeFilter)}
+                className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${
+                  active
+                    ? 'bg-teal-600 text-white border-teal-600'
+                    : 'bg-white text-gray-500 border-gray-200 hover:border-teal-300 hover:text-teal-600'
+                }`}
+              >{label}</button>
+            );
+          })}
 
-        {filtered.length === 0 && filteredQueue.length === 0 && (
-          <div className="text-center py-16 text-gray-400 text-sm">لا يوجد مرضى</div>
-        )}
+          <div className="w-px h-4 bg-gray-200 mx-1" />
+
+          {/* Patient type */}
+          {[['', 'كل الأنواع'], ['Normal', 'عادي'], ['Insurance', 'تأمين'], ['VIP', 'VIP']].map(([v, l]) => {
+            const active = typeFilter === v;
+            return (
+              <button
+                key={v || 'all-t'}
+                onClick={() => applyFilter(genderFilter, v)}
+                className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${
+                  active
+                    ? 'bg-teal-600 text-white border-teal-600'
+                    : 'bg-white text-gray-500 border-gray-200 hover:border-teal-300 hover:text-teal-600'
+                }`}
+              >{l}</button>
+            );
+          })}
+        </div>
       </div>
+
+      {/* ── Table ── */}
+      <div className="flex-1 overflow-auto">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10">
+            <tr>
+              {['المريض', 'رقم الملف', 'الجوال', 'العمر', 'الجنس', 'النوع'].map((h) => (
+                <th key={h} className="px-4 py-3 text-right text-xs font-semibold text-gray-500 tracking-wide whitespace-nowrap">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100 bg-white">
+            {loading ? (
+              <SkeletonRows />
+            ) : patients.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="text-center py-20 text-gray-400 text-sm">
+                  <User className="w-10 h-10 mx-auto mb-3 text-gray-200" />
+                  لا يوجد مرضى
+                </td>
+              </tr>
+            ) : (
+              patients.map((p) => {
+                const gs = GENDER_STYLE[p.gender?.toLowerCase()];
+                const ts = TYPE_STYLE[p.patient_type] || TYPE_STYLE.Normal;
+                return (
+                  <tr
+                    key={p.id}
+                    onClick={() => onSelect(p.id)}
+                    className="hover:bg-teal-50/60 cursor-pointer transition-colors group"
+                  >
+                    {/* Name + avatar */}
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <Avatar name={p.name} gender={p.gender} />
+                        <div className="min-w-0">
+                          <p className="font-semibold text-gray-900 group-hover:text-teal-700 transition-colors truncate">{p.name}</p>
+                          {p.english_name && <p className="text-xs text-gray-400 truncate">{p.english_name}</p>}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 font-mono text-xs text-gray-600 whitespace-nowrap">{p.mrn || '—'}</td>
+                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{p.mobile || '—'}</td>
+                    <td className="px-4 py-3 text-gray-500">{p.age ? `${p.age} سنة` : '—'}</td>
+                    <td className="px-4 py-3">
+                      {gs ? (
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${gs.bg} ${gs.text}`}>
+                          {gs.label}
+                        </span>
+                      ) : <span className="text-gray-400">—</span>}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${ts.bg} ${ts.text}`}>
+                        {ts.label}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* ── Pagination ── */}
+      {!isSearching && totalPages > 1 && (
+        <div className="bg-white border-t border-gray-200 px-6 py-3 flex items-center justify-between flex-shrink-0">
+          <span className="text-xs text-gray-400">
+            عرض {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} من <span className="font-semibold text-gray-600">{total.toLocaleString('ar-SA')}</span> مريض
+          </span>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => loadPage(0)}
+              disabled={page === 0}
+              className="px-2 py-1.5 rounded text-xs text-gray-500 hover:text-teal-600 hover:bg-teal-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >«</button>
+            <button
+              onClick={() => loadPage(page - 1)}
+              disabled={page === 0}
+              className="p-1.5 rounded text-gray-500 hover:text-teal-600 hover:bg-teal-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            ><ChevronRight className="w-4 h-4" /></button>
+
+            {pageButtons().map((p2) => (
+              <button
+                key={p2}
+                onClick={() => loadPage(p2)}
+                className={`w-7 h-7 rounded text-xs font-medium transition-colors ${
+                  p2 === page
+                    ? 'bg-teal-600 text-white'
+                    : 'text-gray-500 hover:text-teal-600 hover:bg-teal-50'
+                }`}
+              >{p2 + 1}</button>
+            ))}
+
+            <button
+              onClick={() => loadPage(page + 1)}
+              disabled={page >= totalPages - 1}
+              className="p-1.5 rounded text-gray-500 hover:text-teal-600 hover:bg-teal-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            ><ChevronLeft className="w-4 h-4" /></button>
+            <button
+              onClick={() => loadPage(totalPages - 1)}
+              disabled={page >= totalPages - 1}
+              className="px-2 py-1.5 rounded text-xs text-gray-500 hover:text-teal-600 hover:bg-teal-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >»</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -297,9 +465,8 @@ export default function PatientInfo() {
 
   useEffect(() => {
     if (!id || isQueueId) return;
-    const match = MOCK_PATIENTS_LIST.find((p) => p.id === Number(id));
-    setSelectedPatient(match ? { ...MOCK_PATIENT, ...match } : MOCK_PATIENT);
-    setVisits(MOCK_VISITS);
+    getPatient(Number(id)).then(setSelectedPatient).catch(() => {});
+    getPatientVisits(Number(id)).then(setVisits).catch(() => {});
   }, [id]);
 
   // No ID → list
