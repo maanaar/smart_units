@@ -30,6 +30,7 @@ const useAgialStore = create(
 
   // ── Reception queue ────────────────────────────────────────────
   queuePatients: [],
+  setQueuePatients: (patients) => set({ queuePatients: patients }),
   addToQueue: (entry) =>
     set((state) => ({
       queuePatients: [...state.queuePatients, { ...entry, qid: Date.now() }],

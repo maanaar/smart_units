@@ -1,29 +1,44 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Scan, Clock, CheckCircle2, AlertTriangle, Search } from 'lucide-react'
 import ListView from '../components/ListView'
 import Card from '../../dashboards/components/cards'
-import useAgialStore from '../store'
+import { listRadRequests } from '../../../services/odooClient'
 
 const columnsRad = [
-  { key: 'daterad',     title: 'التاريخ',     type: 'date'  },
-  { key: 'patientName', title: 'اسم المريض',  type: 'text'  },
-  { key: 'category',    title: 'الفئة',       type: 'tag1'  },
-  { key: 'testsRad',    title: 'الأشعة',      type: 'tag2'  },
+  { key: 'date',        title: 'التاريخ',    type: 'date'  },
+  { key: 'patientName', title: 'اسم المريض', type: 'text'  },
+  { key: 'category',   title: 'المصدر',      type: 'tag1'  },
+  { key: 'testsRad',   title: 'الأشعة',      type: 'tag2'  },
+  { key: 'state',      title: 'الحالة',      type: 'tag3'  },
 ]
 
 export default function RadTestsAR() {
-  const radRequests = useAgialStore((s) => s.radRequests)
+  const [radRequests, setRadRequests] = useState([])
+  const [loading, setLoading] = useState(false)
   const [search, setSearch] = useState('')
 
+  const today = new Date().toISOString().slice(0, 10)
+
+  useEffect(() => {
+    setLoading(true)
+    listRadRequests({ date: today })
+      .then(setRadRequests)
+      .catch(() => setRadRequests([]))
+      .finally(() => setLoading(false))
+  }, [today])
+
   const filtered = radRequests.filter(
-    r => r.patientName.includes(search) || search === ''
+    r => r.patientName?.includes(search) || search === ''
   )
+
+  const done    = radRequests.filter(r => r.state === 'done').length
+  const pending = radRequests.filter(r => r.state !== 'done' && r.state !== 'cancel').length
 
   const radStats = [
     { title: 'إجمالي الطلبات', stat: String(radRequests.length), description: 'جميع طلبات الأشعة اليوم',  icon: <Scan size={20} />          },
-    { title: 'قيد الانتظار',   stat: String(radRequests.length), description: 'طلبات لم تُنجز بعد',        icon: <Clock size={20} />         },
-    { title: 'مكتملة',         stat: '٠',                        description: 'أشعة جاهزة للاستلام',       icon: <CheckCircle2 size={20} />  },
-    { title: 'عاجلة',          stat: '٠',                        description: 'حالات تستدعي الأولوية',     icon: <AlertTriangle size={20} /> },
+    { title: 'قيد الانتظار',   stat: String(pending),            description: 'طلبات لم تُنجز بعد',        icon: <Clock size={20} />         },
+    { title: 'مكتملة',         stat: String(done),               description: 'أشعة جاهزة للاستلام',       icon: <CheckCircle2 size={20} />  },
+    { title: 'ملغاة',          stat: String(radRequests.filter(r => r.state === 'cancel').length), description: 'طلبات ملغاة', icon: <AlertTriangle size={20} /> },
   ]
 
   return (
@@ -42,7 +57,7 @@ export default function RadTestsAR() {
         </div>
         <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold bg-blue-100 text-blue-800 border border-blue-200">
           <Scan size={14} />
-          {radRequests.length} طلبات
+          {loading ? '…' : `${radRequests.length} طلبات`}
         </span>
       </div>
 
@@ -50,33 +65,26 @@ export default function RadTestsAR() {
         {/* Stats */}
         <div className="p-6 grid grid-cols-2 lg:grid-cols-4 gap-4">
           {radStats.map(card => (
-            <Card
-              key={card.title}
-              title={card.title}
-              stat={card.stat}
-              description={card.description}
-              icon={card.icon}
-            />
+            <Card key={card.title} title={card.title} stat={card.stat} description={card.description} icon={card.icon} />
           ))}
         </div>
 
-        {/* Search */}
-        <div className="px-6 mb-4">
-          <div className="relative">
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+        {/* Search + Table */}
+        <div className="px-6 pb-6 space-y-4">
+          <div className="relative max-w-sm">
+            <Search size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
-              type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="ابحث باسم المريض..."
-              className="w-full pr-9 pl-4 py-2.5 text-sm border border-gray-200 rounded-xl bg-white outline-none focus:ring-2 focus:ring-blue-300 shadow-sm"
+              placeholder="بحث باسم المريض…"
+              className="w-full pr-9 pl-3 py-2 text-sm border border-gray-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-teal-300"
             />
           </div>
-        </div>
-
-        {/* Table */}
-        <div className="px-6 pb-6">
-          <ListView columns={columnsRad} data={filtered} />
+          {loading ? (
+            <div className="text-center py-12 text-teal-600 font-semibold">جاري التحميل…</div>
+          ) : (
+            <ListView columns={columnsRad} rows={filtered} />
+          )}
         </div>
       </div>
     </div>

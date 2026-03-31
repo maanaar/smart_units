@@ -2,6 +2,10 @@ import { useState } from "react";
 import { ICD10 } from "../icd10";
 import useAgialStore from "../store";
 import Many2ManyField from "../components/Manytomany-labs";
+import {
+  createOpdVisit, createLabRequest, createRadRequest,
+  createPrescription, updateNursingStatus,
+} from "../../../services/odooClient";
 
 const INPATIENT_URL = "https://sys.agialhospital.net/web#action=634&model=inpatient.admission&view_type=list&cids=1&menu_id=435";
 
@@ -430,15 +434,58 @@ export default function DoctorScreen() {
     medications, labSelected, labCustom, radSelected, radCustom,
   });
 
-  const handleSave = () => {
+  const [saving, setSaving] = useState(false);
+
+  const saveToOdoo = async () => {
+    const patientId = selectedEntry?.patient?.id;
+    if (!patientId) return;
+    const allTests = [...labSelected, ...labCustom];
+    const allRad   = [...radSelected, ...radCustom];
+    const diagText = diagnoses.map(d => `${d.code} - ${d.desc}`).join('\n');
+    const icdCodes = diagnoses.map(d => d.code);
+    const [visitResult] = await Promise.allSettled([
+      createOpdVisit({
+        patient_id: patientId,
+        chief_complaint: chiefComplaint,
+        diagnosis_text: diagText,
+        icd_codes: icdCodes,
+        doctor_id: selectedEntry?.visit?.doctor_id || null,
+        clinic_id: selectedEntry?.visit?.clinic_id || null,
+      }),
+    ]);
+    if (allTests.length > 0) {
+      createLabRequest({ patient_id: patientId, tests: allTests }).catch(() => {});
+    }
+    if (allRad.length > 0) {
+      createRadRequest({ patient_id: patientId, tests: allRad }).catch(() => {});
+    }
+    const validMeds = medications.filter(m => m.drug?.trim());
+    if (validMeds.length > 0) {
+      createPrescription({ patient_id: patientId, medicines: validMeds }).catch(() => {});
+    }
+    return visitResult;
+  };
+
+  const handleSave = async () => {
     if (!selectedQid && selectedQid !== 0) return alert("الرجاء اختيار مريض من قائمة الانتظار أولاً.");
     setSavedData((prev) => ({ ...prev, [selectedQid]: snapshot() }));
+    setSaving(true);
+    try { await saveToOdoo(); } catch (_) {}
+    setSaving(false);
     alert("تم الحفظ!");
   };
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     if (!selectedQid && selectedQid !== 0) return alert("الرجاء اختيار مريض من قائمة الانتظار أولاً.");
     setSavedData((prev) => ({ ...prev, [selectedQid]: snapshot() }));
+    setSaving(true);
+    try {
+      await saveToOdoo();
+      if (selectedEntry?.patient?.id) {
+        await updateNursingStatus(selectedQid, 'done').catch(() => {});
+      }
+    } catch (_) {}
+    setSaving(false);
     updateQueueStatus(selectedQid, "مكتمل");
     alert("تمت الزيارة!");
   };
@@ -943,15 +990,17 @@ export default function DoctorScreen() {
         <div className="flex justify-start gap-3 pb-4">
           <button
             onClick={handleSave}
-            className="px-6 py-2.5 rounded-xl text-sm font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition active:scale-95"
+            disabled={saving}
+            className="px-6 py-2.5 rounded-xl text-sm font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition active:scale-95 disabled:opacity-50"
           >
-            حفظ
+            {saving ? "جاري الحفظ…" : "حفظ"}
           </button>
           <button
             onClick={handleComplete}
-            className="px-6 py-2.5 rounded-xl text-sm font-bold bg-teal-700/80 hover:bg-teal-800/80 text-white transition shadow active:scale-95"
+            disabled={saving}
+            className="px-6 py-2.5 rounded-xl text-sm font-bold bg-teal-700/80 hover:bg-teal-800/80 text-white transition shadow active:scale-95 disabled:opacity-50"
           >
-            إتمام الزيارة
+            {saving ? "جاري الحفظ…" : "إتمام الزيارة"}
           </button>
         </div>
 

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import useAgialStore from "../store";
-import { MOCK_DOCTORS, MOCK_SPECIALTIES } from "../mockCalendar";
+import { getDoctors, getClinics, createBooking } from "../../../services/odooClient";
 import BookingTabs from "../components/BookingTabs";
 
 const OCR_ENDPOINT = "/id_scanner";
@@ -56,6 +56,13 @@ export default function ReceptionScreen() {
   const updateAppointment = useAgialStore((s) => s.updateAppointment);
   const upsertPatient = useAgialStore((s) => s.upsertPatient);
 
+  const [doctors, setDoctors] = useState([]);
+  const [clinics, setClinics] = useState([]);
+  useEffect(() => {
+    getDoctors().then(setDoctors).catch(() => {});
+    getClinics('OPD').then(setClinics).catch(() => {});
+  }, []);
+
   const slotData = location.state?.slot || null;
   const isEditing = !!slotData?.event;
 
@@ -105,7 +112,7 @@ export default function ReceptionScreen() {
         mobile: ev.patient?.mobile || "", insurance: ev.patient?.insurance || "",
         address: ev.patient?.address || "",
       }));
-      const doc = MOCK_DOCTORS.find(d => d.id === ev.doctorId);
+      const doc = doctors.find(d => String(d.id) === String(ev.doctorId));
       setVisit({
         specialty: doc?.specialty || slotData.specialty || "",
         visitType: ev.visit?.visitType || "متابعة",
@@ -117,8 +124,13 @@ export default function ReceptionScreen() {
   }, [slotData]);
 
   const fullName = [patient.firstName, patient.secondName, patient.thirdName, patient.lastName].filter(Boolean).join(" ");
-  const doctorsForSpecialty = MOCK_DOCTORS.filter(d => d.specialty === visit.specialty);
-  const clinicsForSpecialty = doctorsForSpecialty.map(d => `عيادة ${visit.specialty} (${d.name})`);
+  const specialties = [...new Set(doctors.map(d => d.specialty).filter(Boolean))];
+  const doctorsForSpecialty = visit.specialty
+    ? doctors.filter(d => d.specialty === visit.specialty)
+    : doctors;
+  const clinicsForSpecialty = clinics.filter(c =>
+    !visit.specialty || doctorsForSpecialty.some(d => d.clinic_ids.includes(c.id))
+  );
 
   const handleIdImage = (e) => {
     const file = e.target.files[0];
@@ -164,12 +176,24 @@ export default function ReceptionScreen() {
     };
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
     const appt = buildAppointment();
     if (fullName) upsertPatient({ mrn: patient.mrn, name: fullName, nationalId: patient.nationalId, mobile: patient.mobile, dob: patient.dob, gender: patient.gender, insurance: patient.insurance, address: patient.address });
     if (isEditing) updateAppointment(slotData.event.id, appt);
     else addAppointment(appt);
+    const doctorObj = doctorsForSpecialty[0];
+    const clinicObj = clinicsForSpecialty[0];
+    try {
+      await createBooking({
+        patient_name: fullName,
+        mobile: patient.mobile,
+        gender: patient.gender === 'ذكر' ? 'Male' : patient.gender === 'أنثى' ? 'Female' : '',
+        doctor_id: doctorObj?.id || null,
+        clinic_id: clinicObj?.id || null,
+        appointment_date: appt.start?.replace('T', ' ').slice(0, 19),
+      });
+    } catch (_) {}
     setSaved(true);
   };
 
@@ -404,7 +428,7 @@ export default function ReceptionScreen() {
                       <SelectWrap>
                         <select value={visit.specialty} onChange={(e) => setVisit({ ...visit, specialty: e.target.value, clinic: "" })} className={`${inputCls} pr-3 pl-9`} required>
                           <option value="">— اختر التخصص —</option>
-                          {MOCK_SPECIALTIES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+                          {specialties.map((s) => <option key={s} value={s}>{s}</option>)}
                         </select>
                       </SelectWrap>
                     </div>

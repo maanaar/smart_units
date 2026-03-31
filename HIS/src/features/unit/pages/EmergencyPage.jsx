@@ -1,6 +1,7 @@
 import { useState } from "react";
 import BookingTabs from "../components/BookingTabs";
 import useAgialStore from "../store";
+import { createEmergency } from "../../../services/odooClient";
 
 const genderOptions = ["ذكر", "أنثى"];
 const arrivalMethods = ["سيارة إسعاف", "مشي", "سيارة خاصة", "إحالة من مستشفى", "أخرى"];
@@ -33,12 +34,25 @@ export default function EmergencyPage() {
   });
   const [saved, setSaved] = useState(false);
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
     addToQueue({
       patient: { name: patient.name, gender: patient.gender },
       visit: { visitType: "طوارئ", payment: financial.type, triageLevel: triage.triageLevel },
     });
+    try {
+      await createEmergency({
+        patient_name: patient.name,
+        gender: patient.gender === 'ذكر' ? 'Male' : patient.gender === 'أنثى' ? 'Female' : '',
+        triage_level: triage.triageLevel,
+        chief_complaint: triage.chiefComplaint,
+        financial_type: financial.type,
+        destination: financial.destination,
+        arrival_method: triage.arrivalMethod,
+        companion_name: patient.companionName,
+        companion_phone: patient.companionPhone,
+      });
+    } catch (_) {}
     setSaved(true);
   };
 

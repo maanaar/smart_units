@@ -1,15 +1,7 @@
+import { useState, useEffect } from 'react';
 import useAuthStore from '../../auth/store';
 import Card from '../../dashboards/components/cards';
-
-// ── mock data ──────────────────────────────────────────────────────────────────
-const STATS = [
-  { label: 'الزيارات اليوم',      value: '450',  sub: '+١٢٪ مقارنة بالمتوسط', subColor: 'text-emerald-500' },
-  { label: 'حالات المختبر',       value: '120',  sub: '١٥ معلقة',              subColor: 'text-amber-500'   },
-  { label: 'طلبات الأشعة',        value: '45',   sub: 'تم الإبلاغ عن الكل',   subColor: 'text-emerald-500' },
-  { label: 'صرف الصيدلية',        value: '320',  sub: 'حجم مرتفع',             subColor: 'text-emerald-500' },
-  { label: 'تنبيهات المخزون',     value: '3',    sub: 'عناصر حرجة',            subColor: 'text-red-500'     },
-  { label: 'حالة التكامل',        value: '100%', sub: 'متزامن بالكامل',        subColor: 'text-emerald-500' },
-];
+import { getDashboardStats } from '../../../services/odooClient';
 
 const HOURLY = [
   { h: '8ص', v: 20 }, { h: '10ص', v: 55 }, { h: '12ظ', v: 90 },
@@ -33,11 +25,6 @@ const WEEKLY_THIS = [38, 32, 28, 42, 45, 38, 40];
 const WEEKLY_LAST = [30, 28, 35, 30, 36, 30, 34];
 const WEEKLY_DAYS = ['الإثنين', 'الأربعاء', 'الجمعة', 'الأحد'];
 
-const MODULES = [
-  { name: 'العيادات',  status: 'نشط', updated: 'منذ دقيقة',   label: 'المرضى في الانتظار', value: '٢٤ في الانتظار' },
-  { name: 'المختبر',   status: 'نشط', updated: 'منذ دقيقتين', label: 'نتائج معلقة',         value: '١٥ عينة'         },
-  { name: 'الأشعة',    status: 'نشط', updated: 'منذ ٥ دقائق', label: 'دراسات غير مقروءة',  value: '٠ معلق'          },
-];
 
 const ALERTS = [
   { id: 1, msg: 'مخزون باراسيتامول ٥٠٠ مجم منخفض بشكل حرج (أقل من الحد الأدنى)', source: 'سلسلة الإمداد', time: 'منذ ١٠ دقائق', critical: true  },
@@ -73,7 +60,7 @@ function HourlyChart() {
   );
 }
 
-function DonutChart() {
+function DonutChart({ visits = 0 }) {
   const r = 52, cx = 70, cy = 70, sw = 18;
   const circ = 2 * Math.PI * r;
   let offset = 0;
@@ -95,7 +82,7 @@ function DonutChart() {
             style={{ transform: 'rotate(-90deg)', transformOrigin: `${cx}px ${cy}px` }}
           />
         ))}
-        <text x={cx} y={cy - 5} textAnchor="middle" fontSize="16" fontWeight="700" fill="#111827">{STATS[0].value}</text>
+        <text x={cx} y={cy - 5} textAnchor="middle" fontSize="16" fontWeight="700" fill="#111827">{visits || '—'}</text>
         <text x={cx} y={cy + 12} textAnchor="middle" fontSize="9" fill="#9ca3af">زيارات</text>
       </svg>
       <div className="flex flex-col gap-2">
@@ -159,6 +146,28 @@ function WeeklyChart() {
 export default function AgialDashboard() {
   const { user, unit } = useAuthStore();
   const initials = (user?.name || 'U').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    getDashboardStats().then(setStats).catch(() => {});
+  }, []);
+
+  const s = stats;
+  const statCards = [
+    { label: 'الزيارات اليوم',  value: s ? String(s.today_bookings)       : '…', sub: s ? `${s.booking_confirmed} مؤكدة`  : '…', subColor: 'text-emerald-500' },
+    { label: 'حالات المختبر',   value: s ? String(s.today_lab_requests)   : '…', sub: s ? `${s.lab_pending} معلقة`        : '…', subColor: 'text-amber-500'   },
+    { label: 'طلبات الأشعة',    value: s ? String(s.today_rad_requests)   : '…', sub: s ? `${s.rad_pending} معلقة`        : '…', subColor: s && s.rad_pending === 0 ? 'text-emerald-500' : 'text-amber-500' },
+    { label: 'إجمالي المرضى',   value: s ? String(s.total_patients)       : '…', sub: 'إجمالي في النظام',                        subColor: 'text-emerald-500' },
+    { label: 'مرضى راقدون',     value: s ? String(s.active_inpatient)     : '…', sub: 'حالياً بالمستشفى',                        subColor: 'text-emerald-500' },
+    { label: 'حالة التكامل',    value: '100%',                                    sub: 'متزامن بالكامل',                          subColor: 'text-emerald-500' },
+  ];
+
+  const pendingClinics = s ? s.today_bookings - s.booking_confirmed - s.booking_cancelled : null;
+  const modules = [
+    { name: 'العيادات',  status: 'نشط', updated: 'الآن',          label: 'المرضى في الانتظار', value: s ? `${pendingClinics} في الانتظار` : '…' },
+    { name: 'المختبر',   status: 'نشط', updated: 'الآن',          label: 'نتائج معلقة',         value: s ? `${s.lab_pending} عينة`          : '…' },
+    { name: 'الأشعة',    status: 'نشط', updated: 'الآن',          label: 'دراسات غير مقروءة',  value: s ? `${s.rad_pending} معلق`          : '…' },
+  ];
 
   return (
     <div className="h-full overflow-y-auto bg-gray-50">
@@ -189,7 +198,7 @@ export default function AgialDashboard() {
 
         {/* ── 6 stat cards ── */}
         <div className="grid grid-cols-6 gap-3">
-          {STATS.map(s => (
+          {statCards.map(s => (
             <Card
               key={s.label}
               title={s.label}
@@ -208,7 +217,7 @@ export default function AgialDashboard() {
           </div>
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
             <p className="text-sm font-bold text-gray-800 mb-2">توزيع الفرز</p>
-            <DonutChart />
+            <DonutChart visits={s ? s.today_bookings : 0} />
           </div>
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
             <p className="text-sm font-bold text-gray-800 mb-3">استخدام الأقسام</p>
@@ -227,7 +236,7 @@ export default function AgialDashboard() {
           <div>
             <h2 className="text-base font-bold text-gray-900 mb-3">حالة الوحدات</h2>
             <div className="grid grid-cols-3 gap-4">
-              {MODULES.map(m => (
+              {modules.map(m => (
                 <div key={m.name} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
                   <div className="flex items-center justify-between mb-1">
                     <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
